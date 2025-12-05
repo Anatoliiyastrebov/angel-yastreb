@@ -76,7 +76,7 @@ npm run build
    - Нажмите **"Add a variable"**
    - **Для первой переменной:**
      - **Key:** `VITE_TELEGRAM_BOT_TOKEN` (только имя, без значения!)
-     - **Value:** `8348191426:AAFSipqYQpzfxvx-ICEVttfoJDo3XGzHE8Q`
+     - **Value:** `7795283302:AAEqvc0ubcVlUJQn4yk70GVVyOGSmrSQKpo`
      - Отметьте **"Contains sensitive value"** (если есть)
      - Нажмите **"Create variable"**
    - **Для второй переменной:**
