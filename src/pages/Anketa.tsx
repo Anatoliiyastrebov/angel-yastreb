@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 import { QuestionField } from '@/components/form/QuestionField';
 import { ContactSection } from '@/components/form/ContactSection';
 import { DSGVOCheckbox } from '@/components/form/DSGVOCheckbox';
@@ -75,10 +76,47 @@ const Anketa: React.FC = () => {
         return newErrors;
       });
     }
+    // If operations changed to "no", clear additional field error
+    if (questionId === 'operations' && value === 'no') {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors['operations_additional'];
+        return newErrors;
+      });
+    }
+    // If pregnancy_problems changed to "no", clear additional field error
+    if (questionId === 'pregnancy_problems' && value === 'no') {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors['pregnancy_problems_additional'];
+        return newErrors;
+      });
+    }
+    // If injuries changed to only "no_issues" or empty, clear additional field error
+    if (questionId === 'injuries') {
+      const injuriesArray = Array.isArray(value) ? value : [value];
+      const hasOtherThanNoIssues = injuriesArray.some((val: string) => val !== 'no_issues');
+      if (!hasOtherThanNoIssues) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors['injuries_additional'];
+          return newErrors;
+        });
+      }
+    }
   };
 
   const handleAdditionalChange = (questionId: string, value: string) => {
     setAdditionalData((prev) => ({ ...prev, [`${questionId}_additional`]: value }));
+    // Clear error when user starts typing in additional field
+    const additionalKey = `${questionId}_additional`;
+    if (errors[additionalKey]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[additionalKey];
+        return newErrors;
+      });
+    }
   };
 
   const handleClearForm = () => {
@@ -98,7 +136,7 @@ const Anketa: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const validationErrors = validateForm(sections, formData, contactData, language);
+    const validationErrors = validateForm(sections, formData, contactData, language, additionalData);
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
@@ -165,6 +203,7 @@ const Anketa: React.FC = () => {
                       value={formData[question.id] || (question.type === 'checkbox' ? [] : '')}
                       additionalValue={additionalData[`${question.id}_additional`] || ''}
                       error={errors[question.id]}
+                      additionalError={errors[`${question.id}_additional`]}
                       onChange={(value) => handleFieldChange(question.id, value)}
                       onAdditionalChange={(value) =>
                         handleAdditionalChange(question.id, value)
@@ -245,6 +284,8 @@ const Anketa: React.FC = () => {
           <MarkdownPreview markdown={markdown} onClose={() => setShowPreview(false)} />
         )}
       </main>
+      
+      <Footer />
     </div>
   );
 };

@@ -43,6 +43,12 @@ export interface QuestionnaireSection {
 
 // Common options used across questionnaires
 const yesNoOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+  { value: 'yes', label: { ru: 'Да', en: 'Yes', de: 'Ja' } },
+  { value: 'no', label: { ru: 'Нет', en: 'No', de: 'Nein' } },
+];
+
+const yesNoOptionsSimple: QuestionOption[] = [
   { value: 'yes', label: { ru: 'Да', en: 'Yes', de: 'Ja' } },
   { value: 'no', label: { ru: 'Нет', en: 'No', de: 'Nein' } },
 ];
@@ -96,6 +102,13 @@ const skinOptions: QuestionOption[] = [
 ];
 
 const sleepOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+  { value: 'good', label: { ru: 'Хорошо', en: 'Good', de: 'Gut' } },
+  { value: 'bad', label: { ru: 'Плохо', en: 'Bad', de: 'Schlecht' } },
+  { value: 'sometimes', label: { ru: 'Иногда проблемы', en: 'Sometimes problems', de: 'Manchmal Probleme' } },
+];
+
+const sleepOptionsSimple: QuestionOption[] = [
   { value: 'good', label: { ru: 'Хорошо', en: 'Good', de: 'Gut' } },
   { value: 'bad', label: { ru: 'Плохо', en: 'Bad', de: 'Schlecht' } },
   { value: 'sometimes', label: { ru: 'Иногда проблемы', en: 'Sometimes problems', de: 'Manchmal Probleme' } },
@@ -110,13 +123,29 @@ const energyOptions: QuestionOption[] = [
 const birthOptions: QuestionOption[] = [
   { value: 'natural', label: { ru: 'Естественно', en: 'Natural', de: 'Natürlich' } },
   { value: 'cesarean', label: { ru: 'Кесарево', en: 'Cesarean', de: 'Kaiserschnitt' } },
-  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
 ];
 
-const covidOptions: QuestionOption[] = [
-  { value: 'had_covid', label: { ru: 'Болел(а)', en: 'Had COVID', de: 'Hatte COVID' } },
-  { value: 'vaccinated', label: { ru: 'Вакцинирован(а)', en: 'Vaccinated', de: 'Geimpft' } },
+const injuriesOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Все в порядке', en: 'All is well', de: 'Alles in Ordnung' } },
+  { value: 'injuries', label: { ru: 'Травмы', en: 'Injuries', de: 'Verletzungen' } },
+  { value: 'surgeries', label: { ru: 'Операции', en: 'Surgeries', de: 'Operationen' } },
+  { value: 'head_trauma', label: { ru: 'Удары по голове', en: 'Head trauma', de: 'Kopftrauma' } },
+  { value: 'fractures', label: { ru: 'Переломы', en: 'Fractures', de: 'Brüche' } },
+  { value: 'severe_falls', label: { ru: 'Сильные падения', en: 'Severe falls', de: 'Schwere Stürze' } },
+];
+
+const covidOptionsWoman: QuestionOption[] = [
   { value: 'no', label: { ru: 'Нет', en: 'No', de: 'Nein' } },
+  { value: 'had_covid', label: { ru: 'Болела', en: 'Had COVID', de: 'Hatte COVID' } },
+  { value: 'vaccinated', label: { ru: 'Вакцинирована', en: 'Vaccinated', de: 'Geimpft' } },
+  { value: 'both', label: { ru: 'И болела, и вакцинирована', en: 'Both had COVID and vaccinated', de: 'Sowohl COVID gehabt als auch geimpft' } },
+];
+
+const covidOptionsMan: QuestionOption[] = [
+  { value: 'no', label: { ru: 'Нет', en: 'No', de: 'Nein' } },
+  { value: 'had_covid', label: { ru: 'Болел', en: 'Had COVID', de: 'Hatte COVID' } },
+  { value: 'vaccinated', label: { ru: 'Вакцинирован', en: 'Vaccinated', de: 'Geimpft' } },
+  { value: 'both', label: { ru: 'И болел, и вакцинирован', en: 'Both had COVID and vaccinated', de: 'Sowohl COVID gehabt als auch geimpft' } },
 ];
 
 const teethOptions: QuestionOption[] = [
@@ -158,9 +187,10 @@ const molesWartsHerpesOptions: QuestionOption[] = [
 
 const dischargeMolesWartsHerpesOptions: QuestionOption[] = [
   { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
-  { value: 'discharge', label: { ru: 'Выделения', en: 'Discharge', de: 'Ausfluss' } },
-  { value: 'moles', label: { ru: 'Родинки', en: 'Moles', de: 'Muttermale' } },
+  { value: 'thrush', label: { ru: 'Молочница', en: 'Thrush', de: 'Soor' } },
+  { value: 'moles', label: { ru: 'Много родинок', en: 'Many moles', de: 'Viele Muttermale' } },
   { value: 'warts', label: { ru: 'Бородавки', en: 'Warts', de: 'Warzen' } },
+  { value: 'hpv_skin', label: { ru: 'Папилломавирус на коже', en: 'HPV on skin', de: 'HPV auf der Haut' } },
   { value: 'herpes', label: { ru: 'Герпес', en: 'Herpes', de: 'Herpes' } },
 ];
 
@@ -172,7 +202,7 @@ const memoryOptions: QuestionOption[] = [
 ];
 
 const illnessAntibioticsOptions: QuestionOption[] = [
-  { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+  { value: 'rarely_ill', label: { ru: 'Редко болеет', en: 'Rarely ill', de: 'Selten krank' } },
   { value: 'often_ill', label: { ru: 'Часто болеет', en: 'Often ill', de: 'Oft krank' } },
   { value: 'took_antibiotics', label: { ru: 'Принимал антибиотики', en: 'Took antibiotics', de: 'Antibiotika genommen' } },
   { value: 'both', label: { ru: 'И часто болеет, и принимал антибиотики', en: 'Both often ill and took antibiotics', de: 'Sowohl oft krank als auch Antibiotika genommen' } },
@@ -182,7 +212,9 @@ const cystsStonesOptions: QuestionOption[] = [
   { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
   { value: 'cysts', label: { ru: 'Кисты', en: 'Cysts', de: 'Zysten' } },
   { value: 'fibroids', label: { ru: 'Миомы', en: 'Fibroids', de: 'Myome' } },
-  { value: 'stones', label: { ru: 'Камни', en: 'Stones', de: 'Steine' } },
+  { value: 'stones_kidneys', label: { ru: 'Камни в почках', en: 'Stones in kidneys', de: 'Steine in Nieren' } },
+  { value: 'sand_kidneys', label: { ru: 'Песок в почках', en: 'Sand in kidneys', de: 'Sand in Nieren' } },
+  { value: 'stones_gallbladder', label: { ru: 'Камни в желчном', en: 'Stones in gallbladder', de: 'Steine in Gallenblase' } },
 ];
 
 const cystsStonesKidneysOptions: QuestionOption[] = [
@@ -194,9 +226,14 @@ const cystsStonesKidneysOptions: QuestionOption[] = [
 ];
 
 const menstruationOptions: QuestionOption[] = [
-  { value: 'normal', label: { ru: 'Нормальные месячные', en: 'Normal menstruation', de: 'Normale Menstruation' } },
-  { value: 'irregular', label: { ru: 'Нерегулярные месячные', en: 'Irregular menstruation', de: 'Unregelmäßige Menstruation' } },
-  { value: 'menopause', label: { ru: 'Менопауза', en: 'Menopause', de: 'Menopause' } },
+  { value: 'regular', label: { ru: 'Регулярные', en: 'Regular', de: 'Regelmäßig' } },
+  { value: 'heavy', label: { ru: 'Обильные', en: 'Heavy', de: 'Stark' } },
+  { value: 'clots', label: { ru: 'Сгустками', en: 'With clots', de: 'Mit Gerinnseln' } },
+  { value: 'painful', label: { ru: 'Болезненные', en: 'Painful', de: 'Schmerzhaft' } },
+  { value: 'hot_flashes', label: { ru: 'Приливы', en: 'Hot flashes', de: 'Hitzewallungen' } },
+  { value: 'sweating', label: { ru: 'Потливость', en: 'Sweating', de: 'Schwitzen' } },
+  { value: 'poor_sleep', label: { ru: 'Плохой сон', en: 'Poor sleep', de: 'Schlechter Schlaf' } },
+  { value: 'mood_swings', label: { ru: 'Скачки настроения', en: 'Mood swings', de: 'Stimmungsschwankungen' } },
 ];
 
 const headachesOptions: QuestionOption[] = [
@@ -215,12 +252,14 @@ const headachesSleepOptions: QuestionOption[] = [
 ];
 
 const hyperactiveOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
   { value: 'hyperactive', label: { ru: 'Гиперактивный', en: 'Hyperactive', de: 'Hyperaktiv' } },
   { value: 'tired_often', label: { ru: 'Часто устаёт', en: 'Often tired', de: 'Oft müde' } },
   { value: 'normal', label: { ru: 'Нормально', en: 'Normal', de: 'Normal' } },
 ];
 
 const sugarOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
   { value: 'no', label: { ru: 'Нет', en: 'No', de: 'Nein' } },
   { value: 'moderate', label: { ru: 'Умеренно', en: 'Moderate', de: 'Mäßig' } },
   { value: 'strong', label: { ru: 'Сильно', en: 'Strong', de: 'Stark' } },
@@ -232,11 +271,19 @@ const pressureOptions: QuestionOption[] = [
   { value: 'normal', label: { ru: 'Нормальное', en: 'Normal', de: 'Normal' } },
 ];
 
+const waterOptions: QuestionOption[] = [
+  { value: '1', label: { ru: '1 литр', en: '1 liter', de: '1 Liter' } },
+  { value: '1.5', label: { ru: '1.5 литра', en: '1.5 liters', de: '1.5 Liter' } },
+  { value: '2', label: { ru: '2 литра', en: '2 liters', de: '2 Liter' } },
+  { value: '2.5', label: { ru: '2.5 литра', en: '2.5 liters', de: '2.5 Liter' } },
+  { value: '3', label: { ru: '3 литра', en: '3 liters', de: '3 Liter' } },
+  { value: '3.5', label: { ru: '3.5 литра', en: '3.5 liters', de: '3.5 Liter' } },
+];
+
 const sleepAdultOptions: QuestionOption[] = [
   { value: 'good', label: { ru: 'Хороший', en: 'Good', de: 'Gut' } },
   { value: 'hard_to_fall_asleep', label: { ru: 'Трудно заснуть', en: 'Hard to fall asleep', de: 'Schwer einzuschlafen' } },
   { value: 'wake_often', label: { ru: 'Часто просыпаюсь', en: 'Wake up often', de: 'Wache oft auf' } },
-  { value: 'disturbed', label: { ru: 'Нарушен', en: 'Disturbed', de: 'Gestört' } },
 ];
 
 // Infant questionnaire (type = infant)
@@ -291,7 +338,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         type: 'radio',
         label: { ru: 'Потеет во сне', en: 'Sweats at night', de: 'Schwitzt nachts' },
         icon: 'droplets',
-        options: yesNoOptions,
+        options: yesNoOptionsSimple,
         required: true,
         hasAdditional: true,
       },
@@ -300,7 +347,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         type: 'radio',
         label: { ru: 'Есть ли неприятный запах изо рта', en: 'Is there bad breath', de: 'Gibt es Mundgeruch' },
         icon: 'wind',
-        options: yesNoOptions,
+        options: yesNoOptionsSimple,
         required: true,
         hasAdditional: true,
       },
@@ -332,19 +379,19 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
       },
       {
         id: 'injuries',
-        type: 'text',
+        type: 'checkbox',
         label: { ru: 'Травмы / операции / удары по голове / переломы', en: 'Injuries / surgeries / head trauma / fractures', de: 'Verletzungen / Operationen / Kopftrauma / Brüche' },
         icon: 'activity',
+        options: injuriesOptions,
         required: true,
         hasAdditional: true,
-        placeholder: { ru: 'Опишите, если есть', en: 'Describe if any', de: 'Beschreiben Sie, falls vorhanden' },
       },
       {
         id: 'sleep_quality',
         type: 'radio',
         label: { ru: 'Хорошо ли спит', en: 'Does the child sleep well', de: 'Schläft das Kind gut' },
         icon: 'moon',
-        options: sleepOptions,
+        options: sleepOptionsSimple,
         required: true,
         hasAdditional: true,
       },
@@ -378,7 +425,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         type: 'radio',
         label: { ru: 'Был ли у мамы сильный токсикоз при беременности', en: 'Did mother have severe toxicosis during pregnancy', de: 'Hatte die Mutter starke Toxikose während der Schwangerschaft' },
         icon: 'alert-circle',
-        options: yesNoOptions,
+        options: yesNoOptionsSimple,
         required: true,
         hasAdditional: true,
       },
@@ -387,7 +434,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         type: 'radio',
         label: { ru: 'Была ли у мамы аллергия до или во время беременности', en: 'Did mother have allergies before or during pregnancy', de: 'Hatte die Mutter Allergien vor oder während der Schwangerschaft' },
         icon: 'flower',
-        options: yesNoOptions,
+        options: yesNoOptionsSimple,
         required: true,
         hasAdditional: true,
       },
@@ -396,7 +443,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         type: 'radio',
         label: { ru: 'Был ли у мамы запор', en: 'Did mother have constipation', de: 'Hatte die Mutter Verstopfung' },
         icon: 'alert-triangle',
-        options: yesNoOptions,
+        options: yesNoOptionsSimple,
         required: true,
         hasAdditional: true,
       },
@@ -405,7 +452,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         type: 'radio',
         label: { ru: 'Пила ли мама антибиотики во время беременности', en: 'Did mother take antibiotics during pregnancy', de: 'Nahm die Mutter Antibiotika während der Schwangerschaft' },
         icon: 'pill',
-        options: yesNoOptions,
+        options: yesNoOptionsSimple,
         required: true,
         hasAdditional: true,
       },
@@ -414,18 +461,18 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         type: 'radio',
         label: { ru: 'Была ли анемия у мамы', en: 'Did mother have anemia', de: 'Hatte die Mutter Anämie' },
         icon: 'heart',
-        options: yesNoOptions,
+        options: yesNoOptionsSimple,
         required: true,
         hasAdditional: true,
       },
       {
         id: 'pregnancy_problems',
-        type: 'textarea',
-        label: { ru: 'Какие проблемы были в беременности', en: 'What problems were there during pregnancy', de: 'Welche Probleme gab es während der Schwangerschaft' },
+        type: 'radio',
+        label: { ru: 'Были ли проблемы во время беременности', en: 'Were there problems during pregnancy', de: 'Gab es Probleme während der Schwangerschaft' },
         icon: 'file-text',
+        options: yesNoOptionsSimple,
         required: true,
         hasAdditional: true,
-        placeholder: { ru: 'Опишите все проблемы', en: 'Describe all problems', de: 'Beschreiben Sie alle Probleme' },
       },
       {
         id: 'what_else',
@@ -502,6 +549,7 @@ export const childQuestionnaire: QuestionnaireSection[] = [
         label: { ru: 'Потеет во сне / скрипит зубами', en: 'Sweats at night / grinds teeth', de: 'Schwitzt nachts / knirscht mit den Zähnen' },
         icon: 'moon',
         options: [
+          { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
           { value: 'sweats', label: { ru: 'Потеет во сне', en: 'Sweats at night', de: 'Schwitzt nachts' } },
           { value: 'grinds', label: { ru: 'Скрипит зубами', en: 'Grinds teeth', de: 'Knirscht mit den Zähnen' } },
         ],
@@ -513,18 +561,18 @@ export const childQuestionnaire: QuestionnaireSection[] = [
         type: 'radio',
         label: { ru: 'Неприятный запах изо рта', en: 'Bad breath', de: 'Mundgeruch' },
         icon: 'wind',
-        options: yesNoOptions,
+        options: yesNoOptionsSimple,
         required: true,
         hasAdditional: true,
       },
       {
         id: 'sugar_dependency',
-        type: 'radio',
+        type: 'text',
         label: { ru: 'Зависимость от сладкого', en: 'Sugar dependency', de: 'Zuckerabhängigkeit' },
         icon: 'candy',
-        options: sugarOptions,
         required: true,
         hasAdditional: true,
+        placeholder: { ru: 'Опишите', en: 'Describe', de: 'Beschreiben' },
       },
       {
         id: 'skin_condition',
@@ -555,20 +603,21 @@ export const childQuestionnaire: QuestionnaireSection[] = [
       },
       {
         id: 'water_per_day',
-        type: 'number',
+        type: 'radio',
         label: { ru: 'Сколько воды в день (литров)', en: 'Water per day (liters)', de: 'Wasser pro Tag (Liter)' },
         icon: 'droplet',
+        options: waterOptions,
         required: true,
         hasAdditional: true,
       },
       {
         id: 'injuries',
-        type: 'text',
+        type: 'checkbox',
         label: { ru: 'Травмы / операции / удары по голове / переломы', en: 'Injuries / surgeries / head trauma / fractures', de: 'Verletzungen / Operationen / Kopftrauma / Brüche' },
         icon: 'activity',
+        options: injuriesOptions,
         required: true,
         hasAdditional: true,
-        placeholder: { ru: 'Опишите, если есть', en: 'Describe if any', de: 'Beschreiben Sie, falls vorhanden' },
       },
       {
         id: 'headaches_sleep',
@@ -652,7 +701,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         type: 'radio',
         label: { ru: 'Был ли ковид или вакцина', en: 'COVID or vaccination status', de: 'COVID oder Impfstatus' },
         icon: 'shield',
-        options: covidOptions,
+        options: covidOptionsWoman,
         required: true,
         hasAdditional: true,
       },
@@ -704,7 +753,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         type: 'radio',
         label: { ru: 'Холодные руки/ноги', en: 'Cold hands/feet', de: 'Kalte Hände/Füße' },
         icon: 'thermometer',
-        options: yesNoOptions,
+        options: yesNoOptionsSimple,
         required: true,
         hasAdditional: true,
       },
@@ -722,14 +771,14 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         type: 'radio',
         label: { ru: 'Операции', en: 'Operations', de: 'Operationen' },
         icon: 'scissors',
-        options: yesNoOptions,
+        options: yesNoOptionsSimple,
         required: true,
         hasAdditional: true,
       },
       {
         id: 'cysts_stones',
         type: 'checkbox',
-        label: { ru: 'Кисты, миомы, камни', en: 'Cysts, fibroids, stones', de: 'Zysten, Myome, Steine' },
+        label: { ru: 'Кисты, миомы, песок или камни в почках или желчном', en: 'Cysts, fibroids, sand or stones in kidneys or gallbladder', de: 'Zysten, Myome, Sand oder Steine in Nieren oder Gallenblase' },
         icon: 'circle',
         options: cystsStonesOptions,
         required: true,
@@ -738,7 +787,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
       {
         id: 'pressure',
         type: 'radio',
-        label: { ru: 'Давление', en: 'Blood pressure', de: 'Blutdruck' },
+        label: { ru: 'Давление. Пьете ли таблетки (написать в дополнительно)', en: 'Blood pressure. Do you take medication (write in additional)', de: 'Blutdruck. Nehmen Sie Medikamente (in zusätzlich schreiben)' },
         icon: 'activity',
         options: pressureOptions,
         required: true,
@@ -756,7 +805,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
       {
         id: 'discharge_viruses',
         type: 'checkbox',
-        label: { ru: 'Выделения, родинки, бородавки, герпес', en: 'Discharge, moles, warts, herpes', de: 'Ausfluss, Muttermale, Warzen, Herpes' },
+        label: { ru: 'Выделения - молочница, много родинок, бородавок, папилломавирус на коже, герпес', en: 'Discharge - thrush, many moles, warts, HPV on skin, herpes', de: 'Ausfluss - Soor, viele Muttermale, Warzen, HPV auf der Haut, Herpes' },
         icon: 'alert-circle',
         options: dischargeMolesWartsHerpesOptions,
         required: true,
@@ -800,9 +849,10 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
       },
       {
         id: 'water_per_day',
-        type: 'number',
+        type: 'radio',
         label: { ru: 'Сколько воды в день (литров)', en: 'Water per day (liters)', de: 'Wasser pro Tag (Liter)' },
         icon: 'droplet',
+        options: waterOptions,
         required: true,
         hasAdditional: true,
       },
@@ -812,7 +862,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         label: { ru: 'Варикоз или геморрой', en: 'Varicose veins or hemorrhoids', de: 'Krampfadern oder Hämorrhoiden' },
         icon: 'heart',
         options: [
-          { value: 'no', label: { ru: 'Нет', en: 'No', de: 'Nein' } },
+          { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
           { value: 'varicose', label: { ru: 'Варикоз', en: 'Varicose veins', de: 'Krampfadern' } },
           { value: 'hemorrhoids', label: { ru: 'Геморрой', en: 'Hemorrhoids', de: 'Hämorrhoiden' } },
           { value: 'both', label: { ru: 'Оба', en: 'Both', de: 'Beide' } },
@@ -884,7 +934,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         type: 'radio',
         label: { ru: 'Был ли ковид или вакцина', en: 'COVID or vaccination status', de: 'COVID oder Impfstatus' },
         icon: 'shield',
-        options: covidOptions,
+        options: covidOptionsMan,
         required: true,
         hasAdditional: true,
       },
@@ -910,7 +960,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         label: { ru: 'Варикоз или геморрой', en: 'Varicose veins or hemorrhoids', de: 'Krampfadern oder Hämorrhoiden' },
         icon: 'heart',
         options: [
-          { value: 'no', label: { ru: 'Нет', en: 'No', de: 'Nein' } },
+          { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
           { value: 'varicose', label: { ru: 'Варикоз', en: 'Varicose veins', de: 'Krampfadern' } },
           { value: 'hemorrhoids', label: { ru: 'Геморрой', en: 'Hemorrhoids', de: 'Hämorrhoiden' } },
           { value: 'both', label: { ru: 'Оба', en: 'Both', de: 'Beide' } },
@@ -941,7 +991,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         type: 'radio',
         label: { ru: 'Руки-ноги холодные даже летом', en: 'Cold hands/feet even in summer', de: 'Kalte Hände/Füße auch im Sommer' },
         icon: 'thermometer',
-        options: yesNoOptions,
+        options: yesNoOptionsSimple,
         required: true,
         hasAdditional: true,
       },
@@ -957,9 +1007,9 @@ export const manQuestionnaire: QuestionnaireSection[] = [
       {
         id: 'operations',
         type: 'radio',
-        label: { ru: 'Операции — все ли органы на месте', en: 'Operations — are all organs in place', de: 'Operationen — sind alle Organe vorhanden' },
+        label: { ru: 'Операции', en: 'Operations', de: 'Operationen' },
         icon: 'scissors',
-        options: yesNoOptions,
+        options: yesNoOptionsSimple,
         required: true,
         hasAdditional: true,
       },
@@ -975,7 +1025,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
       {
         id: 'pressure',
         type: 'radio',
-        label: { ru: 'Давление', en: 'Blood pressure', de: 'Blutdruck' },
+        label: { ru: 'Давление. Пьете ли таблетки (написать в дополнительно)', en: 'Blood pressure. Do you take medication (write in additional)', de: 'Blutdruck. Nehmen Sie Medikamente (in zusätzlich schreiben)' },
         icon: 'activity',
         options: pressureOptions,
         required: true,
@@ -983,9 +1033,10 @@ export const manQuestionnaire: QuestionnaireSection[] = [
       },
       {
         id: 'water_per_day',
-        type: 'number',
+        type: 'radio',
         label: { ru: 'Сколько воды в день (литров)', en: 'Water per day (liters)', de: 'Wasser pro Tag (Liter)' },
         icon: 'droplet',
+        options: waterOptions,
         required: true,
         hasAdditional: true,
       },

@@ -163,7 +163,7 @@ export const translations = {
     contactLink: 'Ваша ссылка для связи',
     
     // DSGVO
-    dsgvoConsent: 'Я даю согласие на обработку моих персональных данных согласно DSGVO. Я понимаю, что консультация не является медицинской услугой.',
+    dsgvoConsent: 'Я даю свое добровольное согласие на обработку моих персональных данных согласно DSGVO/GDPR для целей предоставления консультации по здоровью. Я понимаю, что консультация не является медицинской услугой. Я знаю, что могу отозвать свое согласие в любое время.',
     
     // Buttons
     submit: 'Отправить анкету',
@@ -354,7 +354,7 @@ export const translations = {
     contactLink: 'Your contact link',
     
     // DSGVO
-    dsgvoConsent: 'I consent to the processing of my personal data in accordance with GDPR. I understand that the consultation is not a medical service.',
+    dsgvoConsent: 'I give my voluntary consent to the processing of my personal data in accordance with GDPR for the purpose of providing health consultation. I understand that the consultation is not a medical service. I know that I can withdraw my consent at any time.',
     
     // Buttons
     submit: 'Submit questionnaire',
@@ -545,7 +545,7 @@ export const translations = {
     contactLink: 'Ihr Kontaktlink',
     
     // DSGVO
-    dsgvoConsent: 'Ich stimme der Verarbeitung meiner personenbezogenen Daten gemäß DSGVO zu. Ich verstehe, dass die Beratung keine medizinische Leistung ist.',
+    dsgvoConsent: 'Ich gebe meine freiwillige Einwilligung zur Verarbeitung meiner personenbezogenen Daten gemäß DSGVO zum Zweck der Gesundheitsberatung. Ich verstehe, dass die Beratung keine medizinische Leistung ist. Ich weiß, dass ich meine Einwilligung jederzeit widerrufen kann.',
     
     // Buttons
     submit: 'Fragebogen absenden',

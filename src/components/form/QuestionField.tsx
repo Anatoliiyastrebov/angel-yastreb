@@ -8,6 +8,7 @@ interface QuestionFieldProps {
   value: string | string[];
   additionalValue: string;
   error?: string;
+  additionalError?: string;
   onChange: (value: string | string[]) => void;
   onAdditionalChange: (value: string) => void;
 }
@@ -17,6 +18,7 @@ export const QuestionField: React.FC<QuestionFieldProps> = ({
   value,
   additionalValue,
   error,
+  additionalError,
   onChange,
   onAdditionalChange,
 }) => {
@@ -159,13 +161,20 @@ export const QuestionField: React.FC<QuestionFieldProps> = ({
         <div className="mt-2">
           <label className="text-sm text-muted-foreground mb-1 block">
             {t('additionalInfo')}
+            {additionalError && <span className="text-destructive ml-1">*</span>}
           </label>
           <textarea
-            className="input-field text-sm min-h-[60px] resize-y"
+            className={`input-field text-sm min-h-[60px] resize-y ${additionalError ? 'input-error' : ''}`}
             value={additionalValue}
             onChange={(e) => onAdditionalChange(e.target.value)}
             placeholder={t('additionalInfo')}
           />
+          {additionalError && (
+            <p className="error-message mt-1">
+              <AlertCircleIcon />
+              {additionalError}
+            </p>
+          )}
         </div>
       )}
     </div>

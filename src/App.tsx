@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Anketa from "./pages/Anketa";
 import Success from "./pages/Success";
 import NotFound from "./pages/NotFound";
+import Impressum from "./pages/Impressum";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/anketa" element={<Anketa />} />
             <Route path="/success" element={<Success />} />
+            <Route path="/impressum" element={<Impressum />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </LanguageProvider>

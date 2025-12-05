@@ -73,7 +73,8 @@ export const validateForm = (
   sections: QuestionnaireSection[],
   formData: FormData,
   contactData: ContactData,
-  lang: Language
+  lang: Language,
+  additionalData?: FormAdditionalData
 ): FormErrors => {
   const errors: FormErrors = {};
   const t = translations[lang];
@@ -100,6 +101,36 @@ export const validateForm = (
     });
   });
 
+  // Special validation: if operations is "yes", additional field is required
+  if (formData['operations'] === 'yes' && additionalData) {
+    const operationsAdditional = additionalData['operations_additional'];
+    if (!operationsAdditional || operationsAdditional.trim() === '') {
+      errors['operations_additional'] = t.required;
+    }
+  }
+
+  // Special validation: if pregnancy_problems is "yes", additional field is required
+  if (formData['pregnancy_problems'] === 'yes' && additionalData) {
+    const pregnancyProblemsAdditional = additionalData['pregnancy_problems_additional'];
+    if (!pregnancyProblemsAdditional || pregnancyProblemsAdditional.trim() === '') {
+      errors['pregnancy_problems_additional'] = t.required;
+    }
+  }
+
+  // Special validation: if injuries has any option selected except "no_issues", additional field is required
+  if (formData['injuries'] && additionalData) {
+    const injuriesValue = formData['injuries'];
+    const injuriesArray = Array.isArray(injuriesValue) ? injuriesValue : [injuriesValue];
+    // Check if any option other than "no_issues" is selected
+    const hasOtherThanNoIssues = injuriesArray.some((val: string) => val !== 'no_issues');
+    if (hasOtherThanNoIssues) {
+      const injuriesAdditional = additionalData['injuries_additional'];
+      if (!injuriesAdditional || injuriesAdditional.trim() === '') {
+        errors['injuries_additional'] = t.required;
+      }
+    }
+  }
+
   // Validate contact
   if (!contactData.username || contactData.username.trim() === '') {
     errors['contact_username'] = t.required;
@@ -125,9 +156,24 @@ export const generateMarkdown = (
     man: t.mdMan,
   };
 
-  let md = `${headers[type]}\n${'—'.repeat(20)}\n\n`;
+  let md = `\n${'═'.repeat(40)}\n`;
+  md += `  ${headers[type]}\n`;
+  md += `${'═'.repeat(40)}\n\n`;
 
-  sections.forEach((section) => {
+  let questionNumber = 1;
+  let healthSectionPassed = false;
+
+  sections.forEach((section, sectionIndex) => {
+    // Section header
+    md += `\n${'─'.repeat(40)}\n`;
+    md += `📋 ${section.title[lang]}\n`;
+    md += `${'─'.repeat(40)}\n\n`;
+
+    // Mark that we've passed the health section
+    if (section.id === 'health') {
+      healthSectionPassed = true;
+    }
+
     section.questions.forEach((question) => {
       const value = formData[question.id];
       const additional = additionalData[`${question.id}_additional`];
@@ -135,39 +181,58 @@ export const generateMarkdown = (
       if (value && (Array.isArray(value) ? value.length > 0 : value.trim() !== '')) {
         const label = question.label[lang];
         
+        // Question number and label - only number questions after "health" section
+        if (healthSectionPassed && section.id !== 'health') {
+          md += `${questionNumber}. **${label}**\n`;
+          questionNumber++;
+        } else {
+          // Before or in health section, don't number
+          md += `**${label}**\n`;
+        }
+        
         if (Array.isArray(value)) {
           const optionLabels = value.map((v) => {
             const opt = question.options?.find((o) => o.value === v);
             return opt ? opt.label[lang] : v;
           });
-          md += `**${label}:**\n`;
-          optionLabels.forEach((ol) => {
-            md += `- ${ol}\n`;
+          md += `   Ответ: `;
+          optionLabels.forEach((ol, idx) => {
+            md += `${ol}`;
+            if (idx < optionLabels.length - 1) {
+              md += `, `;
+            }
           });
+          md += `\n`;
         } else if (question.options) {
           const opt = question.options.find((o) => o.value === value);
-          md += `**${label}:** ${opt ? opt.label[lang] : value}\n`;
+          md += `   Ответ: ${opt ? opt.label[lang] : value}\n`;
         } else {
-          md += `**${label}:** ${value}\n`;
+          md += `   Ответ: ${value}\n`;
         }
 
         if (additional && additional.trim() !== '') {
-          md += `  _${t.additionalInfo}:_ ${additional}\n`;
+          md += `   📝 Дополнительно: ${additional}\n`;
         }
 
-        md += '\n';
+        md += `\n`;
       }
     });
   });
 
   // Contact section
+  md += `\n${'─'.repeat(40)}\n`;
+  md += `📞 ${t.mdContacts}\n`;
+  md += `${'─'.repeat(40)}\n\n`;
+  
   const cleanUsername = contactData.username.replace(/^@/, '').trim();
   const link = contactData.method === 'telegram'
     ? `https://t.me/${cleanUsername}`
     : `https://instagram.com/${cleanUsername}`;
 
-  md += `${t.mdContacts}: @${cleanUsername}\n`;
-  md += `${link}\n`;
+  md += `👤 Имя пользователя: @${cleanUsername}\n`;
+  md += `🔗 Ссылка: ${link}\n`;
+
+  md += `\n${'═'.repeat(40)}\n`;
 
   return md;
 };

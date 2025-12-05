@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CheckCircle, Home, Send } from 'lucide-react';
 
@@ -48,6 +49,8 @@ const Success: React.FC = () => {
         <div className="fixed top-1/3 left-1/4 w-32 h-32 bg-success/10 rounded-full blur-3xl pointer-events-none animate-pulse-soft" />
         <div className="fixed bottom-1/3 right-1/4 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none animate-pulse-soft" style={{ animationDelay: '1s' }} />
       </main>
+      
+      <Footer />
     </div>
   );
 };
