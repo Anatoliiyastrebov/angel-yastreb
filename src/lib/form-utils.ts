@@ -247,6 +247,7 @@ export const sendToTelegram = async (markdown: string): Promise<{ success: boole
   const CHAT_ID = import.meta.env.VITE_TELEGRAM_CHAT_ID;
 
   // Debug: Log all environment variables (without exposing sensitive data)
+  const allViteEnvKeys = Object.keys(import.meta.env).filter(key => key.startsWith('VITE_'));
   console.log('Environment check:', {
     hasToken: !!BOT_TOKEN,
     hasChatId: !!CHAT_ID,
@@ -255,15 +256,32 @@ export const sendToTelegram = async (markdown: string): Promise<{ success: boole
     mode: import.meta.env.MODE,
     prod: import.meta.env.PROD,
     dev: import.meta.env.DEV,
-    allEnvKeys: Object.keys(import.meta.env).filter(key => key.startsWith('VITE_'))
+    allEnvKeys: allViteEnvKeys,
+    allEnvValues: allViteEnvKeys.map(key => ({ key, hasValue: !!import.meta.env[key] }))
   });
 
   // Validate that tokens are set
   if (!BOT_TOKEN || !CHAT_ID || BOT_TOKEN.trim() === '' || CHAT_ID.trim() === '') {
-    const errorMsg = 'Telegram Bot Token or Chat ID not configured. Please set VITE_TELEGRAM_BOT_TOKEN and VITE_TELEGRAM_CHAT_ID environment variables in Netlify and rebuild the site.';
-    console.error(errorMsg, {
+    const errorMsg = `Telegram Bot Token or Chat ID not configured. 
+    
+Please check:
+1. Go to Netlify → Site settings → Environment variables
+2. Make sure these variables are set:
+   - Key: VITE_TELEGRAM_BOT_TOKEN, Value: your_bot_token
+   - Key: VITE_TELEGRAM_CHAT_ID, Value: your_chat_id
+3. After adding variables, go to Deploys → Trigger deploy → Clear cache and deploy site
+4. Wait for the build to complete
+
+Current status:
+- VITE_TELEGRAM_BOT_TOKEN: ${BOT_TOKEN ? 'SET' : 'NOT SET'}
+- VITE_TELEGRAM_CHAT_ID: ${CHAT_ID ? 'SET' : 'NOT SET'}
+- All VITE_ variables found: ${allViteEnvKeys.join(', ') || 'NONE'}`;
+    
+    console.error('Environment variables check failed:', {
       BOT_TOKEN: BOT_TOKEN ? 'SET (hidden)' : 'NOT SET',
-      CHAT_ID: CHAT_ID ? 'SET (hidden)' : 'NOT SET'
+      CHAT_ID: CHAT_ID ? 'SET (hidden)' : 'NOT SET',
+      allViteEnvKeys,
+      mode: import.meta.env.MODE
     });
     return { success: false, error: errorMsg };
   }
