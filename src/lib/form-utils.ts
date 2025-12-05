@@ -243,19 +243,34 @@ export const generateMarkdown = (
 // For development: Set VITE_TELEGRAM_BOT_TOKEN and VITE_TELEGRAM_CHAT_ID in .env file
 export const sendToTelegram = async (markdown: string): Promise<{ success: boolean; error?: string }> => {
   // Try to get from environment variables first (for Vite: VITE_ prefix)
-  const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN || '<TELEGRAM_BOT_TOKEN>';
-  const CHAT_ID = import.meta.env.VITE_TELEGRAM_CHAT_ID || '<TELEGRAM_CHAT_ID>';
+  const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
+  const CHAT_ID = import.meta.env.VITE_TELEGRAM_CHAT_ID;
+
+  // Debug: Log all environment variables (without exposing sensitive data)
+  console.log('Environment check:', {
+    hasToken: !!BOT_TOKEN,
+    hasChatId: !!CHAT_ID,
+    tokenLength: BOT_TOKEN?.length || 0,
+    chatIdLength: CHAT_ID?.length || 0,
+    mode: import.meta.env.MODE,
+    prod: import.meta.env.PROD,
+    dev: import.meta.env.DEV,
+    allEnvKeys: Object.keys(import.meta.env).filter(key => key.startsWith('VITE_'))
+  });
 
   // Validate that tokens are set
-  if (BOT_TOKEN === '<TELEGRAM_BOT_TOKEN>' || CHAT_ID === '<TELEGRAM_CHAT_ID>') {
-    const errorMsg = 'Telegram Bot Token or Chat ID not configured. Please set VITE_TELEGRAM_BOT_TOKEN and VITE_TELEGRAM_CHAT_ID environment variables.';
-    console.error(errorMsg);
+  if (!BOT_TOKEN || !CHAT_ID || BOT_TOKEN.trim() === '' || CHAT_ID.trim() === '') {
+    const errorMsg = 'Telegram Bot Token or Chat ID not configured. Please set VITE_TELEGRAM_BOT_TOKEN and VITE_TELEGRAM_CHAT_ID environment variables in Netlify and rebuild the site.';
+    console.error(errorMsg, {
+      BOT_TOKEN: BOT_TOKEN ? 'SET (hidden)' : 'NOT SET',
+      CHAT_ID: CHAT_ID ? 'SET (hidden)' : 'NOT SET'
+    });
     return { success: false, error: errorMsg };
   }
 
   // Log payload for debugging
   console.log('Sending to Telegram...', { 
-    chatId: CHAT_ID, 
+    chatId: CHAT_ID.substring(0, 4) + '...', 
     textLength: markdown.length,
     hasToken: !!BOT_TOKEN,
     hasChatId: !!CHAT_ID

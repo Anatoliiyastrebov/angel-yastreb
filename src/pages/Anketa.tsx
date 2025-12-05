@@ -25,8 +25,9 @@ import {
   clearFormData,
   sendToTelegram,
 } from '@/lib/form-utils';
-import { Eye, Send, Trash2, Loader2 } from 'lucide-react';
+import { Eye, Send, Trash2, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const Anketa: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -36,6 +37,13 @@ const Anketa: React.FC = () => {
   const type = (searchParams.get('type') as QuestionnaireType) || 'infant';
   const sections = useMemo(() => getQuestionnaire(type), [type]);
   const title = getQuestionnaireTitle(type, language);
+
+  // Check if environment variables are configured
+  const isEnvConfigured = useMemo(() => {
+    const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
+    const CHAT_ID = import.meta.env.VITE_TELEGRAM_CHAT_ID;
+    return !!(BOT_TOKEN && CHAT_ID && BOT_TOKEN.trim() !== '' && CHAT_ID.trim() !== '');
+  }, []);
 
   const [formData, setFormData] = useState<FormData>({});
   const [additionalData, setAdditionalData] = useState<FormAdditionalData>({});
@@ -188,6 +196,26 @@ const Anketa: React.FC = () => {
           {title}
         </h1>
 
+        {!isEnvConfigured && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>
+              {language === 'ru' 
+                ? 'Переменные окружения не настроены' 
+                : language === 'de' 
+                ? 'Umgebungsvariablen nicht konfiguriert'
+                : 'Environment variables not configured'}
+            </AlertTitle>
+            <AlertDescription>
+              {language === 'ru' 
+                ? 'Telegram Bot Token или Chat ID не настроены. Пожалуйста, настройте переменные окружения VITE_TELEGRAM_BOT_TOKEN и VITE_TELEGRAM_CHAT_ID в Netlify и пересоберите сайт.'
+                : language === 'de'
+                ? 'Telegram Bot Token oder Chat ID nicht konfiguriert. Bitte setzen Sie die Umgebungsvariablen VITE_TELEGRAM_BOT_TOKEN und VITE_TELEGRAM_CHAT_ID in Netlify und stellen Sie die Site neu bereit.'
+                : 'Telegram Bot Token or Chat ID not configured. Please set VITE_TELEGRAM_BOT_TOKEN and VITE_TELEGRAM_CHAT_ID environment variables in Netlify and rebuild the site.'}
+            </AlertDescription>
+          </Alert>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-6">
           {sections.map((section, sectionIndex) => (
             <div
@@ -270,8 +298,8 @@ const Anketa: React.FC = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={!dsgvoAccepted || isSubmitting}
-            className="btn-primary w-full flex items-center justify-center gap-2 py-4 text-lg"
+            disabled={!dsgvoAccepted || isSubmitting || !isEnvConfigured}
+            className="btn-primary w-full flex items-center justify-center gap-2 py-4 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? (
               <>
