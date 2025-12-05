@@ -795,7 +795,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
       },
       {
         id: 'menstruation',
-        type: 'radio',
+        type: 'checkbox',
         label: { ru: 'Месячные или менопауза', en: 'Menstruation or menopause', de: 'Menstruation oder Menopause' },
         icon: 'calendar',
         options: menstruationOptions,
