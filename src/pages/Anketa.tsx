@@ -124,6 +124,18 @@ const Anketa: React.FC = () => {
         });
       }
     }
+    // If skin_condition changed and "other" is not selected, clear additional field error
+    if (questionId === 'skin_condition') {
+      const skinConditionArray = Array.isArray(value) ? value : [value];
+      const hasOther = skinConditionArray.includes('other');
+      if (!hasOther) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors['skin_condition_additional'];
+          return newErrors;
+        });
+      }
+    }
   };
 
   const handleAdditionalChange = (questionId: string, value: string) => {

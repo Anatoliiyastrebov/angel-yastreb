@@ -144,6 +144,19 @@ export const validateForm = (
     }
   }
 
+  // Special validation: if skin_condition has "other" selected, additional field is required
+  if (formData['skin_condition'] && additionalData) {
+    const skinConditionValue = formData['skin_condition'];
+    const skinConditionArray = Array.isArray(skinConditionValue) ? skinConditionValue : [skinConditionValue];
+    const hasOther = skinConditionArray.includes('other');
+    if (hasOther) {
+      const skinConditionAdditional = additionalData['skin_condition_additional'];
+      if (!skinConditionAdditional || skinConditionAdditional.trim() === '') {
+        errors['skin_condition_additional'] = t.required;
+      }
+    }
+  }
+
   // Validate contact
   if (!contactData.username || contactData.username.trim() === '') {
     errors['contact_username'] = t.required;

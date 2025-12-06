@@ -178,6 +178,7 @@ const skinConditionOptions: QuestionOption[] = [
   { value: 'rashes', label: { ru: 'Высыпания', en: 'Rashes', de: 'Ausschläge' } },
   { value: 'irritation', label: { ru: 'Раздражение', en: 'Irritation', de: 'Reizung' } },
   { value: 'acne', label: { ru: 'Прыщи', en: 'Acne', de: 'Akne' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
 ];
 
 const molesWartsHerpesOptions: QuestionOption[] = [
