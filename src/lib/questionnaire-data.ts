@@ -82,6 +82,7 @@ const allergyOptions: QuestionOption[] = [
   { value: 'animals', label: { ru: 'Животные', en: 'Animals', de: 'Tiere' } },
   { value: 'dust', label: { ru: 'Пыль', en: 'Dust', de: 'Staub' } },
   { value: 'food', label: { ru: 'Еда', en: 'Food', de: 'Lebensmittel' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
 ];
 
 const allergyOptionsExtended: QuestionOption[] = [
@@ -91,6 +92,7 @@ const allergyOptionsExtended: QuestionOption[] = [
   { value: 'dust', label: { ru: 'Пыль', en: 'Dust', de: 'Staub' } },
   { value: 'food', label: { ru: 'Еда', en: 'Food', de: 'Lebensmittel' } },
   { value: 'medications', label: { ru: 'Лекарства', en: 'Medications', de: 'Medikamente' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
 ];
 
 const skinOptions: QuestionOption[] = [

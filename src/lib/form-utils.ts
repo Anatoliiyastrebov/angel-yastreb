@@ -131,6 +131,19 @@ export const validateForm = (
     }
   }
 
+  // Special validation: if allergies has "other" selected, additional field is required
+  if (formData['allergies'] && additionalData) {
+    const allergiesValue = formData['allergies'];
+    const allergiesArray = Array.isArray(allergiesValue) ? allergiesValue : [allergiesValue];
+    const hasOther = allergiesArray.includes('other');
+    if (hasOther) {
+      const allergiesAdditional = additionalData['allergies_additional'];
+      if (!allergiesAdditional || allergiesAdditional.trim() === '') {
+        errors['allergies_additional'] = t.required;
+      }
+    }
+  }
+
   // Validate contact
   if (!contactData.username || contactData.username.trim() === '') {
     errors['contact_username'] = t.required;

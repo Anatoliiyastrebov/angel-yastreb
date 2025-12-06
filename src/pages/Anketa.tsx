@@ -112,6 +112,18 @@ const Anketa: React.FC = () => {
         });
       }
     }
+    // If allergies changed and "other" is not selected, clear additional field error
+    if (questionId === 'allergies') {
+      const allergiesArray = Array.isArray(value) ? value : [value];
+      const hasOther = allergiesArray.includes('other');
+      if (!hasOther) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors['allergies_additional'];
+          return newErrors;
+        });
+      }
+    }
   };
 
   const handleAdditionalChange = (questionId: string, value: string) => {
