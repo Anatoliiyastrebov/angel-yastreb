@@ -299,11 +299,14 @@ export const sendToTelegram = async (markdown: string): Promise<{ success: boole
     const errorMsg = `Telegram Bot Token or Chat ID not configured. 
     
 Please check:
-1. Go to Netlify → Site settings → Environment variables
+1. For Vercel: Go to Project Settings → Environment Variables
+   For Netlify: Go to Site settings → Environment variables
 2. Make sure these variables are set:
    - Key: VITE_TELEGRAM_BOT_TOKEN, Value: your_bot_token
    - Key: VITE_TELEGRAM_CHAT_ID, Value: your_chat_id
-3. After adding variables, go to Deploys → Trigger deploy → Clear cache and deploy site
+3. After adding variables:
+   - Vercel: Redeploy the project (automatic or manual via Deployments)
+   - Netlify: Trigger deploy → Clear cache and deploy site
 4. Wait for the build to complete
 
 Current status:
