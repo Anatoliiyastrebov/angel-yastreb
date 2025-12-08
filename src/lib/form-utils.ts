@@ -271,6 +271,16 @@ export const generateMarkdown = (
   return md;
 };
 
+// Helper function to get current language from URL
+const getCurrentLanguage = (): Language => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const lang = urlParams.get('lang');
+  if (lang && ['ru', 'en', 'de'].includes(lang)) {
+    return lang as Language;
+  }
+  return 'ru'; // default
+};
+
 // Send to Telegram
 // SECURITY NOTE: In production, use environment variables or a server-side proxy
 // Do not expose BOT_TOKEN in client-side code in production!
@@ -358,13 +368,62 @@ Current status:
 
     const responseData = await response.json();
 
+    // Helper function to extract migrate_to_chat_id from response
+    const extractNewChatId = (data: any): number | null => {
+      // Try different possible locations for migrate_to_chat_id
+      if (data?.parameters?.migrate_to_chat_id) return data.parameters.migrate_to_chat_id;
+      if (data?.migrate_to_chat_id) return data.migrate_to_chat_id;
+      if (data?.error_code === 400 && data?.parameters?.migrate_to_chat_id) return data.parameters.migrate_to_chat_id;
+      return null;
+    };
+
+    // Helper function to create error message for supergroup migration
+    const createSupergroupErrorMessage = (newChatId: number | null, lang: Language): string => {
+      if (newChatId) {
+        return lang === 'ru' 
+          ? `Чат был преобразован в супергруппу. Необходимо обновить Chat ID на новый: ${newChatId}. Обновите переменную окружения VITE_TELEGRAM_CHAT_ID и пересоберите проект.`
+          : lang === 'de'
+          ? `Der Chat wurde in eine Supergruppe konvertiert. Sie müssen die Chat-ID auf die neue aktualisieren: ${newChatId}. Aktualisieren Sie die Umgebungsvariable VITE_TELEGRAM_CHAT_ID und stellen Sie das Projekt neu bereit.`
+          : `Chat was upgraded to a supergroup. You need to update Chat ID to the new one: ${newChatId}. Update VITE_TELEGRAM_CHAT_ID environment variable and rebuild the project.`;
+      } else {
+        return lang === 'ru'
+          ? `Чат был преобразован в супергруппу. Необходимо получить новый Chat ID. Добавьте бота в супергруппу и получите новый Chat ID через @userinfobot или @RawDataBot.`
+          : lang === 'de'
+          ? `Der Chat wurde in eine Supergruppe konvertiert. Sie müssen eine neue Chat-ID erhalten. Fügen Sie den Bot zur Supergruppe hinzu und erhalten Sie die neue Chat-ID über @userinfobot oder @RawDataBot.`
+          : `Chat was upgraded to a supergroup. You need to get a new Chat ID. Add the bot to the supergroup and get the new Chat ID via @userinfobot or @RawDataBot.`;
+      }
+    };
+
+    // Check for supergroup migration error in response description
+    const isSupergroupError = responseData.description && 
+      responseData.description.toLowerCase().includes('group chat was upgraded to a supergroup chat');
+
+    if (isSupergroupError) {
+      const lang = getCurrentLanguage();
+      const newChatId = extractNewChatId(responseData);
+      
+      console.error('Chat migrated to supergroup - Full response:', {
+        oldChatId: CHAT_ID,
+        newChatId: newChatId || 'NOT PROVIDED IN RESPONSE',
+        fullResponse: JSON.stringify(responseData, null, 2),
+        instructions: 'Update VITE_TELEGRAM_CHAT_ID environment variable'
+      });
+      
+      return {
+        success: false,
+        error: createSupergroupErrorMessage(newChatId, lang)
+      };
+    }
+
     if (!response.ok) {
       const errorMsg = responseData.description || `HTTP ${response.status}`;
       console.error('Telegram API error:', {
         status: response.status,
         statusText: response.statusText,
-        error: responseData
+        error: responseData,
+        fullResponse: JSON.stringify(responseData, null, 2)
       });
+      
       return { 
         success: false, 
         error: `Telegram API error: ${errorMsg}` 
@@ -373,7 +432,11 @@ Current status:
 
     if (!responseData.ok) {
       const errorMsg = responseData.description || 'Unknown Telegram API error';
-      console.error('Telegram API returned error:', responseData);
+      console.error('Telegram API returned error:', {
+        error: responseData,
+        fullResponse: JSON.stringify(responseData, null, 2)
+      });
+      
       return { 
         success: false, 
         error: `Telegram API error: ${errorMsg}` 
