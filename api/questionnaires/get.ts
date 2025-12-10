@@ -3,18 +3,11 @@ import crypto from 'crypto';
 import { getSupabaseClient } from '../../lib/supabase-server';
 import { verifySessionToken } from '../auth/verify-otp';
 
-// Encryption key - MUST be set in environment variables
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
-
-if (!ENCRYPTION_KEY) {
-  throw new Error('ENCRYPTION_KEY environment variable is required');
-}
-
-function decrypt(encryptedText: string): string {
+function decrypt(encryptedText: string, encryptionKey: string): string {
   const parts = encryptedText.split(':');
   const iv = Buffer.from(parts[0], 'hex');
   const encrypted = parts[1];
-  const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY, 'hex'), iv);
+  const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(encryptionKey, 'hex'), iv);
   let decrypted = decipher.update(encrypted, 'hex', 'utf8');
   decrypted += decipher.final('utf8');
   return decrypted;
@@ -24,6 +17,13 @@ function decrypt(encryptedText: string): string {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Check encryption key inside handler to return proper JSON error
+  const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
+  if (!ENCRYPTION_KEY) {
+    console.error('ENCRYPTION_KEY environment variable is required');
+    return res.status(500).json({ error: 'Server configuration error. ENCRYPTION_KEY is not set.' });
   }
 
   try {
@@ -55,7 +55,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const questionnaires: any[] = [];
     for (const row of questionnaireRows || []) {
       try {
-        const decrypted = decrypt(row.encrypted_data);
+        const decrypted = decrypt(row.encrypted_data, ENCRYPTION_KEY);
         questionnaires.push(JSON.parse(decrypted));
       } catch (err) {
         console.error('Error decrypting questionnaire:', err);
