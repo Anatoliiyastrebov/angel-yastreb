@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getSupabaseClient } from '../../lib/supabase-server';
-import { verifySessionToken } from '../auth/verify-otp';
+import { getSupabaseClient } from '../../lib/supabase-server.js';
+import { verifySessionToken } from '../auth/verify-otp.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'DELETE') {

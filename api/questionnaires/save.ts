@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import crypto from 'crypto';
-import { getSupabaseClient } from '../../lib/supabase-server';
-import { verifySessionToken } from '../auth/verify-otp';
+import { getSupabaseClient } from '../../lib/supabase-server.js';
+import { verifySessionToken } from '../auth/verify-otp.js';
 
 function encrypt(text: string, encryptionKey: string): string {
   const iv = crypto.randomBytes(16);
