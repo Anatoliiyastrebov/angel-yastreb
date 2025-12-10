@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -24,7 +24,13 @@ import {
   loadFormData,
   clearFormData,
   sendToTelegram,
+  generateQuestionnaireId,
 } from '@/lib/form-utils';
+import {
+  saveQuestionnaire,
+  getQuestionnaires,
+  getSessionToken,
+} from '@/lib/api-client';
 import { Eye, Send, Trash2, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -48,34 +54,130 @@ const Anketa: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({});
   const [additionalData, setAdditionalData] = useState<FormAdditionalData>({});
   const [contactData, setContactData] = useState<ContactData>({
-    method: 'telegram',
-    username: '',
+    telegram: '',
+    phone: '',
+    phoneCountryCode: 'DE',
   });
   const [dsgvoAccepted, setDsgvoAccepted] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [editingQuestionnaireId, setEditingQuestionnaireId] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
-  // Load saved form data on mount
+  // Load saved form data on mount or load questionnaire for editing
   useEffect(() => {
-    const saved = loadFormData(type, language);
-    if (saved) {
-      setFormData(saved.formData);
-      setAdditionalData(saved.additionalData);
-      setContactData(saved.contactData);
+    const editId = searchParams.get('editId');
+    
+    if (editId) {
+      // Load questionnaire for editing - need to get from Supabase via API
+      const loadQuestionnaireForEdit = async () => {
+        const sessionToken = getSessionToken();
+        if (!sessionToken) {
+          toast.error(language === 'ru' 
+            ? 'Для редактирования необходимо войти. Перейдите на страницу "Мои анкеты" и войдите.' 
+            : language === 'de'
+            ? 'Zum Bearbeiten müssen Sie sich anmelden. Gehen Sie zur Seite "Meine Fragebögen" und melden Sie sich an.'
+            : 'To edit, you need to sign in. Go to "My Questionnaires" page and sign in.');
+          navigate(`/data-request?lang=${language}`);
+          return;
+        }
+
+        // Load questionnaires from API
+        const result = await getQuestionnaires();
+        if (result.success && result.data) {
+          const questionnaire = result.data.questionnaires.find((q: any) => q.id === editId);
+          if (questionnaire) {
+            setFormData(questionnaire.formData);
+            setAdditionalData(questionnaire.additionalData);
+            setContactData(questionnaire.contactData);
+            setDsgvoAccepted(true);
+            setEditingQuestionnaireId(editId);
+            setIsEditing(true);
+          } else {
+            // Fallback to localStorage for backward compatibility
+            const { getSubmittedQuestionnaireById } = await import('@/lib/form-utils');
+            const localQuestionnaire = getSubmittedQuestionnaireById(editId);
+            if (localQuestionnaire) {
+              setFormData(localQuestionnaire.formData);
+              setAdditionalData(localQuestionnaire.additionalData);
+              setContactData(localQuestionnaire.contactData);
+              setDsgvoAccepted(true);
+              setEditingQuestionnaireId(editId);
+              setIsEditing(true);
+            } else {
+              toast.error(language === 'ru' ? 'Анкета не найдена' : language === 'de' ? 'Fragebogen nicht gefunden' : 'Questionnaire not found');
+              navigate(`/data-request?lang=${language}`);
+            }
+          }
+        } else {
+          // Fallback to localStorage for backward compatibility
+          const { getSubmittedQuestionnaireById } = await import('@/lib/form-utils');
+          const localQuestionnaire = getSubmittedQuestionnaireById(editId);
+          if (localQuestionnaire) {
+            setFormData(localQuestionnaire.formData);
+            setAdditionalData(localQuestionnaire.additionalData);
+            setContactData(localQuestionnaire.contactData);
+            setDsgvoAccepted(true);
+            setEditingQuestionnaireId(editId);
+            setIsEditing(true);
+          } else {
+            toast.error(language === 'ru' ? 'Анкета не найдена' : language === 'de' ? 'Fragebogen nicht gefunden' : 'Questionnaire not found');
+            navigate(`/data-request?lang=${language}`);
+          }
+        }
+      };
+      
+      loadQuestionnaireForEdit();
+    } else {
+      // Load saved form data
+      const saved = loadFormData(type, language);
+      if (saved) {
+        setFormData(saved.formData);
+        setAdditionalData(saved.additionalData);
+        setContactData({
+          ...saved.contactData,
+          phoneCountryCode: saved.contactData.phoneCountryCode || 'DE', // Default to DE if not set
+        });
+      }
     }
-  }, [type, language]);
+  }, [type, language, searchParams, navigate]);
 
-  // Auto-save form data
+  // Auto-save form data with debounce
   useEffect(() => {
+    // Skip auto-save if editing (to avoid overwriting)
+    if (isEditing) return;
+    
     const timeout = setTimeout(() => {
-      saveFormData(type, language, formData, additionalData, contactData);
-    }, 1000);
+      try {
+        saveFormData(type, language, formData, additionalData, contactData);
+      } catch (err) {
+        // Silently fail - localStorage might be full or disabled
+        console.warn('Auto-save failed:', err);
+      }
+    }, 1500); // Increased debounce to reduce localStorage writes
     return () => clearTimeout(timeout);
-  }, [formData, additionalData, contactData, type, language]);
+  }, [formData, additionalData, contactData, type, language, isEditing]);
 
-  const handleFieldChange = (questionId: string, value: string | string[]) => {
+  // Helper function to clear additional field
+  const clearAdditionalField = useCallback((fieldKey: string) => {
+    setErrors((prev) => {
+      if (!prev[fieldKey]) return prev;
+      const newErrors = { ...prev };
+      delete newErrors[fieldKey];
+      return newErrors;
+    });
+    setAdditionalData((prev) => {
+      if (!prev[fieldKey]) return prev;
+      const newData = { ...prev };
+      delete newData[fieldKey];
+      return newData;
+    });
+  }, []);
+
+  const handleFieldChange = useCallback((questionId: string, value: string | string[]) => {
     setFormData((prev) => ({ ...prev, [questionId]: value }));
+    
     // Clear error when user starts typing
     if (errors[questionId]) {
       setErrors((prev) => {
@@ -84,61 +186,51 @@ const Anketa: React.FC = () => {
         return newErrors;
       });
     }
-    // If operations changed to "no", clear additional field error
-    if (questionId === 'operations' && value === 'no') {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors['operations_additional'];
-        return newErrors;
-      });
-    }
-    // If pregnancy_problems changed to "no", clear additional field error
-    if (questionId === 'pregnancy_problems' && value === 'no') {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors['pregnancy_problems_additional'];
-        return newErrors;
-      });
-    }
-    // If injuries changed to only "no_issues" or empty, clear additional field error
-    if (questionId === 'injuries') {
-      const injuriesArray = Array.isArray(value) ? value : [value];
-      const hasOtherThanNoIssues = injuriesArray.some((val: string) => val !== 'no_issues');
-      if (!hasOtherThanNoIssues) {
-        setErrors((prev) => {
-          const newErrors = { ...prev };
-          delete newErrors['injuries_additional'];
-          return newErrors;
-        });
-      }
-    }
-    // If allergies changed and "other" is not selected, clear additional field error
-    if (questionId === 'allergies') {
-      const allergiesArray = Array.isArray(value) ? value : [value];
-      const hasOther = allergiesArray.includes('other');
-      if (!hasOther) {
-        setErrors((prev) => {
-          const newErrors = { ...prev };
-          delete newErrors['allergies_additional'];
-          return newErrors;
-        });
-      }
-    }
-    // If skin_condition changed and "other" is not selected, clear additional field error
-    if (questionId === 'skin_condition') {
-      const skinConditionArray = Array.isArray(value) ? value : [value];
-      const hasOther = skinConditionArray.includes('other');
-      if (!hasOther) {
-        setErrors((prev) => {
-          const newErrors = { ...prev };
-          delete newErrors['skin_condition_additional'];
-          return newErrors;
-        });
-      }
-    }
-  };
 
-  const handleAdditionalChange = (questionId: string, value: string) => {
+    // Handle conditional field clearing based on question type
+    const valueArray = Array.isArray(value) ? value : [value];
+    const firstValue = valueArray[0];
+
+    switch (questionId) {
+      case 'operations':
+        if (firstValue !== 'yes') {
+          clearAdditionalField('operations_additional');
+        }
+        break;
+      case 'pregnancy_problems':
+        if (firstValue === 'no') {
+          clearAdditionalField('pregnancy_problems_additional');
+        }
+        break;
+      case 'injuries':
+        if (!valueArray.some((v: string) => v !== 'no_issues')) {
+          clearAdditionalField('injuries_additional');
+        }
+        break;
+      case 'allergies':
+        if (!valueArray.includes('other')) {
+          clearAdditionalField('allergies_additional');
+        }
+        break;
+      case 'illness_antibiotics':
+        if (!valueArray.some((v: string) => ['took_antibiotics', 'took_medications', 'both'].includes(v))) {
+          clearAdditionalField('illness_antibiotics_additional');
+        }
+        break;
+      case 'skin_condition':
+        if (!valueArray.includes('other')) {
+          clearAdditionalField('skin_condition_additional');
+        }
+        break;
+      case 'sleep':
+        if (firstValue !== 'other') {
+          clearAdditionalField('sleep_additional');
+        }
+        break;
+    }
+  }, [errors, clearAdditionalField]);
+
+  const handleAdditionalChange = useCallback((questionId: string, value: string) => {
     setAdditionalData((prev) => ({ ...prev, [`${questionId}_additional`]: value }));
     // Clear error when user starts typing in additional field
     const additionalKey = `${questionId}_additional`;
@@ -149,17 +241,17 @@ const Anketa: React.FC = () => {
         return newErrors;
       });
     }
-  };
+  }, [errors]);
 
-  const handleClearForm = () => {
+  const handleClearForm = useCallback(() => {
     setFormData({});
     setAdditionalData({});
-    setContactData({ method: 'telegram', username: '' });
+    setContactData({ telegram: '', phone: '', phoneCountryCode: 'DE' });
     setDsgvoAccepted(false);
     setErrors({});
     clearFormData(type, language);
     toast.success(language === 'ru' ? 'Форма очищена' : language === 'de' ? 'Formular gelöscht' : 'Form cleared');
-  };
+  }, [type, language]);
 
   const markdown = useMemo(() => {
     return generateMarkdown(type, sections, formData, additionalData, contactData, language);
@@ -190,8 +282,77 @@ const Anketa: React.FC = () => {
       const result = await sendToTelegram(markdown);
       
       if (result.success) {
-        clearFormData(type, language);
-        navigate(`/success?lang=${language}`);
+        // Check if user is authenticated (for secure storage in Supabase)
+        const sessionToken = getSessionToken();
+        
+        // Prepare questionnaire data
+        const questionnaireId = isEditing && editingQuestionnaireId 
+          ? editingQuestionnaireId 
+          : generateQuestionnaireId();
+        
+        const questionnaireData = {
+          id: questionnaireId,
+          type,
+          formData,
+          additionalData,
+          contactData,
+          markdown,
+          telegramMessageId: result.messageId,
+          submittedAt: Date.now(),
+          language,
+        };
+
+        if (isEditing && editingQuestionnaireId) {
+          // Update existing questionnaire - need authentication
+          if (!sessionToken) {
+            toast.error(language === 'ru' 
+              ? 'Для редактирования необходимо войти. Перейдите на страницу "Мои анкеты" и войдите.' 
+              : language === 'de'
+              ? 'Zum Bearbeiten müssen Sie sich anmelden. Gehen Sie zur Seite "Meine Fragebögen" und melden Sie sich an.'
+              : 'To edit, you need to sign in. Go to "My Questionnaires" page and sign in.');
+            navigate(`/data-request?lang=${language}`);
+            return;
+          }
+
+          // Delete old message from Telegram if exists
+          // Note: We need to get the old message ID from Supabase
+          // For now, we'll try to delete if we have it in the data
+          
+          // Update questionnaire via API
+          const updateResult = await saveQuestionnaire(questionnaireData);
+          if (updateResult.success) {
+            toast.success(language === 'ru' ? 'Анкета успешно обновлена' : language === 'de' ? 'Fragebogen erfolgreich aktualisiert' : 'Questionnaire successfully updated');
+            navigate(`/data-request?lang=${language}`);
+          } else {
+            toast.error(updateResult.error || (language === 'ru' ? 'Ошибка обновления анкеты' : language === 'de' ? 'Fehler beim Aktualisieren des Fragebogens' : 'Error updating questionnaire'));
+          }
+        } else {
+          // Save new questionnaire
+          // If user is authenticated, save to Supabase
+          if (sessionToken) {
+            const saveResult = await saveQuestionnaire(questionnaireData);
+            if (saveResult.success) {
+              clearFormData(type, language);
+              navigate(`/success?lang=${language}`);
+            } else {
+              toast.error(saveResult.error || (language === 'ru' ? 'Ошибка сохранения анкеты' : language === 'de' ? 'Fehler beim Speichern des Fragebogens' : 'Error saving questionnaire'));
+            }
+          } else {
+            // User not authenticated - save to localStorage as fallback
+            // User will need to authenticate later to access from other devices
+            const { saveSubmittedQuestionnaire } = await import('@/lib/form-utils');
+            saveSubmittedQuestionnaire(questionnaireData);
+            clearFormData(type, language);
+            toast.success(
+              language === 'ru' 
+                ? 'Анкета отправлена! Для доступа с других устройств войдите на странице "Мои анкеты".'
+                : language === 'de'
+                ? 'Fragebogen gesendet! Für den Zugriff von anderen Geräten melden Sie sich auf der Seite "Meine Fragebögen" an.'
+                : 'Questionnaire sent! To access from other devices, sign in on "My Questionnaires" page.'
+            );
+            navigate(`/success?lang=${language}`);
+          }
+        }
       } else {
         // Show detailed error message
         const errorMsg = result.error || t('submitError');
@@ -217,7 +378,9 @@ const Anketa: React.FC = () => {
 
       <main className="container mx-auto px-4 py-8 max-w-2xl">
         <h1 className="text-3xl font-bold text-foreground text-center mb-8 animate-fade-in">
-          {title}
+          {isEditing 
+            ? (language === 'ru' ? 'Редактирование анкеты' : language === 'de' ? 'Fragebogen bearbeiten' : 'Edit Questionnaire')
+            : title}
         </h1>
 
         {!isEnvConfigured && (
@@ -232,10 +395,10 @@ const Anketa: React.FC = () => {
             </AlertTitle>
             <AlertDescription>
               {language === 'ru' 
-                ? 'Telegram Bot Token или Chat ID не настроены. Пожалуйста, настройте переменные окружения VITE_TELEGRAM_BOT_TOKEN и VITE_TELEGRAM_CHAT_ID в Netlify и пересоберите сайт.'
+                ? 'Telegram Bot Token или Chat ID не настроены. Пожалуйста, настройте переменные окружения VITE_TELEGRAM_BOT_TOKEN и VITE_TELEGRAM_CHAT_ID в Vercel и пересоберите проект.'
                 : language === 'de'
-                ? 'Telegram Bot Token oder Chat ID nicht konfiguriert. Bitte setzen Sie die Umgebungsvariablen VITE_TELEGRAM_BOT_TOKEN und VITE_TELEGRAM_CHAT_ID in Netlify und stellen Sie die Site neu bereit.'
-                : 'Telegram Bot Token or Chat ID not configured. Please set VITE_TELEGRAM_BOT_TOKEN and VITE_TELEGRAM_CHAT_ID environment variables in Netlify and rebuild the site.'}
+                ? 'Telegram Bot Token oder Chat ID nicht konfiguriert. Bitte setzen Sie die Umgebungsvariablen VITE_TELEGRAM_BOT_TOKEN und VITE_TELEGRAM_CHAT_ID in Vercel und stellen Sie das Projekt neu bereit.'
+                : 'Telegram Bot Token or Chat ID not configured. Please set VITE_TELEGRAM_BOT_TOKEN and VITE_TELEGRAM_CHAT_ID environment variables in Vercel and redeploy the project.'}
             </AlertDescription>
           </Alert>
         )}
@@ -253,11 +416,17 @@ const Anketa: React.FC = () => {
               </h2>
 
               <div className="space-y-6">
-                {section.questions.map((question) => (
-                  <div
-                    key={question.id}
-                    data-error={!!errors[question.id]}
-                  >
+                {section.questions.map((question) => {
+                  // Hide what_else field if what_else_question is not 'yes'
+                  if (question.id === 'what_else' && formData['what_else_question'] !== 'yes') {
+                    return null;
+                  }
+                  
+                  return (
+                    <div
+                      key={question.id}
+                      data-error={!!errors[question.id]}
+                    >
                     <QuestionField
                       question={question}
                       value={formData[question.id] || (question.type === 'checkbox' ? [] : '')}
@@ -268,27 +437,51 @@ const Anketa: React.FC = () => {
                       onAdditionalChange={(value) =>
                         handleAdditionalChange(question.id, value)
                       }
+                      formData={formData}
                     />
-                  </div>
-                ))}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ))}
 
           {/* Contact Section */}
           <ContactSection
-            contactMethod={contactData.method}
-            username={contactData.username}
-            error={errors['contact_username']}
-            onMethodChange={(method) =>
-              setContactData((prev) => ({ ...prev, method }))
-            }
-            onUsernameChange={(username) => {
-              setContactData((prev) => ({ ...prev, username }));
-              if (errors['contact_username']) {
+            telegram={contactData.telegram || ''}
+            phone={contactData.phone || ''}
+            telegramError={errors['telegram']}
+            phoneError={errors['phone']}
+            contactMethodError={errors['contact_method']}
+            onTelegramChange={(telegram) => {
+              setContactData((prev) => ({ ...prev, telegram }));
+              if (errors['telegram'] || errors['contact_method']) {
                 setErrors((prev) => {
                   const newErrors = { ...prev };
-                  delete newErrors['contact_username'];
+                  delete newErrors['telegram'];
+                  delete newErrors['contact_method'];
+                  return newErrors;
+                });
+              }
+            }}
+            phoneCountryCode={contactData.phoneCountryCode || 'DE'}
+            onPhoneChange={(phone) => {
+              setContactData((prev) => ({ ...prev, phone }));
+              if (errors['phone'] || errors['contact_method']) {
+                setErrors((prev) => {
+                  const newErrors = { ...prev };
+                  delete newErrors['phone'];
+                  delete newErrors['contact_method'];
+                  return newErrors;
+                });
+              }
+            }}
+            onCountryCodeChange={(countryCode) => {
+              setContactData((prev) => ({ ...prev, phoneCountryCode: countryCode }));
+              if (errors['phone']) {
+                setErrors((prev) => {
+                  const newErrors = { ...prev };
+                  delete newErrors['phone'];
                   return newErrors;
                 });
               }
@@ -333,7 +526,9 @@ const Anketa: React.FC = () => {
             ) : (
               <>
                 <Send className="w-5 h-5" />
-                {t('submit')}
+                {isEditing 
+                  ? (language === 'ru' ? 'Сохранить изменения' : language === 'de' ? 'Änderungen speichern' : 'Save Changes')
+                  : t('submit')}
               </>
             )}
           </button>

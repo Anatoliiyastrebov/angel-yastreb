@@ -28,7 +28,7 @@ export const translations = {
     ageMonths: 'Возраст (в месяцах)',
     weight: 'Вес (кг)',
     waterPerDay: 'Сколько воды в день (литров)',
-    additionalInfo: 'Дополнительно (необязательно)',
+    additionalInfo: 'Дополнительно',
     whatElseToKnow: 'Что ещё нужно знать о здоровье',
     
     // Common options
@@ -157,9 +157,12 @@ export const translations = {
     // Contact
     contactMethod: 'Способ связи',
     telegram: 'Telegram',
-    instagram: 'Instagram',
-    username: 'Имя пользователя',
-    usernameHint: 'Введите без @ или с @',
+    phone: 'Телефон',
+    email: 'Электронная почта',
+    emailHint: 'your.email@example.com',
+    telegramHint: '@username или username',
+    phoneHint: '+49 123 456 7890',
+    optional: '(необязательно)',
     contactLink: 'Ваша ссылка для связи',
     
     // DSGVO
@@ -219,7 +222,7 @@ export const translations = {
     ageMonths: 'Age (in months)',
     weight: 'Weight (kg)',
     waterPerDay: 'Water per day (liters)',
-    additionalInfo: 'Additional info (optional)',
+    additionalInfo: 'Additional info',
     whatElseToKnow: 'What else should we know about health',
     
     // Common options
@@ -348,9 +351,12 @@ export const translations = {
     // Contact
     contactMethod: 'Contact method',
     telegram: 'Telegram',
-    instagram: 'Instagram',
-    username: 'Username',
-    usernameHint: 'Enter with or without @',
+    phone: 'Phone',
+    email: 'Email',
+    emailHint: 'your.email@example.com',
+    telegramHint: '@username or username',
+    phoneHint: '+49 123 456 7890',
+    optional: '(optional)',
     contactLink: 'Your contact link',
     
     // DSGVO
@@ -410,7 +416,7 @@ export const translations = {
     ageMonths: 'Alter (in Monaten)',
     weight: 'Gewicht (kg)',
     waterPerDay: 'Wasser pro Tag (Liter)',
-    additionalInfo: 'Zusätzliche Informationen (optional)',
+    additionalInfo: 'Zusätzliche Informationen',
     whatElseToKnow: 'Was sollten wir noch über die Gesundheit wissen',
     
     // Common options
@@ -539,9 +545,12 @@ export const translations = {
     // Contact
     contactMethod: 'Kontaktmethode',
     telegram: 'Telegram',
-    instagram: 'Instagram',
-    username: 'Benutzername',
-    usernameHint: 'Mit oder ohne @ eingeben',
+    phone: 'Telefon',
+    email: 'E-Mail',
+    emailHint: 'ihre.email@beispiel.com',
+    telegramHint: '@username oder username',
+    phoneHint: '+49 123 456 7890',
+    optional: '(optional)',
     contactLink: 'Ihr Kontaktlink',
     
     // DSGVO

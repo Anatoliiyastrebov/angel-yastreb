@@ -1,0 +1,206 @@
+// API client for secure questionnaire storage
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+// Session management
+let sessionToken: string | null = localStorage.getItem('sessionToken') || null;
+let sessionExpiresAt: number | null = null;
+
+export function setSessionToken(token: string, expiresAt: number) {
+  sessionToken = token;
+  sessionExpiresAt = expiresAt;
+  localStorage.setItem('sessionToken', token);
+  localStorage.setItem('sessionExpiresAt', expiresAt.toString());
+}
+
+export function getSessionToken(): string | null {
+  if (!sessionToken) {
+    sessionToken = localStorage.getItem('sessionToken');
+    const expiresAtStr = localStorage.getItem('sessionExpiresAt');
+    if (expiresAtStr) {
+      sessionExpiresAt = parseInt(expiresAtStr, 10);
+    }
+  }
+  
+  // Check if session is expired
+  if (sessionExpiresAt && Date.now() > sessionExpiresAt) {
+    clearSession();
+    return null;
+  }
+  
+  return sessionToken;
+}
+
+export function clearSession() {
+  sessionToken = null;
+  sessionExpiresAt = null;
+  localStorage.removeItem('sessionToken');
+  localStorage.removeItem('sessionExpiresAt');
+}
+
+// Send OTP
+export async function sendOTP(telegram?: string, phone?: string): Promise<ApiResponse<{ message: string }>> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/send-otp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ telegram, phone }),
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      return { success: false, error: data.error || 'Failed to send OTP' };
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Network error' 
+    };
+  }
+}
+
+// Verify OTP and get session token
+export async function verifyOTP(
+  telegram: string | undefined,
+  phone: string | undefined,
+  otp: string
+): Promise<ApiResponse<{ sessionToken: string; expiresAt: number }>> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ telegram, phone, otp }),
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      return { success: false, error: data.error || 'Failed to verify OTP' };
+    }
+
+    if (data.success && data.sessionToken) {
+      setSessionToken(data.sessionToken, data.expiresAt);
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Network error' 
+    };
+  }
+}
+
+// Save questionnaire
+export async function saveQuestionnaire(questionnaire: any): Promise<ApiResponse<{ id: string }>> {
+  const token = getSessionToken();
+  if (!token) {
+    return { success: false, error: 'Session expired. Please authenticate again.' };
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/questionnaires/save`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ sessionToken: token, questionnaire }),
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        clearSession();
+      }
+      return { success: false, error: data.error || 'Failed to save questionnaire' };
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Network error' 
+    };
+  }
+}
+
+// Get all questionnaires
+export async function getQuestionnaires(): Promise<ApiResponse<{ questionnaires: any[] }>> {
+  const token = getSessionToken();
+  if (!token) {
+    return { success: false, error: 'Session expired. Please authenticate again.' };
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/questionnaires/get?sessionToken=${encodeURIComponent(token)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        clearSession();
+      }
+      return { success: false, error: data.error || 'Failed to get questionnaires' };
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Network error' 
+    };
+  }
+}
+
+// Delete questionnaire
+export async function deleteQuestionnaire(questionnaireId: string): Promise<ApiResponse<void>> {
+  const token = getSessionToken();
+  if (!token) {
+    return { success: false, error: 'Session expired. Please authenticate again.' };
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/questionnaires/delete`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ sessionToken: token, questionnaireId }),
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        clearSession();
+      }
+      return { success: false, error: data.error || 'Failed to delete questionnaire' };
+    }
+
+    return { success: true };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Network error' 
+    };
+  }
+}

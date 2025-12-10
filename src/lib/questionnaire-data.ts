@@ -103,6 +103,7 @@ const skinOptions: QuestionOption[] = [
   { value: 'warts', label: { ru: 'Бородавки', en: 'Warts', de: 'Warzen' } },
   { value: 'rashes', label: { ru: 'Высыпания', en: 'Rashes', de: 'Ausschläge' } },
   { value: 'eczema', label: { ru: 'Экзема', en: 'Eczema', de: 'Ekzeme' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
 ];
 
 const sleepOptions: QuestionOption[] = [
@@ -210,6 +211,7 @@ const illnessAntibioticsOptions: QuestionOption[] = [
   { value: 'rarely_ill', label: { ru: 'Редко болеет', en: 'Rarely ill', de: 'Selten krank' } },
   { value: 'often_ill', label: { ru: 'Часто болеет', en: 'Often ill', de: 'Oft krank' } },
   { value: 'took_antibiotics', label: { ru: 'Принимал антибиотики', en: 'Took antibiotics', de: 'Antibiotika genommen' } },
+  { value: 'took_medications', label: { ru: 'Принимал лекарства', en: 'Took medications', de: 'Medikamente genommen' } },
   { value: 'both', label: { ru: 'И часто болеет, и принимал антибиотики', en: 'Both often ill and took antibiotics', de: 'Sowohl oft krank als auch Antibiotika genommen' } },
 ];
 
@@ -289,6 +291,7 @@ const sleepAdultOptions: QuestionOption[] = [
   { value: 'good', label: { ru: 'Хороший', en: 'Good', de: 'Gut' } },
   { value: 'hard_to_fall_asleep', label: { ru: 'Трудно заснуть', en: 'Hard to fall asleep', de: 'Schwer einzuschlafen' } },
   { value: 'wake_often', label: { ru: 'Часто просыпаюсь', en: 'Wake up often', de: 'Wache oft auf' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
 ];
 
 // Infant questionnaire (type = infant)
@@ -302,6 +305,14 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         id: 'name',
         type: 'text',
         label: { ru: 'Имя', en: 'Name', de: 'Vorname' },
+        icon: 'user',
+        required: true,
+        hasAdditional: false,
+      },
+      {
+        id: 'last_name',
+        type: 'text',
+        label: { ru: 'Фамилия', en: 'Last Name', de: 'Nachname' },
         icon: 'user',
         required: true,
         hasAdditional: false,
@@ -336,7 +347,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         icon: 'heart',
         options: digestionOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'sweats_at_night',
@@ -345,7 +356,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         icon: 'droplets',
         options: yesNoOptionsSimple,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'bad_breath',
@@ -354,7 +365,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         icon: 'wind',
         options: yesNoOptionsSimple,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'skin_condition',
@@ -380,7 +391,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         label: { ru: 'Сколько воды в день пьёт ребенок (миллилитров)', en: 'How much water does the child drink per day (milliliters)', de: 'Wie viel Wasser trinkt das Kind pro Tag (Milliliter)' },
         icon: 'droplet',
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'injuries',
@@ -398,12 +409,12 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         icon: 'moon',
         options: sleepOptionsSimple,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'illness_antibiotics',
         type: 'checkbox',
-        label: { ru: 'Часто ли болеет / принимал ли антибиотики', en: 'Is often ill / has taken antibiotics', de: 'Ist oft krank / hat Antibiotika genommen' },
+        label: { ru: 'Часто ли болеет / принимал ли антибиотики или лекарства', en: 'Is often ill / has taken antibiotics or medications', de: 'Ist oft krank / hat Antibiotika oder Medikamente genommen' },
         icon: 'pill',
         options: illnessAntibioticsOptions,
         required: true,
@@ -423,7 +434,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         icon: 'baby',
         options: birthOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'mother_toxicosis',
@@ -432,7 +443,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         icon: 'alert-circle',
         options: yesNoOptionsSimple,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'mother_allergy',
@@ -441,7 +452,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         icon: 'flower',
         options: yesNoOptionsSimple,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'mother_constipation',
@@ -450,7 +461,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         icon: 'alert-triangle',
         options: yesNoOptionsSimple,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'mother_antibiotics',
@@ -459,7 +470,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         icon: 'pill',
         options: yesNoOptionsSimple,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'mother_anemia',
@@ -468,7 +479,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         icon: 'heart',
         options: yesNoOptionsSimple,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'pregnancy_problems',
@@ -480,9 +491,18 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         hasAdditional: true,
       },
       {
+        id: 'what_else_question',
+        type: 'radio',
+        label: { ru: 'Есть ли что-то еще что я должна знать о здоровье ребенка?', en: 'Is there anything else I should know about the child\'s health?', de: 'Gibt es noch etwas, was ich über die Gesundheit des Kindes wissen sollte?' },
+        icon: 'info',
+        options: yesNoOptionsSimple,
+        required: true,
+        hasAdditional: false,
+      },
+      {
         id: 'what_else',
         type: 'textarea',
-        label: { ru: 'Что ещё нужно знать о здоровье ребёнка', en: 'What else should we know about the child\'s health', de: 'Was sollten wir noch über die Gesundheit des Kindes wissen' },
+        label: { ru: 'Опишите подробнее', en: 'Please describe', de: 'Bitte beschreiben Sie' },
         icon: 'info',
         required: false,
         hasAdditional: false,
@@ -503,6 +523,14 @@ export const childQuestionnaire: QuestionnaireSection[] = [
         id: 'name',
         type: 'text',
         label: { ru: 'Имя', en: 'Name', de: 'Vorname' },
+        icon: 'user',
+        required: true,
+        hasAdditional: false,
+      },
+      {
+        id: 'last_name',
+        type: 'text',
+        label: { ru: 'Фамилия', en: 'Last Name', de: 'Nachname' },
         icon: 'user',
         required: true,
         hasAdditional: false,
@@ -539,7 +567,7 @@ export const childQuestionnaire: QuestionnaireSection[] = [
         icon: 'heart',
         options: digestionOptionsExtended,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'teeth_decay',
@@ -548,7 +576,7 @@ export const childQuestionnaire: QuestionnaireSection[] = [
         icon: 'smile',
         options: yesNoOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'sweats_grinds',
@@ -561,7 +589,7 @@ export const childQuestionnaire: QuestionnaireSection[] = [
           { value: 'grinds', label: { ru: 'Скрипит зубами', en: 'Grinds teeth', de: 'Knirscht mit den Zähnen' } },
         ],
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'bad_breath',
@@ -570,7 +598,7 @@ export const childQuestionnaire: QuestionnaireSection[] = [
         icon: 'wind',
         options: yesNoOptionsSimple,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'sugar_dependency',
@@ -578,7 +606,7 @@ export const childQuestionnaire: QuestionnaireSection[] = [
         label: { ru: 'Зависимость от сладкого', en: 'Sugar dependency', de: 'Zuckerabhängigkeit' },
         icon: 'candy',
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
         placeholder: { ru: 'Опишите', en: 'Describe', de: 'Beschreiben' },
       },
       {
@@ -606,7 +634,7 @@ export const childQuestionnaire: QuestionnaireSection[] = [
         icon: 'zap',
         options: hyperactiveOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'water_per_day',
@@ -615,7 +643,7 @@ export const childQuestionnaire: QuestionnaireSection[] = [
         icon: 'droplet',
         options: waterOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'injuries',
@@ -633,21 +661,30 @@ export const childQuestionnaire: QuestionnaireSection[] = [
         icon: 'brain',
         options: headachesSleepOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'illness_antibiotics',
         type: 'checkbox',
-        label: { ru: 'Часто ли болеет, принимал ли антибиотики', en: 'Is often ill, has taken antibiotics', de: 'Ist oft krank, hat Antibiotika genommen' },
+        label: { ru: 'Часто ли болеет, принимал ли антибиотики или лекарства', en: 'Is often ill, has taken antibiotics or medications', de: 'Ist oft krank, hat Antibiotika oder Medikamente genommen' },
         icon: 'pill',
         options: illnessAntibioticsOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
+      },
+      {
+        id: 'what_else_question',
+        type: 'radio',
+        label: { ru: 'Есть ли что-то еще что я должна знать о здоровье ребенка?', en: 'Is there anything else I should know about the child\'s health?', de: 'Gibt es noch etwas, was ich über die Gesundheit des Kindes wissen sollte?' },
+        icon: 'info',
+        options: yesNoOptionsSimple,
+        required: true,
+        hasAdditional: false,
       },
       {
         id: 'what_else',
         type: 'textarea',
-        label: { ru: 'Что ещё нужно знать', en: 'What else should we know', de: 'Was sollten wir noch wissen' },
+        label: { ru: 'Опишите подробнее', en: 'Please describe', de: 'Bitte beschreiben Sie' },
         icon: 'info',
         required: false,
         hasAdditional: false,
@@ -710,7 +747,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         icon: 'shield',
         options: covidOptionsWoman,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
     ],
   },
@@ -726,7 +763,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         icon: 'heart',
         options: digestionOptionsAdult,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'hair_condition',
@@ -735,7 +772,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         icon: 'sparkles',
         options: hairOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'teeth',
@@ -744,7 +781,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         icon: 'smile',
         options: teethOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'joints',
@@ -753,7 +790,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         icon: 'bone',
         options: jointOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'cold_hands',
@@ -762,7 +799,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         icon: 'thermometer',
         options: yesNoOptionsSimple,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'headaches',
@@ -771,7 +808,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         icon: 'brain',
         options: headachesOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'operations',
@@ -789,7 +826,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         icon: 'circle',
         options: cystsStonesOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'pressure',
@@ -798,7 +835,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         icon: 'activity',
         options: pressureOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'menstruation',
@@ -807,7 +844,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         icon: 'calendar',
         options: menstruationOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'discharge_viruses',
@@ -816,7 +853,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         icon: 'alert-circle',
         options: dischargeMolesWartsHerpesOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'allergies',
@@ -843,7 +880,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         icon: 'moon',
         options: sleepAdultOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'energy',
@@ -852,7 +889,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         icon: 'zap',
         options: energyOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'water_per_day',
@@ -861,7 +898,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         icon: 'droplet',
         options: waterOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'varicose_hemorrhoids',
@@ -875,12 +912,21 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
           { value: 'both', label: { ru: 'Оба', en: 'Both', de: 'Beide' } },
         ],
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
+      },
+      {
+        id: 'what_else_question',
+        type: 'radio',
+        label: { ru: 'Есть ли что-то еще что я должна знать о здоровье ребенка?', en: 'Is there anything else I should know about the child\'s health?', de: 'Gibt es noch etwas, was ich über die Gesundheit des Kindes wissen sollte?' },
+        icon: 'info',
+        options: yesNoOptionsSimple,
+        required: true,
+        hasAdditional: false,
       },
       {
         id: 'what_else',
         type: 'textarea',
-        label: { ru: 'Что ещё нужно знать', en: 'What else should we know', de: 'Was sollten wir noch wissen' },
+        label: { ru: 'Опишите подробнее', en: 'Please describe', de: 'Bitte beschreiben Sie' },
         icon: 'info',
         required: false,
         hasAdditional: false,
@@ -943,7 +989,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         icon: 'shield',
         options: covidOptionsMan,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
     ],
   },
@@ -959,7 +1005,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         icon: 'heart',
         options: digestionOptionsAdult,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'varicose_hemorrhoids',
@@ -973,7 +1019,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
           { value: 'both', label: { ru: 'Оба', en: 'Both', de: 'Beide' } },
         ],
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'teeth',
@@ -982,7 +1028,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         icon: 'smile',
         options: teethOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'joints',
@@ -991,7 +1037,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         icon: 'bone',
         options: jointOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'cold_hands',
@@ -1000,7 +1046,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         icon: 'thermometer',
         options: yesNoOptionsSimple,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'headaches',
@@ -1009,7 +1055,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         icon: 'brain',
         options: headachesOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'operations',
@@ -1027,7 +1073,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         icon: 'circle',
         options: cystsStonesKidneysOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'pressure',
@@ -1036,7 +1082,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         icon: 'activity',
         options: pressureOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'water_per_day',
@@ -1045,7 +1091,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         icon: 'droplet',
         options: waterOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'skin_viruses',
@@ -1054,7 +1100,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         icon: 'alert-circle',
         options: molesWartsHerpesOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'allergies',
@@ -1068,7 +1114,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
       {
         id: 'skin_condition',
         type: 'checkbox',
-        label: { ru: 'Кожа — сухая, высыпания, раздражение, прыщи', en: 'Skin — dry, rashes, irritation, acne', de: 'Haut — trocken, Ausschläge, Reizung, Akne' },
+        label: { ru: 'Кожа', en: 'Skin', de: 'Haut' },
         icon: 'sparkles',
         options: skinConditionOptions,
         required: true,
@@ -1077,7 +1123,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
       {
         id: 'sleep',
         type: 'radio',
-        label: { ru: 'Сон — трудно заснуть, часто просыпаетесь', en: 'Sleep — hard to fall asleep, wake up often', de: 'Schlaf — schwer einzuschlafen, wachen oft auf' },
+        label: { ru: 'Сон', en: 'Sleep', de: 'Schlaf' },
         icon: 'moon',
         options: sleepAdultOptions,
         required: true,
@@ -1086,11 +1132,11 @@ export const manQuestionnaire: QuestionnaireSection[] = [
       {
         id: 'energy',
         type: 'radio',
-        label: { ru: 'Энергия — с утра устал', en: 'Energy — tired in the morning', de: 'Energie — morgens müde' },
+        label: { ru: 'Энергия', en: 'Energy', de: 'Energie' },
         icon: 'zap',
         options: energyOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'memory',
@@ -1099,12 +1145,21 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         icon: 'brain',
         options: memoryOptions,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
+      },
+      {
+        id: 'what_else_question',
+        type: 'radio',
+        label: { ru: 'Есть ли что-то еще что я должна знать о здоровье ребенка?', en: 'Is there anything else I should know about the child\'s health?', de: 'Gibt es noch etwas, was ich über die Gesundheit des Kindes wissen sollte?' },
+        icon: 'info',
+        options: yesNoOptionsSimple,
+        required: true,
+        hasAdditional: false,
       },
       {
         id: 'what_else',
         type: 'textarea',
-        label: { ru: 'Что ещё нужно знать', en: 'What else should we know', de: 'Was sollten wir noch wissen' },
+        label: { ru: 'Опишите подробнее', en: 'Please describe', de: 'Bitte beschreiben Sie' },
         icon: 'info',
         required: false,
         hasAdditional: false,

@@ -1,115 +1,181 @@
-import React, { useMemo } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { MessageCircle, Instagram, ExternalLink } from 'lucide-react';
+import { MessageCircle, Phone, ChevronDown } from 'lucide-react';
+import { countryCodes, defaultCountryCode, type CountryCode } from '@/lib/country-codes';
 
 interface ContactSectionProps {
-  contactMethod: 'telegram' | 'instagram';
-  username: string;
-  error?: string;
-  onMethodChange: (method: 'telegram' | 'instagram') => void;
-  onUsernameChange: (username: string) => void;
+  telegram: string;
+  phone: string;
+  phoneCountryCode?: string;
+  telegramError?: string;
+  phoneError?: string;
+  contactMethodError?: string;
+  onTelegramChange: (telegram: string) => void;
+  onPhoneChange: (phone: string) => void;
+  onCountryCodeChange: (countryCode: string) => void;
 }
 
 export const ContactSection: React.FC<ContactSectionProps> = ({
-  contactMethod,
-  username,
-  error,
-  onMethodChange,
-  onUsernameChange,
+  telegram,
+  phone,
+  phoneCountryCode = defaultCountryCode,
+  telegramError,
+  phoneError,
+  contactMethodError,
+  onTelegramChange,
+  onPhoneChange,
+  onCountryCodeChange,
 }) => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const cleanUsername = useMemo(() => {
-    return username.replace(/^@/, '').trim();
-  }, [username]);
+  const selectedCountry = countryCodes.find(c => c.code === phoneCountryCode) || countryCodes.find(c => c.code === defaultCountryCode)!;
 
-  const contactLink = useMemo(() => {
-    if (!cleanUsername) return '';
-    return contactMethod === 'telegram'
-      ? `https://t.me/${cleanUsername}`
-      : `https://instagram.com/${cleanUsername}`;
-  }, [contactMethod, cleanUsername]);
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsCountryDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleCountrySelect = (country: CountryCode) => {
+    onCountryCodeChange(country.code);
+    setIsCountryDropdownOpen(false);
+    
+    // If phone already has a dial code, replace it with the new one
+    if (phone.trim()) {
+      const phoneWithoutCode = phone.replace(/^\+\d+\s*/, '').trim();
+      onPhoneChange(phoneWithoutCode);
+    }
+  };
+
+  const handlePhoneChange = (value: string) => {
+    // Remove any existing country code if user types manually
+    const cleaned = value.replace(/^\+\d+\s*/, '');
+    onPhoneChange(cleaned);
+  };
+
+  const getFullPhoneNumber = () => {
+    if (!phone.trim()) return '';
+    return `${selectedCountry.dialCode} ${phone.trim()}`;
+  };
+
 
   return (
     <div className="card-wellness space-y-4">
-      <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-        <MessageCircle className="w-5 h-5 text-primary" />
-        {t('contactMethod')}
-      </h3>
-
-      <div className="flex gap-3">
-        <label
-          className={`flex items-center gap-2 px-4 py-3 rounded-xl cursor-pointer transition-all flex-1 justify-center ${
-            contactMethod === 'telegram'
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-secondary text-secondary-foreground hover:bg-muted'
-          }`}
-        >
-          <input
-            type="radio"
-            name="contactMethod"
-            value="telegram"
-            checked={contactMethod === 'telegram'}
-            onChange={() => onMethodChange('telegram')}
-            className="sr-only"
-          />
-          <MessageCircle className="w-5 h-5" />
-          <span className="font-medium">{t('telegram')}</span>
-        </label>
-
-        <label
-          className={`flex items-center gap-2 px-4 py-3 rounded-xl cursor-pointer transition-all flex-1 justify-center ${
-            contactMethod === 'instagram'
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-secondary text-secondary-foreground hover:bg-muted'
-          }`}
-        >
-          <input
-            type="radio"
-            name="contactMethod"
-            value="instagram"
-            checked={contactMethod === 'instagram'}
-            onChange={() => onMethodChange('instagram')}
-            className="sr-only"
-          />
-          <Instagram className="w-5 h-5" />
-          <span className="font-medium">{t('instagram')}</span>
-        </label>
+      <div>
+        <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+          <MessageCircle className="w-5 h-5 text-primary" />
+          {t('contactMethod')}
+          <span className="text-destructive">*</span>
+        </h3>
+        <p className="text-sm text-muted-foreground mt-2">
+          {language === 'ru' 
+            ? 'Укажите Telegram или телефон для доступа к вашим анкетам с любого устройства. Код подтверждения будет отправлен на указанный контакт.'
+            : language === 'de'
+            ? 'Geben Sie Telegram oder Telefon an, um von jedem Gerät auf Ihre Fragebögen zuzugreifen. Ein Bestätigungscode wird an den angegebenen Kontakt gesendet.'
+            : 'Provide Telegram or phone to access your questionnaires from any device. A verification code will be sent to the specified contact.'}
+        </p>
       </div>
+
+      {contactMethodError && (
+        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
+          <p className="text-sm text-destructive">
+            <AlertCircleIcon />
+            {contactMethodError}
+          </p>
+        </div>
+      )}
 
       <div>
         <label className="text-sm text-muted-foreground mb-1 block">
-          {t('username')} <span className="text-destructive">*</span>
+          {t('telegram')}
         </label>
-        <input
-          type="text"
-          className={`input-field ${error ? 'input-error' : ''}`}
-          value={username}
-          onChange={(e) => onUsernameChange(e.target.value)}
-          placeholder={t('usernameHint')}
-        />
-        {error && (
+        <div className="relative">
+          <MessageCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <input
+            type="text"
+            className={`input-field pl-10 ${telegramError ? 'input-error' : ''}`}
+            value={telegram}
+            onChange={(e) => onTelegramChange(e.target.value)}
+            placeholder={t('telegramHint') || '@username или username'}
+          />
+        </div>
+        {telegramError && (
           <p className="error-message mt-1">
             <AlertCircleIcon />
-            {error}
+            {telegramError}
           </p>
         )}
       </div>
 
-      {cleanUsername && (
-        <div className="bg-accent/50 rounded-xl p-3">
-          <p className="text-sm text-muted-foreground mb-1">{t('contactLink')}</p>
-          <a
-            href={contactLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary font-medium flex items-center gap-1 hover:underline break-all"
-          >
-            {contactLink}
-            <ExternalLink className="w-4 h-4 flex-shrink-0" />
-          </a>
+      <div>
+        <label className="text-sm text-muted-foreground mb-1 block">
+          {t('phone') || 'Телефон'}
+        </label>
+        <div className="flex gap-2">
+          {/* Country Code Selector */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
+              className="flex items-center gap-2 px-3 py-2 border border-input bg-background rounded-lg hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring min-w-[100px]"
+            >
+              <span className="text-lg">{selectedCountry.flag}</span>
+              <span className="text-sm font-medium">{selectedCountry.dialCode}</span>
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            </button>
+            
+            {isCountryDropdownOpen && (
+              <div className="absolute z-50 mt-1 w-64 max-h-60 overflow-y-auto bg-background border border-input rounded-lg shadow-lg">
+                {countryCodes.map((country) => (
+                  <button
+                    key={country.code}
+                    type="button"
+                    onClick={() => handleCountrySelect(country)}
+                    className={`w-full flex items-center gap-3 px-4 py-2 hover:bg-accent text-left ${
+                      country.code === phoneCountryCode ? 'bg-accent' : ''
+                    }`}
+                  >
+                    <span className="text-lg">{country.flag}</span>
+                    <span className="flex-1 text-sm">{country.name[language]}</span>
+                    <span className="text-sm text-muted-foreground">{country.dialCode}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Phone Input */}
+          <div className="relative flex-1">
+            <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <input
+              type="tel"
+              className={`input-field pl-10 ${phoneError ? 'input-error' : ''}`}
+              value={phone}
+              onChange={(e) => handlePhoneChange(e.target.value)}
+              placeholder={language === 'ru' ? '123 456 7890' : language === 'de' ? '123 456 7890' : '123 456 7890'}
+            />
+          </div>
         </div>
-      )}
+        {phone && phone.trim() && (
+          <p className="text-xs text-muted-foreground mt-1">
+            {getFullPhoneNumber()}
+          </p>
+        )}
+        {phoneError && (
+          <p className="error-message mt-1">
+            <AlertCircleIcon />
+            {phoneError}
+          </p>
+        )}
+      </div>
     </div>
   );
 };
