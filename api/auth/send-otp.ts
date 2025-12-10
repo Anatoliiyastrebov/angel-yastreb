@@ -74,15 +74,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           // Remove @ if present and normalize username
           const telegramUsername = telegram.trim().replace(/^@/, '').toLowerCase();
           
-          // Try to find chat_id from database (saved via webhook when user messages bot)
+          // Try to find chat_id and user_id from database (saved via webhook when user messages bot in private chat)
+          let userId: string | null = null;
           try {
             const { data: chatIdData, error: chatIdError } = await supabase
               .from('telegram_chat_ids')
-              .select('chat_id')
+              .select('chat_id, user_id')
               .eq('contact_identifier', telegramUsername)
               .maybeSingle(); // Use maybeSingle instead of single to avoid error if no row found
             
             if (!chatIdError && chatIdData) {
+              // Prefer user_id for private messages, fallback to chat_id
+              userId = chatIdData.user_id || chatIdData.chat_id;
               chatId = chatIdData.chat_id;
             } else if (chatIdError && chatIdError.code !== 'PGRST116') {
               // PGRST116 is "not found" error, which is expected - log other errors
@@ -111,10 +114,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               
               if (updatesData.ok && updatesData.result && Array.isArray(updatesData.result)) {
                 // Search for user in recent updates (check last 100 messages)
+                // Only use PRIVATE chats to ensure OTP goes to personal messages
                 for (const update of updatesData.result) {
                   const message = update.message || update.edited_message;
-                  if (message?.from?.username?.toLowerCase() === telegramUsername) {
-                    chatId = message.chat.id.toString();
+                  const chatType = message?.chat?.type;
+                  
+                  // Only process private chats
+                  if (message?.from?.username?.toLowerCase() === telegramUsername && chatType === 'private') {
+                    const foundChatId = message.chat.id.toString();
+                    const foundUserId = message.from.id.toString();
+                    
+                    // Use user_id for sending (more reliable for private messages)
+                    userId = foundUserId;
+                    chatId = foundChatId;
                     
                     // Save to database for future use
                     try {
@@ -122,7 +134,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                         .from('telegram_chat_ids')
                         .upsert({
                           contact_identifier: telegramUsername,
-                          chat_id: chatId,
+                          chat_id: foundChatId,
+                          user_id: foundUserId,
                           username: message.from.username,
                           first_name: message.from.first_name || null,
                           last_name: message.from.last_name || null,
@@ -155,8 +168,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             }
           }
           
-          // If we found chat_id, send message
-          if (chatId) {
+          // If we found user_id or chat_id, send message to private chat
+          // Prefer user_id for direct sending to personal messages
+          const targetChatId = userId || chatId;
+          
+          if (targetChatId) {
             try {
               const telegramResponse = await fetch(
                 `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
@@ -164,7 +180,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
-                    chat_id: chatId,
+                    chat_id: targetChatId, // Use user_id for private messages
                     text: `🔐 Ваш код подтверждения: *${otp}*\n\n⏰ Код действителен 10 минут.\n\n---\n\n🔐 Your verification code: *${otp}*\n\n⏰ Code is valid for 10 minutes.\n\n---\n\n🔐 Ihr Bestätigungscode: *${otp}*\n\n⏰ Code ist 10 Minuten gültig.`,
                     parse_mode: 'Markdown',
                   }),
@@ -175,7 +191,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               
               if (telegramData.ok) {
                 otpSent = true;
-                console.log(`OTP sent successfully to chat_id: ${chatId}`);
+                console.log(`OTP sent successfully to private chat (user_id: ${targetChatId})`);
               } else {
                 console.error('Telegram API error when sending OTP:', telegramData);
               }
@@ -183,8 +199,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               console.error('Error sending message to Telegram:', sendError);
             }
           } else {
-            // No chat_id found - user needs to start conversation with bot first
-            console.warn(`Could not find chat_id for @${telegramUsername}. User needs to start conversation with bot first.`);
+            // No chat_id found - user needs to start conversation with bot first in PRIVATE chat
+            console.warn(`Could not find private chat_id for @${telegramUsername}. User needs to start a PRIVATE conversation with bot first (not in a group).`);
             // OTP is still stored in database, user can contact admin if needed
           }
         } catch (telegramError) {

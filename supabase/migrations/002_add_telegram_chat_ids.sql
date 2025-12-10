@@ -1,16 +1,29 @@
 -- Add table to store Telegram chat_ids for users
 -- This allows sending OTP codes to users who have started conversation with bot
+-- Only PRIVATE chats are stored to ensure OTP codes go to personal messages
 
 CREATE TABLE IF NOT EXISTS telegram_chat_ids (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   contact_identifier TEXT NOT NULL UNIQUE, -- Normalized telegram username (without @)
-  chat_id TEXT NOT NULL,
+  chat_id TEXT NOT NULL, -- For private chats, chat_id = user_id
+  user_id TEXT, -- Telegram user ID for direct sending to personal messages
   username TEXT, -- Original username for reference
   first_name TEXT,
   last_name TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Add user_id column if table already exists (for existing installations)
+DO $$ 
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'telegram_chat_ids' AND column_name = 'user_id'
+  ) THEN
+    ALTER TABLE telegram_chat_ids ADD COLUMN user_id TEXT;
+  END IF;
+END $$;
 
 -- Index for faster lookups
 CREATE INDEX IF NOT EXISTS idx_telegram_chat_ids_contact ON telegram_chat_ids(contact_identifier);

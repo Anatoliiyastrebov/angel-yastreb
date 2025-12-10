@@ -20,14 +20,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Handle message updates
     const message = update.message || update.edited_message;
     if (message && message.from) {
+      const chatType = message.chat.type; // 'private', 'group', 'supergroup', 'channel'
       const chatId = message.chat.id.toString();
       const userId = message.from.id.toString();
       const username = message.from.username?.toLowerCase() || null;
       const firstName = message.from.first_name || null;
       const lastName = message.from.last_name || null;
 
-      // Only process if we have a username (needed for matching with questionnaires)
-      if (username) {
+      // Only save chat_id for PRIVATE chats (personal messages)
+      // This ensures OTP codes are sent to personal messages, not group chats
+      if (chatType === 'private' && username) {
         let supabase;
         try {
           supabase = getSupabaseClient();
@@ -36,12 +38,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           return res.status(200).json({ ok: true }); // Return 200 to prevent Telegram retries
         }
 
-        // Save or update chat_id for this user
+        // Save or update chat_id and user_id for this user (only for private chats)
         const { error } = await supabase
           .from('telegram_chat_ids')
           .upsert({
             contact_identifier: username,
-            chat_id: chatId,
+            chat_id: chatId, // For private chats, chat_id = user_id
+            user_id: userId, // Also save user_id for direct sending
             username: message.from.username, // Keep original case
             first_name: firstName,
             last_name: lastName,
@@ -53,8 +56,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (error) {
           console.error('Error saving telegram chat_id:', error);
         } else {
-          console.log(`Saved chat_id ${chatId} for user @${username}`);
+          console.log(`Saved private chat_id ${chatId} (user_id: ${userId}) for user @${username}`);
         }
+      } else if (chatType !== 'private') {
+        // Log that we're ignoring group messages
+        console.log(`Ignoring non-private chat message (type: ${chatType}) from @${username || 'unknown'}`);
       }
     }
 
