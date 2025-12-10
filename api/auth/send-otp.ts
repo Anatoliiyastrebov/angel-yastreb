@@ -28,13 +28,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: 'Server configuration error. Please check SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.' });
     }
     
-    await supabase.rpc('clean_expired_otp');
+    // Clean expired OTPs (ignore errors - this is just cleanup)
+    try {
+      await supabase.rpc('clean_expired_otp');
+    } catch (rpcError) {
+      console.warn('Could not clean expired OTPs:', rpcError);
+    }
 
     // Delete any existing OTP for this contact
-    await supabase
-      .from('otp_codes')
-      .delete()
-      .eq('contact_identifier', contactIdentifier);
+    try {
+      await supabase
+        .from('otp_codes')
+        .delete()
+        .eq('contact_identifier', contactIdentifier);
+    } catch (deleteError) {
+      console.warn('Could not delete existing OTP:', deleteError);
+      // Continue anyway - we'll insert new OTP
+    }
 
     // Store OTP in Supabase
     const { error: insertError } = await supabase
@@ -53,6 +63,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Send OTP via Telegram Bot API
+    let chatId: string | null = null;
+    let otpSent = false;
+    
     if (contactType === 'telegram' && telegram) {
       const BOT_TOKEN = process.env.VITE_TELEGRAM_BOT_TOKEN;
       
@@ -62,20 +75,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           const telegramUsername = telegram.trim().replace(/^@/, '').toLowerCase();
           
           // Try to find chat_id from database (saved via webhook when user messages bot)
-          let chatId: string | null = null;
-          
           try {
             const { data: chatIdData, error: chatIdError } = await supabase
               .from('telegram_chat_ids')
               .select('chat_id')
               .eq('contact_identifier', telegramUsername)
-              .single();
+              .maybeSingle(); // Use maybeSingle instead of single to avoid error if no row found
             
             if (!chatIdError && chatIdData) {
               chatId = chatIdData.chat_id;
+            } else if (chatIdError && chatIdError.code !== 'PGRST116') {
+              // PGRST116 is "not found" error, which is expected - log other errors
+              console.warn('Error fetching chat_id from database:', chatIdError);
             }
-          } catch (dbError) {
-            console.warn('Could not fetch chat_id from database:', dbError);
+          } catch (dbError: any) {
+            // Table might not exist if migration not applied - this is OK, we'll use fallback
+            if (dbError?.code === '42P01' || dbError?.message?.includes('does not exist')) {
+              console.warn('telegram_chat_ids table does not exist - migration may not be applied. Using fallback method.');
+            } else {
+              console.warn('Could not fetch chat_id from database:', dbError);
+            }
           }
           
           // Fallback: Try to get chat_id from bot's recent updates
@@ -99,7 +118,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     
                     // Save to database for future use
                     try {
-                      await supabase
+                      const { error: saveError } = await supabase
                         .from('telegram_chat_ids')
                         .upsert({
                           contact_identifier: telegramUsername,
@@ -110,8 +129,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                         }, {
                           onConflict: 'contact_identifier',
                         });
-                    } catch (saveError) {
-                      console.warn('Could not save chat_id to database:', saveError);
+                      
+                      if (saveError) {
+                        // Table might not exist if migration not applied - this is OK
+                        if (saveError.code === '42P01' || saveError.message?.includes('does not exist')) {
+                          console.warn('telegram_chat_ids table does not exist - migration may not be applied.');
+                        } else {
+                          console.warn('Could not save chat_id to database:', saveError);
+                        }
+                      }
+                    } catch (saveError: any) {
+                      if (saveError?.code === '42P01' || saveError?.message?.includes('does not exist')) {
+                        console.warn('telegram_chat_ids table does not exist - migration may not be applied.');
+                      } else {
+                        console.warn('Could not save chat_id to database:', saveError);
+                      }
                     }
                     
                     break;
@@ -125,25 +157,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           
           // If we found chat_id, send message
           if (chatId) {
-            const telegramResponse = await fetch(
-              `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
-              {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  chat_id: chatId,
-                  text: `🔐 Ваш код подтверждения: *${otp}*\n\n⏰ Код действителен 10 минут.\n\n---\n\n🔐 Your verification code: *${otp}*\n\n⏰ Code is valid for 10 minutes.\n\n---\n\n🔐 Ihr Bestätigungscode: *${otp}*\n\n⏰ Code ist 10 Minuten gültig.`,
-                  parse_mode: 'Markdown',
-                }),
-              }
-            );
+            try {
+              const telegramResponse = await fetch(
+                `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
+                {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    chat_id: chatId,
+                    text: `🔐 Ваш код подтверждения: *${otp}*\n\n⏰ Код действителен 10 минут.\n\n---\n\n🔐 Your verification code: *${otp}*\n\n⏰ Code is valid for 10 minutes.\n\n---\n\n🔐 Ihr Bestätigungscode: *${otp}*\n\n⏰ Code ist 10 Minuten gültig.`,
+                    parse_mode: 'Markdown',
+                  }),
+                }
+              );
 
-            const telegramData = await telegramResponse.json();
-            
-            if (!telegramData.ok) {
-              console.error('Telegram API error when sending OTP:', telegramData);
-            } else {
-              console.log(`OTP sent successfully to chat_id: ${chatId}`);
+              const telegramData = await telegramResponse.json();
+              
+              if (telegramData.ok) {
+                otpSent = true;
+                console.log(`OTP sent successfully to chat_id: ${chatId}`);
+              } else {
+                console.error('Telegram API error when sending OTP:', telegramData);
+              }
+            } catch (sendError) {
+              console.error('Error sending message to Telegram:', sendError);
             }
           } else {
             // No chat_id found - user needs to start conversation with bot first
@@ -164,17 +201,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (contactType === 'phone') {
       console.log(`OTP for phone ${contactIdentifier}: ${otp} (SMS sending not implemented - requires Twilio/AWS SNS integration)`);
     }
-    
-    // Determine if OTP was actually sent
-    let otpSent = false;
-    if (contactType === 'telegram') {
-      // Check if we attempted to send (BOT_TOKEN exists)
-      const BOT_TOKEN = process.env.VITE_TELEGRAM_BOT_TOKEN;
-      otpSent = !!BOT_TOKEN; // We tried to send if token exists (actual success is logged separately)
-    }
-    
-    // Determine if OTP was actually sent
-    const otpSent = contactType === 'telegram' && chatId !== null;
     
     return res.status(200).json({
       success: true,
