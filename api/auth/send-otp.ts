@@ -56,9 +56,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       success: true,
       message: 'OTP sent successfully',
     });
-  } catch (error) {
+  } catch (error: any) {
     // Log error server-side only, don't expose details to client
     console.error('Error sending OTP:', error);
+    
+    // Handle Supabase configuration errors
+    if (error?.message?.includes('Supabase URL and Service Role Key')) {
+      return res.status(500).json({ error: 'Server configuration error. Please check environment variables.' });
+    }
+    
     return res.status(500).json({ error: 'Internal server error' });
   }
 }

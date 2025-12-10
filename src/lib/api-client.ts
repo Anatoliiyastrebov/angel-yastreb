@@ -44,6 +44,16 @@ export function clearSession() {
   localStorage.removeItem('sessionExpiresAt');
 }
 
+// Helper function to safely parse JSON response
+async function parseJsonResponse(response: Response): Promise<any> {
+  const contentType = response.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) {
+    const text = await response.text();
+    throw new Error(`Server returned non-JSON response: ${text.substring(0, 100)}`);
+  }
+  return response.json();
+}
+
 // Send OTP
 export async function sendOTP(telegram?: string, phone?: string): Promise<ApiResponse<{ message: string }>> {
   try {
@@ -55,7 +65,7 @@ export async function sendOTP(telegram?: string, phone?: string): Promise<ApiRes
       body: JSON.stringify({ telegram, phone }),
     });
 
-    const data = await response.json();
+    const data = await parseJsonResponse(response);
     
     if (!response.ok) {
       return { success: false, error: data.error || 'Failed to send OTP' };
@@ -85,7 +95,7 @@ export async function verifyOTP(
       body: JSON.stringify({ telegram, phone, otp }),
     });
 
-    const data = await response.json();
+    const data = await parseJsonResponse(response);
     
     if (!response.ok) {
       return { success: false, error: data.error || 'Failed to verify OTP' };
@@ -120,7 +130,7 @@ export async function saveQuestionnaire(questionnaire: any): Promise<ApiResponse
       body: JSON.stringify({ sessionToken: token, questionnaire }),
     });
 
-    const data = await response.json();
+    const data = await parseJsonResponse(response);
     
     if (!response.ok) {
       if (response.status === 401) {
@@ -153,7 +163,7 @@ export async function getQuestionnaires(): Promise<ApiResponse<{ questionnaires:
       },
     });
 
-    const data = await response.json();
+    const data = await parseJsonResponse(response);
     
     if (!response.ok) {
       if (response.status === 401) {
@@ -187,7 +197,7 @@ export async function deleteQuestionnaire(questionnaireId: string): Promise<ApiR
       body: JSON.stringify({ sessionToken: token, questionnaireId }),
     });
 
-    const data = await response.json();
+    const data = await parseJsonResponse(response);
     
     if (!response.ok) {
       if (response.status === 401) {

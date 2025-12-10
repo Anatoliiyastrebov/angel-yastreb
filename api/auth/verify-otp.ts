@@ -83,8 +83,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       sessionToken,
       expiresAt: expiresAt.getTime(),
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error verifying OTP:', error);
+    
+    // Handle Supabase configuration errors
+    if (error?.message?.includes('Supabase URL and Service Role Key')) {
+      return res.status(500).json({ error: 'Server configuration error. Please check environment variables.' });
+    }
+    
     return res.status(500).json({ error: 'Internal server error' });
   }
 }

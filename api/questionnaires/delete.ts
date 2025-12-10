@@ -43,8 +43,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     return res.status(200).json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error deleting questionnaire:', error);
+    
+    // Handle Supabase configuration errors
+    if (error?.message?.includes('Supabase URL and Service Role Key')) {
+      return res.status(500).json({ error: 'Server configuration error. Please check environment variables.' });
+    }
+    
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
