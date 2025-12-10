@@ -121,6 +121,43 @@ npm install
 
 Это установит `@supabase/supabase-js` (уже добавлен в package.json).
 
+## Шаг 6.5: Настройка Telegram Webhook (для автоматической отправки OTP)
+
+Для автоматической отправки OTP кодов пользователям, нужно настроить Telegram webhook:
+
+1. **Примените дополнительную SQL миграцию:**
+   - Откройте Supabase Dashboard → SQL Editor
+   - Скопируйте содержимое файла `supabase/migrations/002_add_telegram_chat_ids.sql`
+   - Вставьте и выполните (Run)
+
+2. **Получите URL вашего webhook:**
+   - После деплоя на Vercel, ваш webhook будет доступен по адресу:
+   - `https://your-domain.vercel.app/api/telegram/webhook`
+
+3. **Настройте webhook в Telegram:**
+   ```bash
+   curl -X POST "https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook" \
+     -H "Content-Type: application/json" \
+     -d '{"url": "https://your-domain.vercel.app/api/telegram/webhook"}'
+   ```
+
+   Или используйте браузер:
+   ```
+   https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook?url=https://your-domain.vercel.app/api/telegram/webhook
+   ```
+
+4. **Проверьте webhook:**
+   ```bash
+   curl "https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getWebhookInfo"
+   ```
+
+**Как это работает:**
+- Когда пользователь пишет боту (например, `/start`), Telegram отправляет обновление на webhook
+- Webhook сохраняет `chat_id` пользователя в базе данных
+- При запросе OTP система использует сохраненный `chat_id` для отправки кода
+
+**Важно:** Пользователь должен хотя бы раз написать боту (например, `/start`), чтобы его `chat_id` был сохранен.
+
 ## Шаг 7: Деплой на Vercel
 
 После добавления переменных окружения:

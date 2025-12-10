@@ -128,7 +128,19 @@ const DataRequest: React.FC = () => {
 
       if (result.success) {
         setShowOtpInput(true);
-        toast.success(language === 'ru' ? 'Код отправлен. Проверьте Telegram или SMS.' : language === 'de' ? 'Code gesendet. Bitte überprüfen Sie Telegram oder SMS.' : 'Code sent. Please check Telegram or SMS.');
+        const message = result.data?.message || '';
+        if (message.includes('started a conversation')) {
+          toast.warning(
+            language === 'ru' 
+              ? 'Код сгенерирован, но не отправлен. Пожалуйста, сначала напишите боту в Telegram, затем попробуйте снова.'
+              : language === 'de'
+              ? 'Code generiert, aber nicht gesendet. Bitte schreiben Sie zuerst dem Bot in Telegram, dann versuchen Sie es erneut.'
+              : 'Code generated but not sent. Please start a conversation with the bot in Telegram first, then try again.',
+            { duration: 8000 }
+          );
+        } else {
+          toast.success(language === 'ru' ? 'Код отправлен. Проверьте Telegram или SMS.' : language === 'de' ? 'Code gesendet. Bitte überprüfen Sie Telegram oder SMS.' : 'Code sent. Please check Telegram or SMS.');
+        }
       } else {
         toast.error(result.error || (language === 'ru' ? 'Ошибка отправки кода' : language === 'de' ? 'Fehler beim Senden des Codes' : 'Error sending code'));
       }
@@ -565,6 +577,56 @@ const DataRequest: React.FC = () => {
                   <h3 className="text-lg font-semibold text-foreground">{t.authTitle}</h3>
                 </div>
                 <p className="text-sm text-muted-foreground mb-4">{t.authDesc}</p>
+                {authTelegram.trim() && (
+                  <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4">
+                    <p className="text-xs text-blue-900 dark:text-blue-100">
+                      {language === 'ru' 
+                        ? (
+                          <>
+                            💡 Важно: Для получения кода в Telegram, сначала напишите боту{' '}
+                            <a 
+                              href="https://t.me/ZdorovAnketaBot" 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="font-semibold underline hover:text-blue-700 dark:hover:text-blue-300"
+                            >
+                              @ZdorovAnketaBot
+                            </a>
+                            {' '}команду /start (или любое сообщение). Затем вернитесь сюда и запросите код снова.
+                          </>
+                        )
+                        : language === 'de'
+                        ? (
+                          <>
+                            💡 Wichtig: Um den Code in Telegram zu erhalten, schreiben Sie zuerst dem Bot{' '}
+                            <a 
+                              href="https://t.me/ZdorovAnketaBot" 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="font-semibold underline hover:text-blue-700 dark:hover:text-blue-300"
+                            >
+                              @ZdorovAnketaBot
+                            </a>
+                            {' '}den Befehl /start (oder eine beliebige Nachricht). Kehren Sie dann hierher zurück und fordern Sie den Code erneut an.
+                          </>
+                        )
+                        : (
+                          <>
+                            💡 Important: To receive the code in Telegram, first send the bot{' '}
+                            <a 
+                              href="https://t.me/ZdorovAnketaBot" 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="font-semibold underline hover:text-blue-700 dark:hover:text-blue-300"
+                            >
+                              @ZdorovAnketaBot
+                            </a>
+                            {' '}the /start command (or any message). Then return here and request the code again.
+                          </>
+                        )}
+                    </p>
+                  </div>
+                )}
                 
                 {!showOtpInput ? (
                   <div className="space-y-3">

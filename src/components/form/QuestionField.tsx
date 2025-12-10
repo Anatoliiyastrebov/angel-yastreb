@@ -250,15 +250,6 @@ const QuestionFieldComponent: React.FC<QuestionFieldProps> = ({
           }
         }
         
-        // For what_else_question, show additional field only if "yes" is selected
-        if (question.id === 'what_else_question') {
-          const whatElseValue = Array.isArray(value) ? value[0] : value;
-          const hasYes = whatElseValue === 'yes';
-          if (!hasYes) {
-            return null;
-          }
-        }
-        
         const isRequired = question.id === 'injuries' || question.id === 'pregnancy_problems' || question.id === 'what_else' || question.id === 'allergies' || question.id === 'skin_condition' || question.id === 'sleep' || question.id === 'operations';
         
         return (

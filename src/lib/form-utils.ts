@@ -491,8 +491,11 @@ export const generateMarkdown = (
     const countryCode = contactData.phoneCountryCode || 'DE';
     const country = countryCodes.find(c => c.code === countryCode);
     const dialCode = country?.dialCode || '+49';
-    const fullPhone = `${dialCode} ${contactData.phone.trim()}`;
-    contacts.push(`Phone: **${fullPhone}**`);
+    const phoneNumber = contactData.phone.trim().replace(/[\s\-\(\)]/g, ''); // Remove formatting
+    const fullPhoneNumber = `${dialCode}${phoneNumber}`; // Full number without spaces
+    // Telegram automatically makes phone numbers in format +1234567890 clickable
+    // So we display it without spaces to ensure the entire number is clickable
+    contacts.push(`Phone: **${fullPhoneNumber}**`);
   }
   if (contactData.email && contactData.email.trim() !== '') {
     contacts.push(`Email: **${contactData.email.trim()}**`);

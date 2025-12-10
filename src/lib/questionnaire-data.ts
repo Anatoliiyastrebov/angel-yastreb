@@ -497,7 +497,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
         icon: 'info',
         options: yesNoOptionsSimple,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'what_else',
@@ -679,7 +679,7 @@ export const childQuestionnaire: QuestionnaireSection[] = [
         icon: 'info',
         options: yesNoOptionsSimple,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'what_else',
@@ -921,7 +921,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         icon: 'info',
         options: yesNoOptionsSimple,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'what_else',
@@ -1154,7 +1154,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         icon: 'info',
         options: yesNoOptionsSimple,
         required: true,
-        hasAdditional: true,
+        hasAdditional: false,
       },
       {
         id: 'what_else',
