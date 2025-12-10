@@ -493,7 +493,7 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
       {
         id: 'what_else_question',
         type: 'radio',
-        label: { ru: 'Есть ли еще что-то что ещё нужно знать о вашем здоровье?', en: 'Is there anything else we should know about your health?', de: 'Gibt es noch etwas, was wir über Ihre Gesundheit wissen sollten?' },
+        label: { ru: 'Есть ли что-то что ещё нужно знать о вашем здоровье?', en: 'Is there anything else we should know about your health?', de: 'Gibt es noch etwas, was wir über Ihre Gesundheit wissen sollten?' },
         icon: 'info',
         options: yesNoOptionsSimple,
         required: true,
@@ -675,7 +675,7 @@ export const childQuestionnaire: QuestionnaireSection[] = [
       {
         id: 'what_else_question',
         type: 'radio',
-        label: { ru: 'Есть ли еще что-то что ещё нужно знать о вашем здоровье?', en: 'Is there anything else we should know about your health?', de: 'Gibt es noch etwas, was wir über Ihre Gesundheit wissen sollten?' },
+        label: { ru: 'Есть ли что-то что ещё нужно знать о вашем здоровье?', en: 'Is there anything else we should know about your health?', de: 'Gibt es noch etwas, was wir über Ihre Gesundheit wissen sollten?' },
         icon: 'info',
         options: yesNoOptionsSimple,
         required: true,
@@ -917,7 +917,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
       {
         id: 'what_else_question',
         type: 'radio',
-        label: { ru: 'Есть ли еще что-то что ещё нужно знать о вашем здоровье?', en: 'Is there anything else we should know about your health?', de: 'Gibt es noch etwas, was wir über Ihre Gesundheit wissen sollten?' },
+        label: { ru: 'Есть ли что-то что ещё нужно знать о вашем здоровье?', en: 'Is there anything else we should know about your health?', de: 'Gibt es noch etwas, was wir über Ihre Gesundheit wissen sollten?' },
         icon: 'info',
         options: yesNoOptionsSimple,
         required: true,
@@ -1150,7 +1150,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
       {
         id: 'what_else_question',
         type: 'radio',
-        label: { ru: 'Есть ли еще что-то что ещё нужно знать о вашем здоровье?', en: 'Is there anything else we should know about your health?', de: 'Gibt es noch etwas, was wir über Ihre Gesundheit wissen sollten?' },
+        label: { ru: 'Есть ли что-то что ещё нужно знать о вашем здоровье?', en: 'Is there anything else we should know about your health?', de: 'Gibt es noch etwas, was wir über Ihre Gesundheit wissen sollten?' },
         icon: 'info',
         options: yesNoOptionsSimple,
         required: true,
