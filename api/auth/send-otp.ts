@@ -176,11 +176,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             }
           }
           
-          // If we found user_id or chat_id, send message to private chat
-          // Prefer user_id for direct sending to personal messages
-          const targetChatId = userId || chatId;
-          
-          if (targetChatId) {
+          // ONLY send if we have user_id (guaranteed to be private chat)
+          // Never use chat_id alone as it might be a group ID
+          if (userId) {
             try {
               const telegramResponse = await fetch(
                 `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
@@ -189,7 +187,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
                     chat_id: targetChatId, // Use user_id for private messages
-                    text: `?? ??? ??? ?????????????: *${otp}*\n\n? ??? ???????????? 10 ?????.\n\n---\n\n?? Your verification code: *${otp}*\n\n? Code is valid for 10 minutes.\n\n---\n\n?? Ihr Bestätigungscode: *${otp}*\n\n? Code ist 10 Minuten gültig.`,
+                    text: `?? ??? ??? ?????????????: *${otp}*\n\n? ??? ???????????? 10 ?????.\n\n---\n\n?? Your verification code: *${otp}*\n\n? Code is valid for 10 minutes.\n\n---\n\n?? Ihr Bestï¿½tigungscode: *${otp}*\n\n? Code ist 10 Minuten gï¿½ltig.`,
                     parse_mode: 'Markdown',
                   }),
                 }
