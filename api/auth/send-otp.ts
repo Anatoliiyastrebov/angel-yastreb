@@ -186,7 +186,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
-                    chat_id: targetChatId, // Use user_id for private messages
+                    chat_id: userId, // Use user_id for private messages
                     text: `?? ??? ??? ?????????????: *${otp}*\n\n? ??? ???????????? 10 ?????.\n\n---\n\n?? Your verification code: *${otp}*\n\n? Code is valid for 10 minutes.\n\n---\n\n?? Ihr Best�tigungscode: *${otp}*\n\n? Code ist 10 Minuten g�ltig.`,
                     parse_mode: 'Markdown',
                   }),
@@ -197,7 +197,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               
               if (telegramData.ok) {
                 otpSent = true;
-                console.log(`OTP sent successfully to private chat (user_id: ${targetChatId})`);
+                console.log(`OTP sent successfully to private chat (user_id: ${userId})`);
               } else {
                 console.error('Telegram API error when sending OTP:', telegramData);
               }
