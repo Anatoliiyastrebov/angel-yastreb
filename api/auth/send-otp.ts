@@ -84,9 +84,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               .maybeSingle(); // Use maybeSingle instead of single to avoid error if no row found
             
             if (!chatIdError && chatIdData) {
-              // Prefer user_id for private messages, fallback to chat_id
-              userId = chatIdData.user_id || chatIdData.chat_id;
-              chatId = chatIdData.chat_id;
+              // ONLY use user_id for private messages - never use chat_id alone as it might be a group
+              // If user_id is not set, we need to find it via getUpdates (only private chats)
+              if (chatIdData.user_id) {
+                userId = chatIdData.user_id;
+                chatId = chatIdData.chat_id; // Keep for reference but don't use for sending
+              } else {
+                // Old record without user_id - might be from group, so ignore it and search via getUpdates
+                console.warn(`Found chat_id for @${telegramUsername} but no user_id - might be from group. Searching for private chat...`);
+                userId = null;
+                chatId = null;
+              }
             } else if (chatIdError && chatIdError.code !== 'PGRST116') {
               // PGRST116 is "not found" error, which is expected - log other errors
               console.warn('Error fetching chat_id from database:', chatIdError);
@@ -181,7 +189,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
                     chat_id: targetChatId, // Use user_id for private messages
-                    text: `🔐 Ваш код подтверждения: *${otp}*\n\n⏰ Код действителен 10 минут.\n\n---\n\n🔐 Your verification code: *${otp}*\n\n⏰ Code is valid for 10 minutes.\n\n---\n\n🔐 Ihr Bestätigungscode: *${otp}*\n\n⏰ Code ist 10 Minuten gültig.`,
+                    text: `?? ??? ??? ?????????????: *${otp}*\n\n? ??? ???????????? 10 ?????.\n\n---\n\n?? Your verification code: *${otp}*\n\n? Code is valid for 10 minutes.\n\n---\n\n?? Ihr Best�tigungscode: *${otp}*\n\n? Code ist 10 Minuten g�ltig.`,
                     parse_mode: 'Markdown',
                   }),
                 }
