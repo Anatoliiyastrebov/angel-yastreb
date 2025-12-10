@@ -23,7 +23,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Questionnaire ID required' });
     }
 
-    const supabase = getSupabaseClient();
+    let supabase;
+    try {
+      supabase = getSupabaseClient();
+    } catch (supabaseError: any) {
+      console.error('Supabase configuration error:', supabaseError);
+      return res.status(500).json({ error: 'Server configuration error. Please check SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.' });
+    }
 
     // Delete questionnaire (only if it belongs to this contact)
     const { data, error } = await supabase

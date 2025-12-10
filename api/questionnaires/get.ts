@@ -38,7 +38,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(401).json({ error: 'Invalid or expired session' });
     }
 
-    const supabase = getSupabaseClient();
+    let supabase;
+    try {
+      supabase = getSupabaseClient();
+    } catch (supabaseError: any) {
+      console.error('Supabase configuration error:', supabaseError);
+      return res.status(500).json({ error: 'Server configuration error. Please check SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.' });
+    }
 
     // Find all questionnaires for this contact
     const { data: questionnaireRows, error } = await supabase

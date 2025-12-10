@@ -43,7 +43,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Encrypt sensitive data before storing
     const encryptedData = encrypt(JSON.stringify(questionnaire), ENCRYPTION_KEY);
     
-    const supabase = getSupabaseClient();
+    let supabase;
+    try {
+      supabase = getSupabaseClient();
+    } catch (supabaseError: any) {
+      console.error('Supabase configuration error:', supabaseError);
+      return res.status(500).json({ error: 'Server configuration error. Please check SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.' });
+    }
 
     // Check if questionnaire already exists
     const { data: existing } = await supabase

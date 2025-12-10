@@ -23,7 +23,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       : phone?.trim().replace(/[\s\-\(\)]/g, '') || '';
     const contactType = telegram ? 'telegram' : 'phone';
 
-    const supabase = getSupabaseClient();
+    let supabase;
+    try {
+      supabase = getSupabaseClient();
+    } catch (supabaseError: any) {
+      console.error('Supabase configuration error:', supabaseError);
+      return res.status(500).json({ error: 'Server configuration error. Please check SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.' });
+    }
 
     // Clean expired OTPs first
     await supabase.rpc('clean_expired_otp');
@@ -98,7 +104,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 // Helper function to verify session token (for use in other API routes)
 export async function verifySessionToken(token: string): Promise<{ contact: string; contactType: string } | null> {
   try {
-    const supabase = getSupabaseClient();
+    let supabase;
+    try {
+      supabase = getSupabaseClient();
+    } catch (supabaseError: any) {
+      console.error('Supabase configuration error in verifySessionToken:', supabaseError);
+      return null; // Return null instead of throwing to allow graceful error handling
+    }
     
     // Clean expired sessions first
     await supabase.rpc('clean_expired_sessions');
