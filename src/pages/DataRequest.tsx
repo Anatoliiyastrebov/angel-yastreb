@@ -444,6 +444,30 @@ const DataRequest: React.FC = () => {
         ? 'Kontaktinformationen aus den gefundenen Fragebögen'
         : 'Contact information from found questionnaires';
       
+      // Helper function to escape Markdown special characters
+      const escapeMarkdown = (text: string): string => {
+        // Escape special Markdown characters: _ * [ ] ( ) ` ~ > # + - | { } . !
+        return text
+          .replace(/\\/g, '\\\\')  // Escape backslash first
+          .replace(/_/g, '\\_')
+          .replace(/\*/g, '\\*')
+          .replace(/\[/g, '\\[')
+          .replace(/\]/g, '\\]')
+          .replace(/\(/g, '\\(')
+          .replace(/\)/g, '\\)')
+          .replace(/`/g, '\\`')
+          .replace(/~/g, '\\~')
+          .replace(/>/g, '\\>')
+          .replace(/#/g, '\\#')
+          .replace(/\+/g, '\\+')
+          .replace(/-/g, '\\-')
+          .replace(/\|/g, '\\|')
+          .replace(/\{/g, '\\{')
+          .replace(/\}/g, '\\}')
+          .replace(/\./g, '\\.')
+          .replace(/!/g, '\\!');
+      };
+
       // Format date for display
       const formattedDate = deleteRequestDate ? (() => {
         try {
@@ -454,12 +478,19 @@ const DataRequest: React.FC = () => {
         }
       })() : '';
       
+      // Escape user input to prevent Markdown parsing errors
+      const escapedFirstName = escapeMarkdown(deleteRequestFirstName);
+      const escapedLastName = escapeMarkdown(deleteRequestLastName);
+      const escapedDate = escapeMarkdown(formattedDate);
+      const escapedContact = escapeMarkdown(deleteRequestContact);
+      const escapedReason = deleteRequestReason ? escapeMarkdown(deleteRequestReason) : notSpecified;
+      
       const deletionRequestMarkdown = `**${deletionTitle}**\n\n` +
-        `**${firstNameLabel}:** ${deleteRequestFirstName}\n` +
-        `**${lastNameLabel}:** ${deleteRequestLastName}\n` +
-        `**${dateLabel}:** ${formattedDate}\n\n` +
-        `**${contactLabel}:** ${deleteRequestContact}\n\n` +
-        `**${reasonLabel}:** ${deleteRequestReason || notSpecified}\n\n` +
+        `**${firstNameLabel}:** ${escapedFirstName}\n` +
+        `**${lastNameLabel}:** ${escapedLastName}\n` +
+        `**${dateLabel}:** ${escapedDate}\n\n` +
+        `**${contactLabel}:** ${escapedContact}\n\n` +
+        `**${reasonLabel}:** ${escapedReason}\n\n` +
         `**${countLabel}:** ${questionnaireIds.length}\n\n` +
         `**ID анкет:** ${questionnaireIds.join(', ')}\n\n` +
         `**${contactInfoLabel}:**\n` +
@@ -471,7 +502,8 @@ const DataRequest: React.FC = () => {
             })() : c.phone) : '';
           const telegramText = c.telegram || (language === 'ru' ? 'не указан' : language === 'de' ? 'nicht angegeben' : 'not specified');
           const phoneText = phone || (language === 'ru' ? 'не указан' : language === 'de' ? 'nicht angegeben' : 'not specified');
-          return `${i + 1}. Telegram: ${telegramText}, Phone: ${phoneText}`;
+          // Escape contact info as well
+          return `${i + 1}. Telegram: ${escapeMarkdown(telegramText)}, Phone: ${escapeMarkdown(phoneText)}`;
         }).join('\n');
 
       // Send deletion request to Telegram
