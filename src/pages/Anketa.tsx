@@ -327,28 +327,37 @@ const Anketa: React.FC = () => {
             toast.error(updateResult.error || (language === 'ru' ? 'Ошибка обновления анкеты' : language === 'de' ? 'Fehler beim Aktualisieren des Fragebogens' : 'Error updating questionnaire'));
           }
         } else {
-          // Save new questionnaire
-          // If user is authenticated, save to Supabase
-          if (sessionToken) {
-            const saveResult = await saveQuestionnaire(questionnaireData);
-            if (saveResult.success) {
-              clearFormData(type, language);
-              navigate(`/success?lang=${language}`);
+          // Save new questionnaire to Supabase (works with or without authentication)
+          // If authenticated, uses session contact_identifier
+          // If not authenticated, uses contactData from form
+          const saveResult = await saveQuestionnaire(questionnaireData);
+          
+          if (saveResult.success) {
+            clearFormData(type, language);
+            if (sessionToken) {
+              toast.success(language === 'ru' ? 'Анкета успешно отправлена и сохранена' : language === 'de' ? 'Fragebogen erfolgreich gesendet und gespeichert' : 'Questionnaire successfully sent and saved');
             } else {
-              toast.error(saveResult.error || (language === 'ru' ? 'Ошибка сохранения анкеты' : language === 'de' ? 'Fehler beim Speichern des Fragebogens' : 'Error saving questionnaire'));
+              toast.success(
+                language === 'ru' 
+                  ? 'Анкета отправлена! Войдите на странице "Мои анкеты" для просмотра всех ваших анкет.'
+                  : language === 'de'
+                  ? 'Fragebogen gesendet! Melden Sie sich auf der Seite "Meine Fragebögen" an, um alle Ihre Fragebögen anzuzeigen.'
+                  : 'Questionnaire sent! Sign in on "My Questionnaires" page to view all your questionnaires.'
+              );
             }
+            navigate(`/success?lang=${language}`);
           } else {
-            // User not authenticated - save to localStorage as fallback
-            // User will need to authenticate later to access from other devices
+            // If save to Supabase fails, still save to localStorage as fallback
             const { saveSubmittedQuestionnaire } = await import('@/lib/form-utils');
             saveSubmittedQuestionnaire(questionnaireData);
+            console.warn('Failed to save to Supabase, saved to localStorage instead:', saveResult.error);
             clearFormData(type, language);
-            toast.success(
+            toast.warning(
               language === 'ru' 
-                ? 'Анкета отправлена! Для доступа с других устройств войдите на странице "Мои анкеты".'
+                ? 'Анкета отправлена, но сохранение не удалось. Войдите на странице "Мои анкеты" для доступа.'
                 : language === 'de'
-                ? 'Fragebogen gesendet! Für den Zugriff von anderen Geräten melden Sie sich auf der Seite "Meine Fragebögen" an.'
-                : 'Questionnaire sent! To access from other devices, sign in on "My Questionnaires" page.'
+                ? 'Fragebogen gesendet, aber Speichern fehlgeschlagen. Melden Sie sich auf der Seite "Meine Fragebögen" an.'
+                : 'Questionnaire sent, but saving failed. Sign in on "My Questionnaires" page.'
             );
             navigate(`/success?lang=${language}`);
           }

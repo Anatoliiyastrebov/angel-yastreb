@@ -115,11 +115,9 @@ export async function verifyOTP(
 }
 
 // Save questionnaire
+// sessionToken is optional - if not provided, contact_identifier will be extracted from questionnaire.contactData
 export async function saveQuestionnaire(questionnaire: any): Promise<ApiResponse<{ id: string }>> {
   const token = getSessionToken();
-  if (!token) {
-    return { success: false, error: 'Session expired. Please authenticate again.' };
-  }
 
   try {
     const response = await fetch(`${API_BASE_URL}/questionnaires/save`, {
@@ -127,13 +125,16 @@ export async function saveQuestionnaire(questionnaire: any): Promise<ApiResponse
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ sessionToken: token, questionnaire }),
+      body: JSON.stringify({ 
+        ...(token ? { sessionToken: token } : {}), // Only include sessionToken if available
+        questionnaire 
+      }),
     });
 
     const data = await parseJsonResponse(response);
     
     if (!response.ok) {
-      if (response.status === 401) {
+      if (response.status === 401 && token) {
         clearSession();
       }
       return { success: false, error: data.error || 'Failed to save questionnaire' };

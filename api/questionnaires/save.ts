@@ -27,17 +27,42 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const { sessionToken, questionnaire } = req.body;
 
-    if (!sessionToken) {
-      return res.status(401).json({ error: 'Session token required' });
-    }
-
-    const session = await verifySessionToken(sessionToken);
-    if (!session) {
-      return res.status(401).json({ error: 'Invalid or expired session' });
-    }
-
     if (!questionnaire || !questionnaire.id) {
       return res.status(400).json({ error: 'Questionnaire data required' });
+    }
+
+    // Determine contact_identifier and contact_type
+    // Priority: sessionToken > questionnaire.contactData
+    let contactIdentifier: string;
+    let contactType: string;
+
+    if (sessionToken) {
+      // User is authenticated - use session data
+      const session = await verifySessionToken(sessionToken);
+      if (!session) {
+        return res.status(401).json({ error: 'Invalid or expired session' });
+      }
+      contactIdentifier = session.contact;
+      contactType = session.contactType;
+    } else {
+      // User not authenticated - use contactData from questionnaire
+      // This allows saving questionnaires even without authentication
+      // User will need to authenticate later to view them
+      if (!questionnaire.contactData) {
+        return res.status(400).json({ error: 'Contact data required when not authenticated' });
+      }
+
+      const { telegram, phone } = questionnaire.contactData;
+      
+      if (telegram && telegram.trim()) {
+        contactIdentifier = telegram.trim().replace(/^@/, '').toLowerCase();
+        contactType = 'telegram';
+      } else if (phone && phone.trim()) {
+        contactIdentifier = phone.trim().replace(/[\s\-\(\)]/g, '');
+        contactType = 'phone';
+      } else {
+        return res.status(400).json({ error: 'Telegram or phone is required in contact data' });
+      }
     }
 
     // Encrypt sensitive data before storing
@@ -55,7 +80,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { data: existing } = await supabase
       .from('questionnaires')
       .select('id')
-      .eq('contact_identifier', session.contact)
+      .eq('contact_identifier', contactIdentifier)
       .eq('questionnaire_id', questionnaire.id)
       .single();
 
@@ -83,8 +108,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .from('questionnaires')
         .insert({
           questionnaire_id: questionnaire.id,
-          contact_identifier: session.contact,
-          contact_type: session.contactType,
+          contact_identifier: contactIdentifier,
+          contact_type: contactType,
           encrypted_data: encryptedData,
           questionnaire_type: questionnaire.type,
           language: questionnaire.language,
