@@ -575,10 +575,10 @@ const DataRequest: React.FC = () => {
 
         <div className="card-wellness space-y-6">
           <div>
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-foreground mb-2">{t.title}</h1>
-                <p className="text-muted-foreground">{t.description}</p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">{t.title}</h1>
+                <p className="text-sm sm:text-base text-muted-foreground break-words">{t.description}</p>
               </div>
               {isAuthenticated && (
                 <Button
@@ -593,7 +593,7 @@ const DataRequest: React.FC = () => {
                     setAuthPhone('');
                     toast.success(language === 'ru' ? 'Вы вышли из системы' : language === 'de' ? 'Sie haben sich abgemeldet' : 'You have signed out');
                   }}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto"
                 >
                   <LogOut className="w-4 h-4" />
                   {t.signOut}
@@ -814,48 +814,50 @@ const DataRequest: React.FC = () => {
                     key={questionnaire.id}
                     className="border border-border rounded-xl p-4 space-y-3"
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                      <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-foreground">
                           {getQuestionnaireTitle(questionnaire.type, language)}
                         </h3>
                         <div className="flex flex-col gap-1 text-sm text-muted-foreground mt-1">
                           <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4" />
-                            <span>{t.submittedAt}: {formatDate(questionnaire.submittedAt || Date.now())}</span>
+                            <Calendar className="w-4 h-4 flex-shrink-0" />
+                            <span className="break-words">{t.submittedAt}: {formatDate(questionnaire.submittedAt || Date.now())}</span>
                           </div>
                           <div className="flex flex-col gap-1">
                             {questionnaire.contactData?.telegram && (
                               <div className="flex items-center gap-2 text-sm">
-                                <MessageCircle className="w-4 h-4" />
-                                <span>Telegram: {questionnaire.contactData.telegram}</span>
+                                <MessageCircle className="w-4 h-4 flex-shrink-0" />
+                                <span className="break-words">Telegram: {questionnaire.contactData.telegram}</span>
                               </div>
                             )}
                             {questionnaire.contactData?.phone && (
                               <div className="flex items-center gap-2 text-sm">
-                                <Phone className="w-4 h-4" />
-                                <span>{t.phone}: {formatPhone(questionnaire.contactData.phone, questionnaire.contactData.phoneCountryCode)}</span>
+                                <Phone className="w-4 h-4 flex-shrink-0" />
+                                <span className="break-words">{t.phone}: {formatPhone(questionnaire.contactData.phone, questionnaire.contactData.phoneCountryCode)}</span>
                               </div>
                             )}
                           </div>
                         </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-shrink-0 sm:ml-4">
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleView(questionnaire)}
+                          className="flex-1 sm:flex-initial"
                         >
-                          <Eye className="w-4 h-4 mr-1" />
-                          {t.view}
+                          <Eye className="w-4 h-4 sm:mr-1" />
+                          <span className="hidden sm:inline">{t.view}</span>
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleEdit(questionnaire)}
+                          className="flex-1 sm:flex-initial"
                         >
-                          <Edit className="w-4 h-4 mr-1" />
-                          {t.edit}
+                          <Edit className="w-4 h-4 sm:mr-1" />
+                          <span className="hidden sm:inline">{t.edit}</span>
                         </Button>
                       </div>
                     </div>
