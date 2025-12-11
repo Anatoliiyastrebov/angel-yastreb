@@ -201,6 +201,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               } else {
                 console.error('Telegram API error when sending OTP:', telegramData);
               }
+              } else {
+                console.warn(`Chat with user_id ${userId} is not private (type: ${chatInfo.result?.type || 'unknown'}). Not sending OTP.`);
+              }
             } catch (sendError) {
               console.error('Error sending message to Telegram:', sendError);
             }
