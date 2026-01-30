@@ -24,9 +24,15 @@ export const DSGVOCheckbox: React.FC<DSGVOCheckboxProps> = ({ checked, onChange 
     de: 'Sie haben das Recht auf Zugang, Berichtigung, Löschung und Einschränkung der Verarbeitung Ihrer Daten gemäß DSGVO.',
   };
 
+  const shortConsent = {
+    ru: 'Согласен на обработку персональных данных согласно GDPR',
+    en: 'I agree to the processing of personal data in accordance with GDPR',
+    de: 'Ich stimme der Verarbeitung personenbezogener Daten gemäß DSGVO zu',
+  };
+
   return (
     <>
-      <div className="bg-accent/30 rounded-2xl p-5 border border-border space-y-4">
+      <div className="bg-white rounded-lg p-6 md:p-8 border border-medical-200 shadow-sm">
       <label className="flex items-start gap-3 cursor-pointer group">
         <div className="relative flex-shrink-0 mt-0.5">
           <input
@@ -35,7 +41,7 @@ export const DSGVOCheckbox: React.FC<DSGVOCheckboxProps> = ({ checked, onChange 
             onChange={(e) => onChange(e.target.checked)}
             className="sr-only peer"
           />
-          <div className="w-6 h-6 rounded-lg border-2 border-input bg-background peer-checked:bg-primary peer-checked:border-primary transition-all flex items-center justify-center">
+          <div className="w-6 h-6 rounded-lg border-2 border-medical-300 bg-white peer-checked:bg-primary-600 peer-checked:border-primary-600 transition-all duration-200 flex items-center justify-center">
             {checked && (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -47,7 +53,7 @@ export const DSGVOCheckbox: React.FC<DSGVOCheckboxProps> = ({ checked, onChange 
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="text-primary-foreground"
+                className="text-white"
               >
                 <polyline points="20 6 9 17 4 12" />
               </svg>
@@ -55,33 +61,22 @@ export const DSGVOCheckbox: React.FC<DSGVOCheckboxProps> = ({ checked, onChange 
           </div>
         </div>
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <ShieldCheck className="w-4 h-4 text-primary" />
-            <span className="font-medium text-foreground">DSGVO / GDPR</span>
-          </div>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {t('dsgvoConsent')}
-            </p>
+          <p className="text-sm text-medical-700 leading-relaxed">
+            {shortConsent[language]}
+            {' '}
             <button
               type="button"
               onClick={(e) => {
                 e.preventDefault();
                 setShowPrivacyPolicy(true);
               }}
-              className="text-primary hover:underline text-sm mt-2 font-medium"
+              className="text-primary-600 hover:underline font-medium"
             >
               {privacyPolicyLink[language]}
             </button>
-          </div>
-        </label>
-
-        {/* User Rights Notice */}
-        <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 flex gap-3">
-          <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed">
-            {userRightsNotice[language]}
           </p>
         </div>
+      </label>
     </div>
 
       <PrivacyPolicyDialog open={showPrivacyPolicy} onOpenChange={setShowPrivacyPolicy} />

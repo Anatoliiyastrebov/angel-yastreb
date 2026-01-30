@@ -22,25 +22,25 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ markdown, onCl
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/20 backdrop-blur-sm animate-fade-in">
-      <div className="bg-card rounded-2xl shadow-hover max-w-2xl w-full max-h-[80vh] flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <h3 className="font-semibold text-lg">{t('previewMarkdown')}</h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-medical-900/20 backdrop-blur-sm animate-fade-in">
+      <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full max-h-[80vh] flex flex-col border border-medical-200">
+        <div className="flex items-center justify-between p-4 border-b border-medical-200">
+          <h3 className="font-semibold text-lg text-medical-800">{t('previewMarkdown')}</h3>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-muted transition-colors"
+            className="w-10 h-10 rounded-lg bg-medical-100 flex items-center justify-center hover:bg-medical-200 transition-colors duration-200 min-h-[44px] min-w-[44px]"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5 text-medical-700" />
           </button>
         </div>
         
         <div className="flex-1 overflow-auto p-4">
-          <pre className="whitespace-pre-wrap text-sm font-mono bg-secondary rounded-xl p-4 text-foreground">
+          <pre className="whitespace-pre-wrap text-sm font-mono bg-medical-50 rounded-lg p-4 text-medical-700 border border-medical-200">
             {markdown}
           </pre>
         </div>
 
-        <div className="flex justify-end gap-3 p-4 border-t border-border">
+        <div className="flex justify-end gap-3 p-4 border-t border-medical-200">
           <button onClick={handleCopy} className="btn-secondary flex items-center gap-2">
             {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
             {copied ? 'Copied!' : 'Copy'}

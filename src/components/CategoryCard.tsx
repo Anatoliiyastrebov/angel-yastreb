@@ -18,10 +18,10 @@ const icons: Record<QuestionnaireType, React.ReactNode> = {
 };
 
 const colors: Record<QuestionnaireType, string> = {
-  infant: 'bg-pink-50 text-pink-600',
-  child: 'bg-blue-50 text-blue-600',
-  woman: 'bg-rose-50 text-rose-600',
-  man: 'bg-cyan-50 text-cyan-600',
+  infant: 'bg-primary-50 text-primary-600',
+  child: 'bg-medical-50 text-medical-600',
+  woman: 'bg-accent-50 text-accent-600',
+  man: 'bg-success-50 text-success-600',
 };
 
 export const CategoryCard: React.FC<CategoryCardProps> = ({ type, title, description }) => {
@@ -32,11 +32,11 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ type, title, descrip
       to={`/anketa?type=${type}&lang=${language}`}
       className="category-card group flex flex-col items-center text-center p-8"
     >
-      <div className={`w-16 h-16 rounded-2xl ${colors[type]} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+      <div className={`w-16 h-16 rounded-lg ${colors[type]} flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-200`}>
         {icons[type]}
       </div>
-      <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
+      <h3 className="text-lg font-semibold text-medical-800 mb-2">{title}</h3>
+      <p className="text-sm text-medical-600">{description}</p>
     </Link>
   );
 };

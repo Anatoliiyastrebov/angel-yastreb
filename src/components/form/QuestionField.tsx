@@ -12,6 +12,8 @@ interface QuestionFieldProps {
   onChange: (value: string | string[]) => void;
   onAdditionalChange: (value: string) => void;
   formData?: { [key: string]: string | string[] };
+  onFileChange?: (file: File | null) => void;
+  file?: File | null;
 }
 
 const QuestionFieldComponent: React.FC<QuestionFieldProps> = ({
@@ -23,6 +25,8 @@ const QuestionFieldComponent: React.FC<QuestionFieldProps> = ({
   onChange,
   onAdditionalChange,
   formData,
+  onFileChange,
+  file,
 }) => {
   const { language, t } = useLanguage();
 
@@ -186,6 +190,79 @@ const QuestionFieldComponent: React.FC<QuestionFieldProps> = ({
         </p>
       )}
 
+      {/* File upload for medical documents */}
+      {question.id === 'has_medical_documents' && value === 'yes' && onFileChange && (
+        <div className="mt-4">
+          <label className="text-sm text-muted-foreground mb-2 block">
+            {language === 'ru' ? 'Загрузите файл' : language === 'de' ? 'Datei hochladen' : 'Upload file'}
+          </label>
+          <div className="flex items-center gap-4">
+            <input
+              type="file"
+              accept="*/*"
+              onChange={(e) => {
+                const selectedFile = e.target.files?.[0] || null;
+                onFileChange(selectedFile);
+              }}
+              className="hidden"
+              id={`file-input-${question.id}`}
+            />
+            <label
+              htmlFor={`file-input-${question.id}`}
+              className="btn-secondary cursor-pointer flex items-center gap-2"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              {language === 'ru' ? 'Выбрать файл' : language === 'de' ? 'Datei auswählen' : 'Choose file'}
+            </label>
+            {file && (
+              <div className="flex items-center gap-2 text-sm text-foreground">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+                <span>{file.name}</span>
+                <span className="text-muted-foreground">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onFileChange(null);
+                    const input = document.getElementById(`file-input-${question.id}`) as HTMLInputElement;
+                    if (input) input.value = '';
+                  }}
+                  className="ml-2 text-destructive hover:text-destructive/80"
+                >
+                  ×
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {question.hasAdditional && (() => {
         // For injuries question, show additional field only if options other than "no_issues" are selected
         if (question.id === 'injuries') {
@@ -293,7 +370,8 @@ export const QuestionField = React.memo(QuestionFieldComponent, (prevProps, next
     prevProps.additionalValue === nextProps.additionalValue &&
     prevProps.error === nextProps.error &&
     prevProps.additionalError === nextProps.additionalError &&
-    JSON.stringify(prevProps.formData) === JSON.stringify(nextProps.formData)
+    JSON.stringify(prevProps.formData) === JSON.stringify(nextProps.formData) &&
+    prevProps.file === nextProps.file
   );
 });
 

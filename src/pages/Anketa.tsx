@@ -6,6 +6,7 @@ import { QuestionField } from '@/components/form/QuestionField';
 import { ContactSection } from '@/components/form/ContactSection';
 import { DSGVOCheckbox } from '@/components/form/DSGVOCheckbox';
 import { MarkdownPreview } from '@/components/form/MarkdownPreview';
+import { SectionCard } from '@/components/form/SectionCard';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { SectionIcon } from '@/components/icons/SectionIcons';
 import {
@@ -64,6 +65,7 @@ const Anketa: React.FC = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [editingQuestionnaireId, setEditingQuestionnaireId] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [medicalDocumentFile, setMedicalDocumentFile] = useState<File | null>(null);
 
   // Load saved form data on mount or load questionnaire for editing
   useEffect(() => {
@@ -227,6 +229,94 @@ const Anketa: React.FC = () => {
           clearAdditionalField('sleep_additional');
         }
         break;
+      case 'has_medical_documents':
+        if (firstValue !== 'yes') {
+          setMedicalDocumentFile(null);
+        }
+        break;
+      case 'weight_satisfaction':
+        if (firstValue !== 'not_satisfied') {
+          // Clear weight_goal and its additional field if user is satisfied with weight
+          setFormData((prev) => {
+            const newData = { ...prev };
+            delete newData['weight_goal'];
+            return newData;
+          });
+          clearAdditionalField('weight_goal_additional');
+        }
+        break;
+      case 'weight_goal':
+        if (firstValue !== 'lose' && firstValue !== 'gain') {
+          clearAdditionalField('weight_goal_additional');
+        }
+        break;
+      case 'had_covid':
+        if (firstValue !== 'yes') {
+          // Clear covid_times if user didn't have COVID
+          setFormData((prev) => {
+            const newData = { ...prev };
+            delete newData['covid_times'];
+            delete newData['covid_complications'];
+            return newData;
+          });
+          // Clear covid_complications additional field
+          clearAdditionalField('covid_complications_additional');
+        }
+        break;
+      case 'had_vaccine':
+        if (firstValue !== 'yes') {
+          // Clear vaccine_doses if user didn't have vaccine
+          setFormData((prev) => {
+            const newData = { ...prev };
+            delete newData['vaccine_doses'];
+            return newData;
+          });
+        }
+        break;
+      case 'covid_complications':
+        if (!valueArray.includes('other')) {
+          clearAdditionalField('covid_complications_additional');
+        }
+        break;
+      case 'hair_quality':
+        if (!valueArray.includes('other')) {
+          clearAdditionalField('hair_quality_additional');
+        }
+        break;
+      case 'teeth_problems':
+        if (!valueArray.includes('other')) {
+          clearAdditionalField('teeth_problems_additional');
+        }
+        break;
+      case 'stones_kidneys_gallbladder':
+        if (!valueArray.includes('stones_kidneys') && !valueArray.includes('stones_gallbladder')) {
+          clearAdditionalField('stones_kidneys_gallbladder_additional');
+        }
+        break;
+      case 'regular_medications':
+        const regularMedicationsValue = typeof value === 'string' ? value : (Array.isArray(value) ? value[0] : '');
+        if (regularMedicationsValue !== 'yes') {
+          clearAdditionalField('regular_medications_additional');
+        }
+        break;
+      case 'digestion_detailed':
+      case 'headaches_detailed':
+      case 'varicose_hemorrhoids_pigment':
+      case 'joints_detailed':
+      case 'cysts_polyps_tumors':
+      case 'herpes_warts_discharge':
+      case 'menstruation_detailed':
+      case 'prostatitis':
+      case 'skin_problems_detailed':
+      case 'lifestyle':
+      case 'chronic_diseases':
+      case 'sleep_problems':
+      case 'energy_morning':
+      case 'memory_concentration':
+        if (!valueArray.includes('other')) {
+          clearAdditionalField(`${fieldName}_additional`);
+        }
+        break;
     }
   }, [errors, clearAdditionalField]);
 
@@ -249,13 +339,27 @@ const Anketa: React.FC = () => {
     setContactData({ telegram: '', phone: '', phoneCountryCode: 'DE' });
     setDsgvoAccepted(false);
     setErrors({});
+    setMedicalDocumentFile(null);
     clearFormData(type, language);
     toast.success(language === 'ru' ? 'Форма очищена' : language === 'de' ? 'Formular gelöscht' : 'Form cleared');
   }, [type, language]);
 
   const markdown = useMemo(() => {
-    return generateMarkdown(type, sections, formData, additionalData, contactData, language);
-  }, [type, sections, formData, additionalData, contactData, language]);
+    let md = generateMarkdown(type, sections, formData, additionalData, contactData, language);
+    
+    // Add file information if file is uploaded
+    if (medicalDocumentFile && formData['has_medical_documents'] === 'yes') {
+      const fileInfo = language === 'ru'
+        ? `\n**Прикреплён файл:** ${medicalDocumentFile.name} (${(medicalDocumentFile.size / 1024 / 1024).toFixed(2)} MB)`
+        : language === 'de'
+        ? `\n**Angehängte Datei:** ${medicalDocumentFile.name} (${(medicalDocumentFile.size / 1024 / 1024).toFixed(2)} MB)`
+        : `\n**Attached file:** ${medicalDocumentFile.name} (${(medicalDocumentFile.size / 1024 / 1024).toFixed(2)} MB)`;
+      md += fileInfo;
+    }
+    
+    return md;
+  }, [type, sections, formData, additionalData, contactData, language, medicalDocumentFile]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -279,7 +383,7 @@ const Anketa: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const result = await sendToTelegram(markdown);
+      const result = await sendToTelegram(markdown, medicalDocumentFile, language);
       
       if (result.success) {
         // Check if user is authenticated (for secure storage in Supabase)
@@ -382,11 +486,11 @@ const Anketa: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-medical-50">
       <Header />
 
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <h1 className="text-3xl font-bold text-foreground text-center mb-8 animate-fade-in">
+      <main className="container mx-auto px-4 py-8 max-w-3xl">
+        <h1 className="text-3xl md:text-4xl font-bold text-medical-900 text-center mb-6">
           {isEditing 
             ? (language === 'ru' ? 'Редактирование анкеты' : language === 'de' ? 'Fragebogen bearbeiten' : 'Edit Questionnaire')
             : title}
@@ -413,46 +517,20 @@ const Anketa: React.FC = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {sections.map((section, sectionIndex) => (
-            <div
+          {/* Render all sections */}
+          {sections.map((section) => (
+            <SectionCard
               key={section.id}
-              className="card-wellness space-y-6"
-              style={{ animationDelay: `${sectionIndex * 0.1}s` }}
-            >
-              <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-                <SectionIcon name={section.icon} className="w-6 h-6 text-primary" />
-                {section.title[language]}
-              </h2>
-
-              <div className="space-y-6">
-                {section.questions.map((question) => {
-                  // Hide what_else field if what_else_question is not 'yes'
-                  if (question.id === 'what_else' && formData['what_else_question'] !== 'yes') {
-                    return null;
-                  }
-                  
-                  return (
-                    <div
-                      key={question.id}
-                      data-error={!!errors[question.id]}
-                    >
-                    <QuestionField
-                      question={question}
-                      value={formData[question.id] || (question.type === 'checkbox' ? [] : '')}
-                      additionalValue={additionalData[`${question.id}_additional`] || ''}
-                      error={errors[question.id]}
-                      additionalError={errors[`${question.id}_additional`]}
-                      onChange={(value) => handleFieldChange(question.id, value)}
-                      onAdditionalChange={(value) =>
-                        handleAdditionalChange(question.id, value)
-                      }
-                      formData={formData}
-                    />
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+              section={section}
+              formData={formData}
+              additionalData={additionalData}
+              errors={errors}
+              onFieldChange={handleFieldChange}
+              onAdditionalChange={handleAdditionalChange}
+              language={language}
+              onFileChange={section.questions.some(q => q.id === 'has_medical_documents') ? setMedicalDocumentFile : undefined}
+              file={medicalDocumentFile}
+            />
           ))}
 
           {/* Contact Section */}
@@ -521,12 +599,13 @@ const Anketa: React.FC = () => {
             </button>
           </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={!dsgvoAccepted || isSubmitting || !isEnvConfigured}
-            className="btn-primary w-full flex items-center justify-center gap-2 py-4 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          {/* Submit Button - Sticky on mobile */}
+          <div className="sticky bottom-4 z-10 md:static md:z-auto">
+            <button
+              type="submit"
+              disabled={!dsgvoAccepted || isSubmitting || !isEnvConfigured}
+              className="btn-primary w-full flex items-center justify-center gap-2 py-4 text-lg shadow-lg md:shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
             {isSubmitting ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -540,7 +619,8 @@ const Anketa: React.FC = () => {
                   : t('submit')}
               </>
             )}
-          </button>
+            </button>
+          </div>
         </form>
 
         {/* Markdown Preview Modal */}

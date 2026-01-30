@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { MessageCircle, Phone, ChevronDown } from 'lucide-react';
 import { countryCodes, defaultCountryCode, type CountryCode } from '@/lib/country-codes';
@@ -68,20 +69,18 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
 
 
   return (
-    <div className="card-wellness space-y-4">
-      <div>
-        <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-          <MessageCircle className="w-5 h-5 text-primary" />
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="bg-white rounded-lg p-6 md:p-8 border border-medical-200 shadow-sm space-y-6"
+    >
+      <div className="flex items-center gap-3">
+        <MessageCircle className="w-6 h-6 text-primary-600" />
+        <h2 className="text-2xl font-semibold text-medical-800">
           {t('contactMethod')}
-          <span className="text-destructive">*</span>
-        </h3>
-        <p className="text-sm text-muted-foreground mt-2">
-          {language === 'ru' 
-            ? 'Укажите Telegram или телефон для доступа к вашим анкетам с любого устройства. Код подтверждения будет отправлен на указанный контакт.'
-            : language === 'de'
-            ? 'Geben Sie Telegram oder Telefon an, um von jedem Gerät auf Ihre Fragebögen zuzugreifen. Ein Bestätigungscode wird an den angegebenen Kontakt gesendet.'
-            : 'Provide Telegram or phone to access your questionnaires from any device. A verification code will be sent to the specified contact.'}
-        </p>
+          <span className="text-destructive ml-1">*</span>
+        </h2>
       </div>
 
       {contactMethodError && (
@@ -94,11 +93,11 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
       )}
 
       <div>
-        <label className="text-sm text-muted-foreground mb-1 block">
+        <label className="text-sm text-medical-600 mb-1 block">
           {t('telegram')}
         </label>
         <div className="relative">
-          <MessageCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <MessageCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-medical-400" />
           <input
             type="text"
             className={`input-field pl-10 ${telegramError ? 'input-error' : ''}`}
@@ -116,7 +115,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
       </div>
 
       <div>
-        <label className="text-sm text-muted-foreground mb-1 block">
+        <label className="text-sm text-medical-600 mb-1 block">
           {t('phone') || 'Телефон'}
         </label>
         <div className="flex gap-2">
@@ -125,27 +124,27 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
             <button
               type="button"
               onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
-              className="flex items-center gap-2 px-3 py-2 border border-input bg-background rounded-lg hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring min-w-[100px]"
+              className="flex items-center gap-2 px-3 py-2 border border-medical-300 bg-white rounded-lg hover:bg-medical-50 focus:outline-none focus:ring-2 focus:ring-primary-500 min-w-[100px] min-h-[44px]"
             >
               <span className="text-lg">{selectedCountry.flag}</span>
               <span className="text-sm font-medium">{selectedCountry.dialCode}</span>
-              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+              <ChevronDown className="w-4 h-4 text-medical-400" />
             </button>
             
             {isCountryDropdownOpen && (
-              <div className="absolute z-50 mt-1 w-64 max-h-60 overflow-y-auto bg-background border border-input rounded-lg shadow-lg">
+              <div className="absolute z-50 mt-1 w-64 max-h-60 overflow-y-auto bg-white border border-medical-300 rounded-lg shadow-lg">
                 {countryCodes.map((country) => (
                   <button
                     key={country.code}
                     type="button"
                     onClick={() => handleCountrySelect(country)}
-                    className={`w-full flex items-center gap-3 px-4 py-2 hover:bg-accent text-left ${
-                      country.code === phoneCountryCode ? 'bg-accent' : ''
+                    className={`w-full flex items-center gap-3 px-4 py-2 hover:bg-medical-50 text-left min-h-[44px] ${
+                      country.code === phoneCountryCode ? 'bg-medical-100' : ''
                     }`}
                   >
                     <span className="text-lg">{country.flag}</span>
                     <span className="flex-1 text-sm">{country.name[language]}</span>
-                    <span className="text-sm text-muted-foreground">{country.dialCode}</span>
+                    <span className="text-sm text-medical-600">{country.dialCode}</span>
                   </button>
                 ))}
               </div>
@@ -154,7 +153,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
 
           {/* Phone Input */}
           <div className="relative flex-1">
-            <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-medical-400" />
             <input
               type="tel"
               className={`input-field pl-10 ${phoneError ? 'input-error' : ''}`}
@@ -165,7 +164,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           </div>
         </div>
         {phone && phone.trim() && (
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs text-medical-600 mt-1">
             {getFullPhoneNumber()}
           </p>
         )}
@@ -176,7 +175,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           </p>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

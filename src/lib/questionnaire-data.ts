@@ -294,6 +294,212 @@ const sleepAdultOptions: QuestionOption[] = [
   { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
 ];
 
+// New options for updated medical questions
+const weightSatisfactionOptions: QuestionOption[] = [
+  { value: 'satisfied', label: { ru: 'Довольна весом', en: 'Satisfied with weight', de: 'Mit Gewicht zufrieden' } },
+  { value: 'want_to_lose', label: { ru: 'Хочу сбросить', en: 'Want to lose', de: 'Möchte abnehmen' } },
+  { value: 'want_to_gain', label: { ru: 'Хочу набрать', en: 'Want to gain', de: 'Möchte zunehmen' } },
+];
+
+const weightSatisfactionOptionsMan: QuestionOption[] = [
+  { value: 'satisfied', label: { ru: 'Доволен весом', en: 'Satisfied with weight', de: 'Mit Gewicht zufrieden' } },
+  { value: 'want_to_lose', label: { ru: 'Хочу сбросить', en: 'Want to lose', de: 'Möchte abnehmen' } },
+  { value: 'want_to_gain', label: { ru: 'Хочу набрать', en: 'Want to gain', de: 'Möchte zunehmen' } },
+];
+
+const covidComplicationsOptions: QuestionOption[] = [
+  { value: 'hair_loss', label: { ru: 'Выпадение волос', en: 'Hair loss', de: 'Haarausfall' } },
+  { value: 'heart_problems', label: { ru: 'Проблемы сердца', en: 'Heart problems', de: 'Herzprobleme' } },
+  { value: 'joints', label: { ru: 'Суставы', en: 'Joints', de: 'Gelenke' } },
+  { value: 'memory_loss', label: { ru: 'Потеря памяти', en: 'Memory loss', de: 'Gedächtnisverlust' } },
+  { value: 'panic_attacks', label: { ru: 'Панические атаки', en: 'Panic attacks', de: 'Panikattacken' } },
+  { value: 'poor_sleep', label: { ru: 'Ухудшение сна', en: 'Poor sleep', de: 'Schlechter Schlaf' } },
+  { value: 'no_complications', label: { ru: 'Нет осложнений', en: 'No complications', de: 'Keine Komplikationen' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+];
+
+const hairQualityOptions: QuestionOption[] = [
+  { value: 'healthy', label: { ru: 'Здоровые', en: 'Healthy', de: 'Gesund' } },
+  { value: 'dry', label: { ru: 'Сухие', en: 'Dry', de: 'Trocken' } },
+  { value: 'oily', label: { ru: 'Жирные', en: 'Oily', de: 'Fettig' } },
+  { value: 'brittle', label: { ru: 'Ломкие', en: 'Brittle', de: 'Brüchig' } },
+  { value: 'falling_out', label: { ru: 'Выпадают', en: 'Falling out', de: 'Ausfallend' } },
+  { value: 'thin', label: { ru: 'Тонкие', en: 'Thin', de: 'Dünn' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+];
+
+const hairQualityOptionsMan: QuestionOption[] = [
+  { value: 'healthy', label: { ru: 'Здоровые', en: 'Healthy', de: 'Gesund' } },
+  { value: 'dry', label: { ru: 'Сухие', en: 'Dry', de: 'Trocken' } },
+  { value: 'oily', label: { ru: 'Жирные', en: 'Oily', de: 'Fettig' } },
+  { value: 'brittle', label: { ru: 'Ломкие', en: 'Brittle', de: 'Brüchig' } },
+  { value: 'falling_out', label: { ru: 'Выпадают', en: 'Falling out', de: 'Ausfallend' } },
+  { value: 'thin', label: { ru: 'Тонкие', en: 'Thin', de: 'Dünn' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+];
+
+const teethProblemsOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+  { value: 'crumble_fast', label: { ru: 'Быстро крошатся', en: 'Crumble fast', de: 'Bröckeln schnell' } },
+  { value: 'decay_fast', label: { ru: 'Быстро портятся', en: 'Decay fast', de: 'Verderben schnell' } },
+  { value: 'bad_breath', label: { ru: 'Неприятный запах изо рта', en: 'Bad breath', de: 'Mundgeruch' } },
+  { value: 'bleeding_gums', label: { ru: 'Кровоточат десна', en: 'Bleeding gums', de: 'Zahnfleischbluten' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+];
+
+const digestionDetailedOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+  { value: 'heartburn', label: { ru: 'Изжога', en: 'Heartburn', de: 'Sodbrennen' } },
+  { value: 'bitterness', label: { ru: 'Горечь во рту', en: 'Bitterness in mouth', de: 'Bitterkeit im Mund' } },
+  { value: 'bloating', label: { ru: 'Вздутие', en: 'Bloating', de: 'Blähungen' } },
+  { value: 'heaviness', label: { ru: 'Тяжесть в желудке', en: 'Heaviness in stomach', de: 'Schwere im Magen' } },
+  { value: 'gas', label: { ru: 'Газы', en: 'Gas', de: 'Blähungen' } },
+  { value: 'diarrhea', label: { ru: 'Диарея', en: 'Diarrhea', de: 'Durchfall' } },
+  { value: 'constipation', label: { ru: 'Запор', en: 'Constipation', de: 'Verstopfung' } },
+  { value: 'pancreatitis', label: { ru: 'Панкреатит', en: 'Pancreatitis', de: 'Pankreatitis' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+];
+
+const stonesSizeOptions: QuestionOption[] = [
+  { value: 'no_stones', label: { ru: 'Нет камней', en: 'No stones', de: 'Keine Steine' } },
+  { value: 'small', label: { ru: 'Мелкие (до 5мм)', en: 'Small (up to 5mm)', de: 'Klein (bis 5mm)' } },
+  { value: 'medium', label: { ru: 'Средние (5-10мм)', en: 'Medium (5-10mm)', de: 'Mittel (5-10mm)' } },
+  { value: 'large', label: { ru: 'Крупные (более 10мм)', en: 'Large (over 10mm)', de: 'Groß (über 10mm)' } },
+];
+
+const pressureMedicationOptions: QuestionOption[] = [
+  { value: 'no_medication', label: { ru: 'Не пью', en: 'Not taking', de: 'Nehme nicht' } },
+  { value: 'taking_short', label: { ru: 'Пью недолго (до месяца)', en: 'Taking short term (up to month)', de: 'Nehme kurzfristig (bis Monat)' } },
+  { value: 'taking_long', label: { ru: 'Пью долго (более месяца)', en: 'Taking long term (over month)', de: 'Nehme langfristig (über Monat)' } },
+];
+
+const chronicDiseasesOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Нет', en: 'No', de: 'Nein' } },
+  { value: 'diabetes', label: { ru: 'Диабет', en: 'Diabetes', de: 'Diabetes' } },
+  { value: 'autoimmune_thyroiditis', label: { ru: 'Аутоиммунный тиреоидит', en: 'Autoimmune thyroiditis', de: 'Autoimmunthyreoiditis' } },
+  { value: 'arthritis', label: { ru: 'Артрит', en: 'Arthritis', de: 'Arthritis' } },
+  { value: 'psoriasis', label: { ru: 'Псориаз', en: 'Psoriasis', de: 'Psoriasis' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+];
+
+const headachesDetailedOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+  { value: 'headaches', label: { ru: 'Головные боли', en: 'Headaches', de: 'Kopfschmerzen' } },
+  { value: 'migraines', label: { ru: 'Мигрени', en: 'Migraines', de: 'Migräne' } },
+  { value: 'weather_dependent', label: { ru: 'Метеозависимость', en: 'Weather dependent', de: 'Wetterabhängig' } },
+  { value: 'concussion', label: { ru: 'Сотрясение мозга', en: 'Concussion', de: 'Gehirnerschütterung' } },
+  { value: 'head_trauma', label: { ru: 'Удары по голове', en: 'Head trauma', de: 'Kopftrauma' } },
+  { value: 'tinnitus', label: { ru: 'Шум в ушах', en: 'Tinnitus', de: 'Tinnitus' } },
+  { value: 'floaters', label: { ru: 'Мушки перед глазами', en: 'Floaters', de: 'Mouches volantes' } },
+  { value: 'dizziness', label: { ru: 'Головокружения', en: 'Dizziness', de: 'Schwindel' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+];
+
+const numbnessOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+  { value: 'numbness_fingers', label: { ru: 'Онемение пальцев рук и ног', en: 'Numbness in fingers and toes', de: 'Taubheit in Fingern und Zehen' } },
+  { value: 'cold_limbs', label: { ru: 'Руки и ноги холодные даже летом', en: 'Cold hands and feet even in summer', de: 'Kalte Hände und Füße auch im Sommer' } },
+  { value: 'both', label: { ru: 'Оба симптома', en: 'Both symptoms', de: 'Beide Symptome' } },
+];
+
+const varicoseHemorrhoidsDetailedOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+  { value: 'varicose_network', label: { ru: 'Варикоз (сеточка)', en: 'Varicose veins (network)', de: 'Krampfadern (Netz)' } },
+  { value: 'varicose_pronounced', label: { ru: 'Варикоз (выраженные вены)', en: 'Varicose veins (pronounced)', de: 'Krampfadern (ausgeprägt)' } },
+  { value: 'hemorrhoids_bleeding', label: { ru: 'Геморрой (кровоточит)', en: 'Hemorrhoids (bleeding)', de: 'Hämorrhoiden (blutend)' } },
+  { value: 'hemorrhoids_no_bleeding', label: { ru: 'Геморрой (не кровоточит)', en: 'Hemorrhoids (not bleeding)', de: 'Hämorrhoiden (nicht blutend)' } },
+  { value: 'pigment_spots', label: { ru: 'Пигментные пятна', en: 'Pigment spots', de: 'Pigmentflecken' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+];
+
+const jointsDetailedOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+  { value: 'squeak', label: { ru: 'Скрипят', en: 'Squeak', de: 'Quietschen' } },
+  { value: 'crunch', label: { ru: 'Хрустят', en: 'Crunch', de: 'Knacken' } },
+  { value: 'inflammation', label: { ru: 'Воспаляются', en: 'Inflamed', de: 'Entzündet' } },
+  { value: 'arthrosis_stage1', label: { ru: 'Артроз (1 стадия)', en: 'Arthrosis (stage 1)', de: 'Arthrose (Stadium 1)' } },
+  { value: 'arthrosis_stage2', label: { ru: 'Артроз (2 стадия)', en: 'Arthrosis (stage 2)', de: 'Arthrose (Stadium 2)' } },
+  { value: 'arthrosis_stage3', label: { ru: 'Артроз (3 стадия)', en: 'Arthrosis (stage 3)', de: 'Arthrose (Stadium 3)' } },
+  { value: 'back_pain', label: { ru: 'Боли в спине', en: 'Back pain', de: 'Rückenschmerzen' } },
+  { value: 'lower_back_pain', label: { ru: 'Боли в пояснице', en: 'Lower back pain', de: 'Kreuzschmerzen' } },
+  { value: 'knee_pain', label: { ru: 'Боли в коленях', en: 'Knee pain', de: 'Knieschmerzen' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+];
+
+const cystsPolypsOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Нет', en: 'No', de: 'Nein' } },
+  { value: 'cysts', label: { ru: 'Кисты', en: 'Cysts', de: 'Zysten' } },
+  { value: 'polyps', label: { ru: 'Полипы', en: 'Polyps', de: 'Polypen' } },
+  { value: 'fibroids', label: { ru: 'Миомы', en: 'Fibroids', de: 'Myome' } },
+  { value: 'tumors', label: { ru: 'Опухоли', en: 'Tumors', de: 'Tumore' } },
+  { value: 'hernias', label: { ru: 'Грыжи', en: 'Hernias', de: 'Hernien' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+];
+
+const herpesWartsOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Нет', en: 'No', de: 'Nein' } },
+  { value: 'herpes', label: { ru: 'Герпес', en: 'Herpes', de: 'Herpes' } },
+  { value: 'papillomas', label: { ru: 'Папилломы', en: 'Papillomas', de: 'Papillome' } },
+  { value: 'moles', label: { ru: 'Родинки', en: 'Moles', de: 'Muttermale' } },
+  { value: 'warts', label: { ru: 'Бородавки', en: 'Warts', de: 'Warzen' } },
+  { value: 'red_spots', label: { ru: 'Красные точечки на коже', en: 'Red spots on skin', de: 'Rote Punkte auf der Haut' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+];
+
+const menstruationDetailedOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Регулярные, нормальные', en: 'Regular, normal', de: 'Regelmäßig, normal' } },
+  { value: 'irregular', label: { ru: 'Нерегулярные', en: 'Irregular', de: 'Unregelmäßig' } },
+  { value: 'painful', label: { ru: 'Болезненные', en: 'Painful', de: 'Schmerzhaft' } },
+  { value: 'prolonged', label: { ru: 'Затяжные', en: 'Prolonged', de: 'Verlängert' } },
+  { value: 'heavy_bleeding', label: { ru: 'Обильные кровотечения', en: 'Heavy bleeding', de: 'Starke Blutungen' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+];
+
+const prostatitisOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+  { value: 'acute', label: { ru: 'Острый простатит', en: 'Acute prostatitis', de: 'Akute Prostatitis' } },
+  { value: 'chronic', label: { ru: 'Хронический простатит', en: 'Chronic prostatitis', de: 'Chronische Prostatitis' } },
+  { value: 'symptoms', label: { ru: 'Есть симптомы', en: 'Have symptoms', de: 'Habe Symptome' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+];
+
+const skinProblemsDetailedOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+  { value: 'acne', label: { ru: 'Прыщи', en: 'Acne', de: 'Akne' } },
+  { value: 'furuncles', label: { ru: 'Фурункулы', en: 'Furuncles', de: 'Furunkel' } },
+  { value: 'acne_vulgaris', label: { ru: 'Акне', en: 'Acne vulgaris', de: 'Akne vulgaris' } },
+  { value: 'irritation', label: { ru: 'Раздражение', en: 'Irritation', de: 'Reizung' } },
+  { value: 'rosacea', label: { ru: 'Розацеа', en: 'Rosacea', de: 'Rosazea' } },
+  { value: 'psoriasis', label: { ru: 'Псориаз', en: 'Psoriasis', de: 'Psoriasis' } },
+  { value: 'dermatitis', label: { ru: 'Дерматит', en: 'Dermatitis', de: 'Dermatitis' } },
+  { value: 'eczema', label: { ru: 'Экзема', en: 'Eczema', de: 'Ekzem' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+];
+
+const coldsFrequencyOptions: QuestionOption[] = [
+  { value: 'rarely', label: { ru: 'Редко (1-2 раза в год)', en: 'Rarely (1-2 times a year)', de: 'Selten (1-2 mal im Jahr)' } },
+  { value: 'sometimes', label: { ru: 'Иногда (3-4 раза в год)', en: 'Sometimes (3-4 times a year)', de: 'Manchmal (3-4 mal im Jahr)' } },
+  { value: 'often', label: { ru: 'Часто (5+ раз в год)', en: 'Often (5+ times a year)', de: 'Oft (5+ mal im Jahr)' } },
+];
+
+const medicationUsageOptions: QuestionOption[] = [
+  { value: 'no_antibiotics', label: { ru: 'Не пользуюсь', en: 'Not using', de: 'Verwende nicht' } },
+  { value: 'antibiotics', label: { ru: 'Антибиотики', en: 'Antibiotics', de: 'Antibiotika' } },
+  { value: 'antipyretics', label: { ru: 'Жаропонижающие', en: 'Antipyretics', de: 'Fiebersenkende Mittel' } },
+  { value: 'both', label: { ru: 'И антибиотики, и жаропонижающие', en: 'Both antibiotics and antipyretics', de: 'Sowohl Antibiotika als auch fiebersenkende Mittel' } },
+];
+
+const lifestyleOptions: QuestionOption[] = [
+  { value: 'sedentary', label: { ru: 'Сидячий', en: 'Sedentary', de: 'Sitzend' } },
+  { value: 'sport', label: { ru: 'Спорт', en: 'Sport', de: 'Sport' } },
+  { value: 'home_exercise', label: { ru: 'Домашняя гимнастика', en: 'Home exercise', de: 'Hausgymnastik' } },
+  { value: 'cold_showers', label: { ru: 'Холодные обливания', en: 'Cold showers', de: 'Kalte Duschen' } },
+  { value: 'stressful_work', label: { ru: 'Стрессовая работа', en: 'Stressful work', de: 'Stressige Arbeit' } },
+  { value: 'physical_load', label: { ru: 'Физические нагрузки', en: 'Physical load', de: 'Körperliche Belastung' } },
+  { value: 'toxic_substances', label: { ru: 'Токсичные вещества на работе', en: 'Toxic substances at work', de: 'Giftige Stoffe bei der Arbeit' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+];
+
 // Infant questionnaire (type = infant)
 export const infantQuestionnaire: QuestionnaireSection[] = [
   {
@@ -510,6 +716,22 @@ export const infantQuestionnaire: QuestionnaireSection[] = [
       },
     ],
   },
+  {
+    id: 'medical_documents',
+    title: { ru: 'Медицинские документы', en: 'Medical Documents', de: 'Medizinische Dokumente' },
+    icon: 'file-text',
+    questions: [
+      {
+        id: 'has_medical_documents',
+        type: 'radio',
+        label: { ru: 'Есть ли у вас анализы крови за последние 2-3 месяца? УЗИ?', en: 'Do you have blood test results from the last 2-3 months? Ultrasound?', de: 'Haben Sie Blutuntersuchungsergebnisse der letzten 2-3 Monate? Ultraschall?' },
+        icon: 'file-text',
+        options: yesNoOptionsSimple,
+        required: true,
+        hasAdditional: false,
+      },
+    ],
+  },
 ];
 
 // Child questionnaire (type = child)
@@ -657,7 +879,7 @@ export const childQuestionnaire: QuestionnaireSection[] = [
       {
         id: 'headaches_sleep',
         type: 'checkbox',
-        label: { ru: 'Жалобы на головную боль, плохой сон', en: 'Headache complaints, poor sleep', de: 'Kopfschmerzen, schlechter Schlaf' },
+        label: { ru: 'Головные боли и сон', en: 'Headaches and sleep', de: 'Kopfschmerzen und Schlaf' },
         icon: 'brain',
         options: headachesSleepOptions,
         required: true,
@@ -666,7 +888,7 @@ export const childQuestionnaire: QuestionnaireSection[] = [
       {
         id: 'illness_antibiotics',
         type: 'checkbox',
-        label: { ru: 'Часто ли болеет, принимал ли антибиотики или лекарства', en: 'Is often ill, has taken antibiotics or medications', de: 'Ist oft krank, hat Antibiotika oder Medikamente genommen' },
+        label: { ru: 'Простуды и лекарства', en: 'Colds and medications', de: 'Erkältungen und Medikamente' },
         icon: 'pill',
         options: illnessAntibioticsOptions,
         required: true,
@@ -689,6 +911,22 @@ export const childQuestionnaire: QuestionnaireSection[] = [
         required: false,
         hasAdditional: false,
         placeholder: { ru: 'Дополнительная информация', en: 'Additional information', de: 'Zusätzliche Informationen' },
+      },
+    ],
+  },
+  {
+    id: 'medical_documents',
+    title: { ru: 'Медицинские документы', en: 'Medical Documents', de: 'Medizinische Dokumente' },
+    icon: 'file-text',
+    questions: [
+      {
+        id: 'has_medical_documents',
+        type: 'radio',
+        label: { ru: 'Есть ли у вас анализы крови за последние 2-3 месяца? УЗИ?', en: 'Do you have blood test results from the last 2-3 months? Ultrasound?', de: 'Haben Sie Blutuntersuchungsergebnisse der letzten 2-3 Monate? Ultraschall?' },
+        icon: 'file-text',
+        options: yesNoOptionsSimple,
+        required: true,
+        hasAdditional: false,
       },
     ],
   },
@@ -736,201 +974,377 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
     ],
   },
   {
-    id: 'covid',
-    title: { ru: 'COVID-19', en: 'COVID-19', de: 'COVID-19' },
-    icon: 'shield',
-    questions: [
-      {
-        id: 'covid_status',
-        type: 'radio',
-        label: { ru: 'Был ли ковид или вакцина', en: 'COVID or vaccination status', de: 'COVID oder Impfstatus' },
-        icon: 'shield',
-        options: covidOptionsWoman,
-        required: true,
-        hasAdditional: false,
-      },
-    ],
-  },
-  {
     id: 'health',
     title: { ru: 'Здоровье', en: 'Health', de: 'Gesundheit' },
     icon: 'heart',
     questions: [
+      // 1. Довольны ли вы своим весом?
       {
-        id: 'digestion',
-        type: 'checkbox',
-        label: { ru: 'Пищеварение', en: 'Digestion', de: 'Verdauung' },
-        icon: 'heart',
-        options: digestionOptionsAdult,
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'hair_condition',
-        type: 'checkbox',
-        label: { ru: 'Состояние волос', en: 'Hair condition', de: 'Haarzustand' },
-        icon: 'sparkles',
-        options: hairOptions,
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'teeth',
-        type: 'checkbox',
-        label: { ru: 'Зубы', en: 'Teeth', de: 'Zähne' },
-        icon: 'smile',
-        options: teethOptions,
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'joints',
-        type: 'checkbox',
-        label: { ru: 'Суставы', en: 'Joints', de: 'Gelenke' },
-        icon: 'bone',
-        options: jointOptions,
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'cold_hands',
+        id: 'weight_satisfaction',
         type: 'radio',
-        label: { ru: 'Холодные руки/ноги', en: 'Cold hands/feet', de: 'Kalte Hände/Füße' },
-        icon: 'thermometer',
-        options: yesNoOptionsSimple,
+        label: { ru: 'Довольны ли вы своим весом?', en: 'Are you satisfied with your weight?', de: 'Sind Sie mit Ihrem Gewicht zufrieden?' },
+        icon: 'scale',
+        options: [
+          { value: 'satisfied', label: { ru: 'Да, довольна', en: 'Yes, satisfied', de: 'Ja, zufrieden' } },
+          { value: 'not_satisfied', label: { ru: 'Нет, недовольна', en: 'No, not satisfied', de: 'Nein, nicht zufrieden' } },
+        ],
         required: true,
         hasAdditional: false,
       },
+      // 1.1. Если недовольны — что хотите сделать и сколько килограмм
       {
-        id: 'headaches',
-        type: 'checkbox',
-        label: { ru: 'Головные боли, мигрени, травмы', en: 'Headaches, migraines, injuries', de: 'Kopfschmerzen, Migräne, Verletzungen' },
-        icon: 'brain',
-        options: headachesOptions,
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'operations',
+        id: 'weight_goal',
         type: 'radio',
-        label: { ru: 'Операции', en: 'Operations', de: 'Operationen' },
-        icon: 'scissors',
-        options: yesNoOptionsSimple,
-        required: true,
+        label: { ru: 'Что вы хотите сделать с весом?', en: 'What do you want to do with your weight?', de: 'Was möchten Sie mit Ihrem Gewicht tun?' },
+        icon: 'target',
+        options: [
+          { value: 'lose', label: { ru: 'Сбросить вес', en: 'Lose weight', de: 'Gewicht verlieren' } },
+          { value: 'gain', label: { ru: 'Набрать вес', en: 'Gain weight', de: 'Gewicht zunehmen' } },
+        ],
+        required: false,
         hasAdditional: true,
       },
-      {
-        id: 'cysts_stones',
-        type: 'checkbox',
-        label: { ru: 'Кисты, миомы, песок или камни в почках или желчном', en: 'Cysts, fibroids, sand or stones in kidneys or gallbladder', de: 'Zysten, Myome, Sand oder Steine in Nieren oder Gallenblase' },
-        icon: 'circle',
-        options: cystsStonesOptions,
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'pressure',
-        type: 'radio',
-        label: { ru: 'Давление. Пьете ли таблетки (написать в дополнительно)', en: 'Blood pressure. Do you take medication (write in additional)', de: 'Blutdruck. Nehmen Sie Medikamente (in zusätzlich schreiben)' },
-        icon: 'activity',
-        options: pressureOptions,
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'menstruation',
-        type: 'checkbox',
-        label: { ru: 'Месячные или менопауза', en: 'Menstruation or menopause', de: 'Menstruation oder Menopause' },
-        icon: 'calendar',
-        options: menstruationOptions,
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'discharge_viruses',
-        type: 'checkbox',
-        label: { ru: 'Выделения - молочница, много родинок, бородавок, папилломавирус на коже, герпес', en: 'Discharge - thrush, many moles, warts, HPV on skin, herpes', de: 'Ausfluss - Soor, viele Muttermale, Warzen, HPV auf der Haut, Herpes' },
-        icon: 'alert-circle',
-        options: dischargeMolesWartsHerpesOptions,
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'allergies',
-        type: 'checkbox',
-        label: { ru: 'Аллергии', en: 'Allergies', de: 'Allergien' },
-        icon: 'flower',
-        options: allergyOptions,
-        required: true,
-        hasAdditional: true,
-      },
-      {
-        id: 'skin_condition',
-        type: 'checkbox',
-        label: { ru: 'Кожа — раздражение, прыщи', en: 'Skin — irritation, acne', de: 'Haut — Reizung, Akne' },
-        icon: 'sparkles',
-        options: skinConditionOptions,
-        required: true,
-        hasAdditional: true,
-      },
-      {
-        id: 'sleep',
-        type: 'radio',
-        label: { ru: 'Сон', en: 'Sleep', de: 'Schlaf' },
-        icon: 'moon',
-        options: sleepAdultOptions,
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'energy',
-        type: 'radio',
-        label: { ru: 'Энергия', en: 'Energy', de: 'Energie' },
-        icon: 'zap',
-        options: energyOptions,
-        required: true,
-        hasAdditional: false,
-      },
+      // 2. Сколько воды в день Вы пьете? (не чай, не кофе, не другие напитки, а только ВОДА)
       {
         id: 'water_per_day',
         type: 'radio',
-        label: { ru: 'Сколько воды в день (литров)', en: 'Water per day (liters)', de: 'Wasser pro Tag (Liter)' },
+        label: { ru: 'Сколько воды в день Вы пьете?', en: 'How much water do you drink per day?', de: 'Wie viel Wasser trinken Sie pro Tag?' },
         icon: 'droplet',
         options: waterOptions,
         required: true,
         hasAdditional: false,
       },
+      // 3. Был ли ковид?
       {
-        id: 'varicose_hemorrhoids',
+        id: 'had_covid',
         type: 'radio',
-        label: { ru: 'Варикоз или геморрой', en: 'Varicose veins or hemorrhoids', de: 'Krampfadern oder Hämorrhoiden' },
-        icon: 'heart',
-        options: [
-          { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
-          { value: 'varicose', label: { ru: 'Варикоз', en: 'Varicose veins', de: 'Krampfadern' } },
-          { value: 'hemorrhoids', label: { ru: 'Геморрой', en: 'Hemorrhoids', de: 'Hämorrhoiden' } },
-          { value: 'both', label: { ru: 'Оба', en: 'Both', de: 'Beide' } },
-        ],
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'what_else_question',
-        type: 'radio',
-        label: { ru: 'Есть ли что-то что ещё нужно знать о вашем здоровье?', en: 'Is there anything else we should know about your health?', de: 'Gibt es noch etwas, was wir über Ihre Gesundheit wissen sollten?' },
-        icon: 'info',
+        label: { ru: 'Был ли у вас ковид?', en: 'Did you have COVID?', de: 'Hatten Sie COVID?' },
+        icon: 'shield',
         options: yesNoOptionsSimple,
         required: true,
         hasAdditional: false,
       },
+      // 3.1. Сколько раз был ковид?
+      {
+        id: 'covid_times',
+        type: 'number',
+        label: { ru: 'Сколько раз вы болели ковидом?', en: 'How many times did you have COVID?', de: 'Wie oft hatten Sie COVID?' },
+        icon: 'shield',
+        required: false,
+        hasAdditional: false,
+        min: 1,
+        max: 10,
+        placeholder: { ru: 'Введите число', en: 'Enter number', de: 'Zahl eingeben' },
+      },
+      // 3.2. Была ли вакцина от ковида?
+      {
+        id: 'had_vaccine',
+        type: 'radio',
+        label: { ru: 'Делали ли вы вакцину от ковида?', en: 'Did you get COVID vaccine?', de: 'Haben Sie COVID-Impfung erhalten?' },
+        icon: 'shield',
+        options: yesNoOptionsSimple,
+        required: true,
+        hasAdditional: false,
+      },
+      // 3.3. Сколько доз вакцины?
+      {
+        id: 'vaccine_doses',
+        type: 'number',
+        label: { ru: 'Сколько доз вакцины вы получили?', en: 'How many vaccine doses did you receive?', de: 'Wie viele Impfdosen haben Sie erhalten?' },
+        icon: 'shield',
+        required: false,
+        hasAdditional: false,
+        min: 1,
+        max: 10,
+        placeholder: { ru: 'Введите число', en: 'Enter number', de: 'Zahl eingeben' },
+      },
+      // 3.4. Были ли осложнения после ковида?
+      {
+        id: 'covid_complications',
+        type: 'checkbox',
+        label: { ru: 'Были ли осложнения после ковида?', en: 'Were there complications after COVID?', de: 'Gab es Komplikationen nach COVID?' },
+        icon: 'alert-circle',
+        options: covidComplicationsOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 4. Состояние волос
+      {
+        id: 'hair_quality',
+        type: 'checkbox',
+        label: { ru: 'Состояние волос', en: 'Hair condition', de: 'Haarzustand' },
+        icon: 'sparkles',
+        options: hairQualityOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 5. Зубы
+      {
+        id: 'teeth_problems',
+        type: 'checkbox',
+        label: { ru: 'Зубы', en: 'Teeth', de: 'Zähne' },
+        icon: 'smile',
+        options: teethProblemsOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 6. Пищеварение
+      {
+        id: 'digestion_detailed',
+        type: 'checkbox',
+        label: { ru: 'Пищеварение', en: 'Digestion', de: 'Verdauung' },
+        icon: 'heart',
+        options: digestionDetailedOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 7. Песок или камни в желчном или почках. Если есть камни — указать размер
+      {
+        id: 'stones_kidneys_gallbladder',
+        type: 'checkbox',
+        label: { ru: 'Песок или камни в желчном или почках', en: 'Sand or stones in gallbladder or kidneys', de: 'Sand oder Steine in Gallenblase oder Nieren' },
+        icon: 'circle',
+        options: [
+          { value: 'no_issues', label: { ru: 'Нет', en: 'No', de: 'Nein' } },
+          { value: 'sand_kidneys', label: { ru: 'Песок в почках', en: 'Sand in kidneys', de: 'Sand in Nieren' } },
+          { value: 'sand_gallbladder', label: { ru: 'Песок в желчном', en: 'Sand in gallbladder', de: 'Sand in Gallenblase' } },
+          { value: 'stones_kidneys', label: { ru: 'Камни в почках', en: 'Stones in kidneys', de: 'Steine in Nieren' } },
+          { value: 'stones_gallbladder', label: { ru: 'Камни в желчном', en: 'Stones in gallbladder', de: 'Steine in Gallenblase' } },
+        ],
+        required: true,
+        hasAdditional: true,
+      },
+      // 8. Были ли операции (какие именно), все ли органы на месте (какой орган удален), травмы
+      {
+        id: 'operations_traumas',
+        type: 'textarea',
+        label: { ru: 'Операции и травмы', en: 'Operations and injuries', de: 'Operationen und Verletzungen' },
+        icon: 'scissors',
+        required: true,
+        hasAdditional: false,
+        placeholder: { ru: 'Опишите подробно', en: 'Describe in detail', de: 'Detailliert beschreiben' },
+      },
+      // 9. Давление: высокое или низкое. Если высокое — пьете ли лекарства и как долго
+      {
+        id: 'blood_pressure',
+        type: 'radio',
+        label: { ru: 'Давление', en: 'Blood pressure', de: 'Blutdruck' },
+        icon: 'activity',
+        options: pressureOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 10. Есть ли хронические или аутоиммунные заболевания
+      {
+        id: 'chronic_diseases',
+        type: 'checkbox',
+        label: { ru: 'Хронические или аутоиммунные заболевания', en: 'Chronic or autoimmune diseases', de: 'Chronische oder autoimmune Erkrankungen' },
+        icon: 'alert-circle',
+        options: chronicDiseasesOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 11. Головные боли, мигрени, метеозависимость, сотрясение мозга, удары по голове, шум в ушах, мушки перед глазами, головокружения
+      {
+        id: 'headaches_detailed',
+        type: 'checkbox',
+        label: { ru: 'Головные боли', en: 'Headaches', de: 'Kopfschmerzen' },
+        icon: 'brain',
+        options: headachesDetailedOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 12. Онемение пальцев рук и ног, руки и ноги холодные даже летом
+      {
+        id: 'numbness_cold_limbs',
+        type: 'checkbox',
+        label: { ru: 'Онемение и холодные конечности', en: 'Numbness and cold limbs', de: 'Taubheit und kalte Gliedmaßen' },
+        icon: 'thermometer',
+        options: numbnessOptions,
+        required: true,
+        hasAdditional: false,
+      },
+      // 13. Варикоз (сеточка или выраженные вены), геморрой (кровоточит или нет), пигментные пятна
+      {
+        id: 'varicose_hemorrhoids_pigment',
+        type: 'checkbox',
+        label: { ru: 'Варикоз и геморрой', en: 'Varicose veins and hemorrhoids', de: 'Krampfadern und Hämorrhoiden' },
+        icon: 'heart',
+        options: varicoseHemorrhoidsDetailedOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 14. Суставы: скрипят, хрустят, воспаляются, артроз (какая стадия). Боли в спине, пояснице, коленях
+      {
+        id: 'joints_detailed',
+        type: 'checkbox',
+        label: { ru: 'Суставы', en: 'Joints', de: 'Gelenke' },
+        icon: 'bone',
+        options: jointsDetailedOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 15. Кисты, полипы, миомы, опухоли, грыжи
+      {
+        id: 'cysts_polyps_tumors',
+        type: 'checkbox',
+        label: { ru: 'Кисты, полипы, опухоли', en: 'Cysts, polyps, tumors', de: 'Zysten, Polypen, Tumore' },
+        icon: 'circle',
+        options: cystsPolypsOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 16. Герпес, папилломы, родинки, бородавки, красные точечки на коже, выделения (по-женски), цистит
+      {
+        id: 'herpes_warts_discharge',
+        type: 'checkbox',
+        label: { ru: 'Герпес, папилломы, выделения, цистит', en: 'Herpes, papillomas, discharge, cystitis', de: 'Herpes, Papillome, Ausfluss, Zystitis' },
+        icon: 'alert-circle',
+        options: [
+          ...herpesWartsOptions,
+          { value: 'discharge_female', label: { ru: 'Выделения (по-женски)', en: 'Discharge (female)', de: 'Ausfluss (weiblich)' } },
+          { value: 'cystitis', label: { ru: 'Цистит', en: 'Cystitis', de: 'Zystitis' } },
+        ],
+        required: true,
+        hasAdditional: true,
+      },
+      // 17. Месячные: нерегулярные, болезненные, затяжные, обильные кровотечения
+      {
+        id: 'menstruation_detailed',
+        type: 'checkbox',
+        label: { ru: 'Месячные', en: 'Menstruation', de: 'Menstruation' },
+        icon: 'calendar',
+        options: menstruationDetailedOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 18. Прыщи, фурункулы, акне, раздражение, розацеа, псориаз, дерматит, экзема
+      {
+        id: 'skin_problems_detailed',
+        type: 'checkbox',
+        label: { ru: 'Проблемы с кожей', en: 'Skin problems', de: 'Hautprobleme' },
+        icon: 'sparkles',
+        options: skinProblemsDetailedOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 19. Аллергия (на пыльцу, еду, шерсть животных, пыль, лекарства)
+      {
+        id: 'allergies_detailed',
+        type: 'checkbox',
+        label: { ru: 'Аллергия', en: 'Allergies', de: 'Allergien' },
+        icon: 'flower',
+        options: allergyOptionsExtended,
+        required: true,
+        hasAdditional: true,
+      },
+      // 20. Простуды: сколько раз за год простужаетесь. Пользуетесь ли антибиотиками и жаропонижающими
+      {
+        id: 'colds_medication',
+        type: 'radio',
+        label: { ru: 'Простуды', en: 'Colds', de: 'Erkältungen' },
+        icon: 'thermometer',
+        options: coldsFrequencyOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 21. Сон: трудно заснуть, часто просыпаетесь ночью
+      {
+        id: 'sleep_problems',
+        type: 'checkbox',
+        label: { ru: 'Сон', en: 'Sleep', de: 'Schlaf' },
+        icon: 'moon',
+        options: [
+          { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+          { value: 'hard_to_fall_asleep', label: { ru: 'Трудно заснуть', en: 'Hard to fall asleep', de: 'Schwer einzuschlafen' } },
+          { value: 'wake_often', label: { ru: 'Часто просыпаюсь ночью', en: 'Often wake up at night', de: 'Wache oft nachts auf' } },
+          { value: 'both', label: { ru: 'Оба симптома', en: 'Both symptoms', de: 'Beide Symptome' } },
+          { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+        ],
+        required: true,
+        hasAdditional: true,
+      },
+      // 22. Энергия: тяжело просыпаться, утром чувствуете себя неотдохнувшей, нужна стимуляция кофе
+      {
+        id: 'energy_morning',
+        type: 'checkbox',
+        label: { ru: 'Энергия', en: 'Energy', de: 'Energie' },
+        icon: 'zap',
+        options: [
+          { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+          { value: 'hard_to_wake', label: { ru: 'Тяжело просыпаться', en: 'Hard to wake up', de: 'Schwer aufzuwachen' } },
+          { value: 'unrested_morning', label: { ru: 'Утром чувствую себя неотдохнувшей', en: 'Feel unrested in the morning', de: 'Fühle mich morgens unausgeruht' } },
+          { value: 'need_coffee', label: { ru: 'Нужна стимуляция кофе', en: 'Need coffee stimulation', de: 'Brauche Kaffeestimulation' } },
+          { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+        ],
+        required: true,
+        hasAdditional: true,
+      },
+      // 23. Память: трудно сконцентрироваться, забываются имена и события, сложно запоминать информацию
+      {
+        id: 'memory_concentration',
+        type: 'checkbox',
+        label: { ru: 'Память и концентрация', en: 'Memory and concentration', de: 'Gedächtnis und Konzentration' },
+        icon: 'brain',
+        options: [
+          { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+          { value: 'hard_to_concentrate', label: { ru: 'Трудно сконцентрироваться', en: 'Hard to concentrate', de: 'Schwer zu konzentrieren' } },
+          { value: 'forget_names_events', label: { ru: 'Забываются имена и события', en: 'Forget names and events', de: 'Vergesse Namen und Ereignisse' } },
+          { value: 'hard_to_remember', label: { ru: 'Сложно запоминать информацию', en: 'Hard to remember information', de: 'Schwer Informationen zu merken' } },
+          { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+        ],
+        required: true,
+        hasAdditional: true,
+      },
+      // 24. Образ жизни: сидячий, спорт, домашняя гимнастика, холодные обливания, стрессовая работа, физические нагрузки, токсичные вещества на работе
+      {
+        id: 'lifestyle',
+        type: 'checkbox',
+        label: { ru: 'Образ жизни', en: 'Lifestyle', de: 'Lebensstil' },
+        icon: 'activity',
+        options: lifestyleOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 25. Принимаете ли лекарства на постоянной основе (если да — указать названия)
+      {
+        id: 'regular_medications',
+        type: 'radio',
+        label: { ru: 'Регулярные лекарства', en: 'Regular medications', de: 'Regelmäßige Medikamente' },
+        icon: 'pill',
+        options: yesNoOptionsSimple,
+        required: true,
+        hasAdditional: true,
+      },
+      // 26. Есть ли анализы крови за последние 2–3 месяца? УЗИ? Если есть — прикрепите
+      {
+        id: 'has_medical_documents',
+        type: 'radio',
+        label: { ru: 'Анализы крови и УЗИ', en: 'Blood tests and ultrasound', de: 'Blutuntersuchungen und Ultraschall' },
+        icon: 'file-text',
+        options: yesNoOptionsSimple,
+        required: true,
+        hasAdditional: false,
+      },
+      // 27. Что еще Вы хотели бы добавить о своем здоровье
       {
         id: 'what_else',
         type: 'textarea',
-        label: { ru: 'Опишите подробнее', en: 'Please describe', de: 'Bitte beschreiben Sie' },
+        label: { ru: 'Что еще Вы хотели бы добавить о своем здоровье', en: 'What else would you like to add about your health', de: 'Was möchten Sie sonst noch über Ihre Gesundheit hinzufügen' },
         icon: 'info',
         required: false,
         hasAdditional: false,
         placeholder: { ru: 'Дополнительная информация', en: 'Additional information', de: 'Zusätzliche Informationen' },
+      },
+      // 28. Какой самый важный вопрос Вас волнует в первую очередь?
+      {
+        id: 'main_concern',
+        type: 'textarea',
+        label: { ru: 'Какой самый важный вопрос Вас волнует в первую очередь?', en: 'What is the most important question that concerns you first?', de: 'Welche wichtigste Frage beschäftigt Sie in erster Linie?' },
+        icon: 'help-circle',
+        required: false,
+        hasAdditional: false,
+        placeholder: { ru: 'Опишите ваш главный вопрос', en: 'Describe your main question', de: 'Beschreiben Sie Ihre Hauptfrage' },
       },
     ],
   },
@@ -978,132 +1392,263 @@ export const manQuestionnaire: QuestionnaireSection[] = [
     ],
   },
   {
-    id: 'covid',
-    title: { ru: 'COVID-19', en: 'COVID-19', de: 'COVID-19' },
-    icon: 'shield',
-    questions: [
-      {
-        id: 'covid_status',
-        type: 'radio',
-        label: { ru: 'Был ли ковид или вакцина', en: 'COVID or vaccination status', de: 'COVID oder Impfstatus' },
-        icon: 'shield',
-        options: covidOptionsMan,
-        required: true,
-        hasAdditional: false,
-      },
-    ],
-  },
-  {
     id: 'health',
     title: { ru: 'Здоровье', en: 'Health', de: 'Gesundheit' },
     icon: 'heart',
     questions: [
+      // 1. Довольны ли вы своим весом?
       {
-        id: 'digestion',
-        type: 'checkbox',
-        label: { ru: 'Пищеварение', en: 'Digestion', de: 'Verdauung' },
-        icon: 'heart',
-        options: digestionOptionsAdult,
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'varicose_hemorrhoids',
+        id: 'weight_satisfaction',
         type: 'radio',
-        label: { ru: 'Варикоз или геморрой', en: 'Varicose veins or hemorrhoids', de: 'Krampfadern oder Hämorrhoiden' },
-        icon: 'heart',
+        label: { ru: 'Довольны ли вы своим весом?', en: 'Are you satisfied with your weight?', de: 'Sind Sie mit Ihrem Gewicht zufrieden?' },
+        icon: 'scale',
         options: [
-          { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
-          { value: 'varicose', label: { ru: 'Варикоз', en: 'Varicose veins', de: 'Krampfadern' } },
-          { value: 'hemorrhoids', label: { ru: 'Геморрой', en: 'Hemorrhoids', de: 'Hämorrhoiden' } },
-          { value: 'both', label: { ru: 'Оба', en: 'Both', de: 'Beide' } },
+          { value: 'satisfied', label: { ru: 'Да, доволен', en: 'Yes, satisfied', de: 'Ja, zufrieden' } },
+          { value: 'not_satisfied', label: { ru: 'Нет, недоволен', en: 'No, not satisfied', de: 'Nein, nicht zufrieden' } },
         ],
         required: true,
         hasAdditional: false,
       },
+      // 1.1. Если недовольны — что хотите сделать и сколько килограмм
       {
-        id: 'teeth',
-        type: 'checkbox',
-        label: { ru: 'Зубы', en: 'Teeth', de: 'Zähne' },
-        icon: 'smile',
-        options: teethOptions,
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'joints',
-        type: 'checkbox',
-        label: { ru: 'Суставы', en: 'Joints', de: 'Gelenke' },
-        icon: 'bone',
-        options: jointOptions,
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'cold_hands',
+        id: 'weight_goal',
         type: 'radio',
-        label: { ru: 'Руки-ноги холодные даже летом', en: 'Cold hands/feet even in summer', de: 'Kalte Hände/Füße auch im Sommer' },
-        icon: 'thermometer',
-        options: yesNoOptionsSimple,
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'headaches',
-        type: 'checkbox',
-        label: { ru: 'Головные боли, мигрени, травмы/сотрясение', en: 'Headaches, migraines, injuries/concussion', de: 'Kopfschmerzen, Migräne, Verletzungen/Gehirnerschütterung' },
-        icon: 'brain',
-        options: headachesOptions,
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'operations',
-        type: 'radio',
-        label: { ru: 'Операции', en: 'Operations', de: 'Operationen' },
-        icon: 'scissors',
-        options: yesNoOptionsSimple,
-        required: true,
+        label: { ru: 'Что вы хотите сделать с весом?', en: 'What do you want to do with your weight?', de: 'Was möchten Sie mit Ihrem Gewicht tun?' },
+        icon: 'target',
+        options: [
+          { value: 'lose', label: { ru: 'Сбросить вес', en: 'Lose weight', de: 'Gewicht verlieren' } },
+          { value: 'gain', label: { ru: 'Набрать вес', en: 'Gain weight', de: 'Gewicht zunehmen' } },
+        ],
+        required: false,
         hasAdditional: true,
       },
-      {
-        id: 'cysts_stones',
-        type: 'checkbox',
-        label: { ru: 'Кисты, песок или камни в почках/желчном', en: 'Cysts, sand or stones in kidneys/gallbladder', de: 'Zysten, Sand oder Steine in Nieren/Gallenblase' },
-        icon: 'circle',
-        options: cystsStonesKidneysOptions,
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'pressure',
-        type: 'radio',
-        label: { ru: 'Давление. Пьете ли таблетки (написать в дополнительно)', en: 'Blood pressure. Do you take medication (write in additional)', de: 'Blutdruck. Nehmen Sie Medikamente (in zusätzlich schreiben)' },
-        icon: 'activity',
-        options: pressureOptions,
-        required: true,
-        hasAdditional: false,
-      },
+      // 2. Сколько воды в день Вы пьете? (не чай, не кофе, не другие напитки, а только ВОДА)
       {
         id: 'water_per_day',
         type: 'radio',
-        label: { ru: 'Сколько воды в день (литров)', en: 'Water per day (liters)', de: 'Wasser pro Tag (Liter)' },
+        label: { ru: 'Сколько воды в день Вы пьете?', en: 'How much water do you drink per day?', de: 'Wie viel Wasser trinken Sie pro Tag?' },
         icon: 'droplet',
         options: waterOptions,
         required: true,
         hasAdditional: false,
       },
+      // 3. Был ли ковид?
       {
-        id: 'skin_viruses',
-        type: 'checkbox',
-        label: { ru: 'Родинки, бородавки, герпес', en: 'Moles, warts, herpes', de: 'Muttermale, Warzen, Herpes' },
-        icon: 'alert-circle',
-        options: molesWartsHerpesOptions,
+        id: 'had_covid',
+        type: 'radio',
+        label: { ru: 'Был ли у вас ковид?', en: 'Did you have COVID?', de: 'Hatten Sie COVID?' },
+        icon: 'shield',
+        options: yesNoOptionsSimple,
         required: true,
         hasAdditional: false,
       },
+      // 3.1. Сколько раз был ковид?
       {
-        id: 'allergies',
+        id: 'covid_times',
+        type: 'number',
+        label: { ru: 'Сколько раз вы болели ковидом?', en: 'How many times did you have COVID?', de: 'Wie oft hatten Sie COVID?' },
+        icon: 'shield',
+        required: false,
+        hasAdditional: false,
+        min: 1,
+        max: 10,
+        placeholder: { ru: 'Введите число', en: 'Enter number', de: 'Zahl eingeben' },
+      },
+      // 3.2. Была ли вакцина от ковида?
+      {
+        id: 'had_vaccine',
+        type: 'radio',
+        label: { ru: 'Делали ли вы вакцину от ковида?', en: 'Did you get COVID vaccine?', de: 'Haben Sie COVID-Impfung erhalten?' },
+        icon: 'shield',
+        options: yesNoOptionsSimple,
+        required: true,
+        hasAdditional: false,
+      },
+      // 3.3. Сколько доз вакцины?
+      {
+        id: 'vaccine_doses',
+        type: 'number',
+        label: { ru: 'Сколько доз вакцины вы получили?', en: 'How many vaccine doses did you receive?', de: 'Wie viele Impfdosen haben Sie erhalten?' },
+        icon: 'shield',
+        required: false,
+        hasAdditional: false,
+        min: 1,
+        max: 10,
+        placeholder: { ru: 'Введите число', en: 'Enter number', de: 'Zahl eingeben' },
+      },
+      // 3.4. Были ли осложнения после ковида?
+      {
+        id: 'covid_complications',
+        type: 'checkbox',
+        label: { ru: 'Были ли осложнения после ковида?', en: 'Were there complications after COVID?', de: 'Gab es Komplikationen nach COVID?' },
+        icon: 'alert-circle',
+        options: covidComplicationsOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 4. Довольны ли вы качеством волос?
+      {
+        id: 'hair_quality',
+        type: 'radio',
+        label: { ru: 'Довольны ли вы качеством волос?', en: 'Are you satisfied with your hair quality?', de: 'Sind Sie mit der Qualität Ihrer Haare zufrieden?' },
+        icon: 'sparkles',
+        options: hairQualityOptionsMan,
+        required: true,
+        hasAdditional: true,
+      },
+      // 5. Зубы
+      {
+        id: 'teeth_problems',
+        type: 'checkbox',
+        label: { ru: 'Зубы', en: 'Teeth', de: 'Zähne' },
+        icon: 'smile',
+        options: teethProblemsOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 6. Пищеварение
+      {
+        id: 'digestion_detailed',
+        type: 'checkbox',
+        label: { ru: 'Пищеварение', en: 'Digestion', de: 'Verdauung' },
+        icon: 'heart',
+        options: digestionDetailedOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 7. Песок или камни в желчном или почках. Если есть камни — указать размер
+      {
+        id: 'stones_kidneys_gallbladder',
+        type: 'checkbox',
+        label: { ru: 'Песок или камни в желчном или почках', en: 'Sand or stones in gallbladder or kidneys', de: 'Sand oder Steine in Gallenblase oder Nieren' },
+        icon: 'circle',
+        options: [
+          { value: 'no_issues', label: { ru: 'Нет', en: 'No', de: 'Nein' } },
+          { value: 'sand_kidneys', label: { ru: 'Песок в почках', en: 'Sand in kidneys', de: 'Sand in Nieren' } },
+          { value: 'sand_gallbladder', label: { ru: 'Песок в желчном', en: 'Sand in gallbladder', de: 'Sand in Gallenblase' } },
+          { value: 'stones_kidneys', label: { ru: 'Камни в почках', en: 'Stones in kidneys', de: 'Steine in Nieren' } },
+          { value: 'stones_gallbladder', label: { ru: 'Камни в желчном', en: 'Stones in gallbladder', de: 'Steine in Gallenblase' } },
+        ],
+        required: true,
+        hasAdditional: true,
+      },
+      // 8. Были ли операции (какие именно), все ли органы на месте (какой орган удален), травмы
+      {
+        id: 'operations_traumas',
+        type: 'textarea',
+        label: { ru: 'Операции и травмы', en: 'Operations and injuries', de: 'Operationen und Verletzungen' },
+        icon: 'scissors',
+        required: true,
+        hasAdditional: false,
+        placeholder: { ru: 'Опишите подробно', en: 'Describe in detail', de: 'Detailliert beschreiben' },
+      },
+      // 9. Давление: высокое или низкое. Если высокое — пьете ли лекарства и как долго
+      {
+        id: 'blood_pressure',
+        type: 'radio',
+        label: { ru: 'Давление', en: 'Blood pressure', de: 'Blutdruck' },
+        icon: 'activity',
+        options: pressureOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 10. Есть ли хронические или аутоиммунные заболевания
+      {
+        id: 'chronic_diseases',
+        type: 'checkbox',
+        label: { ru: 'Хронические или аутоиммунные заболевания', en: 'Chronic or autoimmune diseases', de: 'Chronische oder autoimmune Erkrankungen' },
+        icon: 'alert-circle',
+        options: chronicDiseasesOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 11. Головные боли, мигрени, метеозависимость, сотрясение мозга, удары по голове, шум в ушах, мушки перед глазами, головокружения
+      {
+        id: 'headaches_detailed',
+        type: 'checkbox',
+        label: { ru: 'Головные боли', en: 'Headaches', de: 'Kopfschmerzen' },
+        icon: 'brain',
+        options: headachesDetailedOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 12. Онемение пальцев рук и ног, руки и ноги холодные даже летом
+      {
+        id: 'numbness_cold_limbs',
+        type: 'checkbox',
+        label: { ru: 'Онемение и холодные конечности', en: 'Numbness and cold limbs', de: 'Taubheit und kalte Gliedmaßen' },
+        icon: 'thermometer',
+        options: numbnessOptions,
+        required: true,
+        hasAdditional: false,
+      },
+      // 13. Варикоз (сеточка или выраженные вены), геморрой (кровоточит или нет), пигментные пятна
+      {
+        id: 'varicose_hemorrhoids_pigment',
+        type: 'checkbox',
+        label: { ru: 'Варикоз и геморрой', en: 'Varicose veins and hemorrhoids', de: 'Krampfadern und Hämorrhoiden' },
+        icon: 'heart',
+        options: varicoseHemorrhoidsDetailedOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 14. Суставы: скрипят, хрустят, воспаляются, артроз (какая стадия). Боли в спине, пояснице, коленях
+      {
+        id: 'joints_detailed',
+        type: 'checkbox',
+        label: { ru: 'Суставы', en: 'Joints', de: 'Gelenke' },
+        icon: 'bone',
+        options: jointsDetailedOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 15. Кисты, полипы, миомы, опухоли, грыжи
+      {
+        id: 'cysts_polyps_tumors',
+        type: 'checkbox',
+        label: { ru: 'Кисты, полипы, опухоли', en: 'Cysts, polyps, tumors', de: 'Zysten, Polypen, Tumore' },
+        icon: 'circle',
+        options: cystsPolypsOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 16. Герпес, папилломы, родинки, бородавки, красные точечки на коже, выделения (по-мужски), цистит
+      {
+        id: 'herpes_warts_discharge',
+        type: 'checkbox',
+        label: { ru: 'Герпес, папилломы, выделения, цистит', en: 'Herpes, papillomas, discharge, cystitis', de: 'Herpes, Papillome, Ausfluss, Zystitis' },
+        icon: 'alert-circle',
+        options: [
+          ...herpesWartsOptions,
+          { value: 'discharge_male', label: { ru: 'Выделения (по-мужски)', en: 'Discharge (male)', de: 'Ausfluss (männlich)' } },
+          { value: 'cystitis', label: { ru: 'Цистит', en: 'Cystitis', de: 'Zystitis' } },
+        ],
+        required: true,
+        hasAdditional: false,
+      },
+      // 17. Простатит (вместо Месячные)
+      {
+        id: 'prostatitis',
+        type: 'checkbox',
+        label: { ru: 'Простатит', en: 'Prostatitis', de: 'Prostatitis' },
+        icon: 'alert-circle',
+        options: prostatitisOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 18. Прыщи, фурункулы, акне, раздражение, розацеа, псориаз, дерматит, экзема
+      {
+        id: 'skin_problems_detailed',
+        type: 'checkbox',
+        label: { ru: 'Проблемы с кожей', en: 'Skin problems', de: 'Hautprobleme' },
+        icon: 'sparkles',
+        options: skinProblemsDetailedOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 19. Аллергия (на пыльцу, еду, шерсть животных, пыль, лекарства)
+      {
+        id: 'allergies_detailed',
         type: 'checkbox',
         label: { ru: 'Аллергия', en: 'Allergies', de: 'Allergien' },
         icon: 'flower',
@@ -1111,32 +1656,113 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         required: true,
         hasAdditional: true,
       },
+      // 20. Простуды: сколько раз за год простужаетесь. Пользуетесь ли антибиотиками и жаропонижающими
       {
-        id: 'skin_condition',
-        type: 'checkbox',
-        label: { ru: 'Кожа', en: 'Skin', de: 'Haut' },
-        icon: 'sparkles',
-        options: skinConditionOptions,
+        id: 'colds_medication',
+        type: 'radio',
+        label: { ru: 'Простуды', en: 'Colds', de: 'Erkältungen' },
+        icon: 'thermometer',
+        options: coldsFrequencyOptions,
         required: true,
         hasAdditional: true,
       },
+      // 21. Сон: трудно заснуть, часто просыпаетесь ночью
       {
-        id: 'sleep',
-        type: 'radio',
+        id: 'sleep_problems',
+        type: 'checkbox',
         label: { ru: 'Сон', en: 'Sleep', de: 'Schlaf' },
         icon: 'moon',
-        options: sleepAdultOptions,
+        options: [
+          { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+          { value: 'hard_to_fall_asleep', label: { ru: 'Трудно заснуть', en: 'Hard to fall asleep', de: 'Schwer einzuschlafen' } },
+          { value: 'wake_often', label: { ru: 'Часто просыпаюсь ночью', en: 'Often wake up at night', de: 'Wache oft nachts auf' } },
+          { value: 'both', label: { ru: 'Оба симптома', en: 'Both symptoms', de: 'Beide Symptome' } },
+          { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+        ],
         required: true,
         hasAdditional: true,
       },
+      // 22. Энергия
       {
-        id: 'energy',
-        type: 'radio',
+        id: 'energy_morning',
+        type: 'checkbox',
         label: { ru: 'Энергия', en: 'Energy', de: 'Energie' },
         icon: 'zap',
-        options: energyOptions,
+        options: [
+          { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+          { value: 'hard_to_wake', label: { ru: 'Тяжело просыпаться', en: 'Hard to wake up', de: 'Schwer aufzuwachen' } },
+          { value: 'unrested_morning', label: { ru: 'Утром чувствую себя неотдохнувшим', en: 'Feel unrested in the morning', de: 'Fühle mich morgens unausgeruht' } },
+          { value: 'need_coffee', label: { ru: 'Нужна стимуляция кофе', en: 'Need coffee stimulation', de: 'Brauche Kaffeestimulation' } },
+          { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+        ],
+        required: true,
+        hasAdditional: true,
+      },
+      // 23. Память: трудно сконцентрироваться, забываются имена и события, сложно запоминать информацию
+      {
+        id: 'memory_concentration',
+        type: 'checkbox',
+        label: { ru: 'Память и концентрация', en: 'Memory and concentration', de: 'Gedächtnis und Konzentration' },
+        icon: 'brain',
+        options: [
+          { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+          { value: 'hard_to_concentrate', label: { ru: 'Трудно сконцентрироваться', en: 'Hard to concentrate', de: 'Schwer zu konzentrieren' } },
+          { value: 'forget_names_events', label: { ru: 'Забываются имена и события', en: 'Forget names and events', de: 'Vergesse Namen und Ereignisse' } },
+          { value: 'hard_to_remember', label: { ru: 'Сложно запоминать информацию', en: 'Hard to remember information', de: 'Schwer Informationen zu merken' } },
+          { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+        ],
+        required: true,
+        hasAdditional: true,
+      },
+      // 24. Образ жизни: сидячий, спорт, домашняя гимнастика, холодные обливания, стрессовая работа, физические нагрузки, токсичные вещества на работе
+      {
+        id: 'lifestyle',
+        type: 'checkbox',
+        label: { ru: 'Образ жизни', en: 'Lifestyle', de: 'Lebensstil' },
+        icon: 'activity',
+        options: lifestyleOptions,
+        required: true,
+        hasAdditional: true,
+      },
+      // 25. Принимаете ли лекарства на постоянной основе (если да — указать названия)
+      {
+        id: 'regular_medications',
+        type: 'radio',
+        label: { ru: 'Регулярные лекарства', en: 'Regular medications', de: 'Regelmäßige Medikamente' },
+        icon: 'pill',
+        options: yesNoOptionsSimple,
+        required: true,
+        hasAdditional: true,
+      },
+      // 26. Есть ли анализы крови за последние 2–3 месяца? УЗИ? Если есть — прикрепите
+      {
+        id: 'has_medical_documents',
+        type: 'radio',
+        label: { ru: 'Анализы крови и УЗИ', en: 'Blood tests and ultrasound', de: 'Blutuntersuchungen und Ultraschall' },
+        icon: 'file-text',
+        options: yesNoOptionsSimple,
         required: true,
         hasAdditional: false,
+      },
+      // 27. Что еще Вы хотели бы добавить о своем здоровье
+      {
+        id: 'what_else',
+        type: 'textarea',
+        label: { ru: 'Что еще Вы хотели бы добавить о своем здоровье', en: 'What else would you like to add about your health', de: 'Was möchten Sie sonst noch über Ihre Gesundheit hinzufügen' },
+        icon: 'info',
+        required: false,
+        hasAdditional: false,
+        placeholder: { ru: 'Дополнительная информация', en: 'Additional information', de: 'Zusätzliche Informationen' },
+      },
+      // 28. Какой самый важный вопрос Вас волнует в первую очередь?
+      {
+        id: 'main_concern',
+        type: 'textarea',
+        label: { ru: 'Какой самый важный вопрос Вас волнует в первую очередь?', en: 'What is the most important question that concerns you first?', de: 'Welche wichtigste Frage beschäftigt Sie in erster Linie?' },
+        icon: 'help-circle',
+        required: false,
+        hasAdditional: false,
+        placeholder: { ru: 'Опишите ваш главный вопрос', en: 'Describe your main question', de: 'Beschreiben Sie Ihre Hauptfrage' },
       },
       {
         id: 'memory',
@@ -1164,6 +1790,22 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         required: false,
         hasAdditional: false,
         placeholder: { ru: 'Дополнительная информация', en: 'Additional information', de: 'Zusätzliche Informationen' },
+      },
+    ],
+  },
+  {
+    id: 'medical_documents',
+    title: { ru: 'Медицинские документы', en: 'Medical Documents', de: 'Medizinische Dokumente' },
+    icon: 'file-text',
+    questions: [
+      {
+        id: 'has_medical_documents',
+        type: 'radio',
+        label: { ru: 'Есть ли у вас анализы крови за последние 2-3 месяца? УЗИ?', en: 'Do you have blood test results from the last 2-3 months? Ultrasound?', de: 'Haben Sie Blutuntersuchungsergebnisse der letzten 2-3 Monate? Ultraschall?' },
+        icon: 'file-text',
+        options: yesNoOptionsSimple,
+        required: true,
+        hasAdditional: false,
       },
     ],
   },

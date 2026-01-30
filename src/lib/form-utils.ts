@@ -121,6 +121,20 @@ export const validateForm = (
 
   sections.forEach((section) => {
     section.questions.forEach((question) => {
+      // Skip validation for conditional fields - they are validated separately
+      if (question.id === 'covid_times' || question.id === 'vaccine_doses') {
+        return;
+      }
+      
+      // Skip validation for covid_complications if had_covid is not 'yes'
+      if (question.id === 'covid_complications') {
+        const hadCovidValue = formData['had_covid'];
+        const hadCovid = typeof hadCovidValue === 'string' ? hadCovidValue : (Array.isArray(hadCovidValue) ? hadCovidValue[0] : '');
+        if (hadCovid !== 'yes') {
+          return;
+        }
+      }
+      
       if (question.required) {
         const value = formData[question.id];
         
@@ -203,6 +217,125 @@ export const validateForm = (
     }
   }
 
+  // Special validation: if covid_complications includes "other", additional field is required
+  // Only validate if had_covid is 'yes'
+  if (formData['covid_complications'] && additionalData) {
+    const hadCovidValue = formData['had_covid'];
+    const hadCovid = typeof hadCovidValue === 'string' ? hadCovidValue : (Array.isArray(hadCovidValue) ? hadCovidValue[0] : '');
+    if (hadCovid === 'yes') {
+      const covidComplicationsValue = formData['covid_complications'];
+      const covidComplications = Array.isArray(covidComplicationsValue) ? covidComplicationsValue : [covidComplicationsValue];
+      if (covidComplications.includes('other')) {
+        const covidComplicationsAdditional = additionalData['covid_complications_additional'];
+        if (!covidComplicationsAdditional || covidComplicationsAdditional.trim() === '') {
+          errors['covid_complications_additional'] = t.required;
+        }
+      }
+    }
+  }
+
+  // Special validation: if hair_quality includes "other", additional field is required
+  if (formData['hair_quality'] && additionalData) {
+    const hairQualityValue = formData['hair_quality'];
+    const hairQualityArray = Array.isArray(hairQualityValue) ? hairQualityValue : [hairQualityValue];
+    if (hairQualityArray.includes('other')) {
+      const hairQualityAdditional = additionalData['hair_quality_additional'];
+      if (!hairQualityAdditional || hairQualityAdditional.trim() === '') {
+        errors['hair_quality_additional'] = t.required;
+      }
+    }
+  }
+
+  // Special validation: if teeth_problems includes "other", additional field is required
+  if (formData['teeth_problems'] && additionalData) {
+    const teethProblemsValue = formData['teeth_problems'];
+    const teethProblemsArray = Array.isArray(teethProblemsValue) ? teethProblemsValue : [teethProblemsValue];
+    if (teethProblemsArray.includes('other')) {
+      const teethProblemsAdditional = additionalData['teeth_problems_additional'];
+      if (!teethProblemsAdditional || teethProblemsAdditional.trim() === '') {
+        errors['teeth_problems_additional'] = t.required;
+      }
+    }
+  }
+
+  // Special validation: if stones_kidneys_gallbladder includes "stones_kidneys" or "stones_gallbladder", additional field is required
+  if (formData['stones_kidneys_gallbladder'] && additionalData) {
+    const stonesValue = formData['stones_kidneys_gallbladder'];
+    const stonesArray = Array.isArray(stonesValue) ? stonesValue : [stonesValue];
+    if (stonesArray.includes('stones_kidneys') || stonesArray.includes('stones_gallbladder')) {
+      const stonesAdditional = additionalData['stones_kidneys_gallbladder_additional'];
+      if (!stonesAdditional || stonesAdditional.trim() === '') {
+        errors['stones_kidneys_gallbladder_additional'] = t.required;
+      }
+    }
+  }
+
+  // Special validation: if questions with "other" option include "other", additional field is required
+  const questionsWithOther = [
+    'digestion_detailed', 'headaches_detailed', 'varicose_hemorrhoids_pigment',
+    'joints_detailed', 'cysts_polyps_tumors', 'herpes_warts_discharge',
+    'menstruation_detailed', 'prostatitis', 'skin_problems_detailed',
+    'lifestyle', 'chronic_diseases', 'sleep_problems', 'energy_morning', 'memory_concentration'
+  ];
+  
+  questionsWithOther.forEach((questionId) => {
+    if (formData[questionId] && additionalData) {
+      const questionValue = formData[questionId];
+      const questionArray = Array.isArray(questionValue) ? questionValue : [questionValue];
+      if (questionArray.includes('other')) {
+        const questionAdditional = additionalData[`${questionId}_additional`];
+        if (!questionAdditional || questionAdditional.trim() === '') {
+          errors[`${questionId}_additional`] = t.required;
+        }
+      }
+    }
+  });
+
+  // Special validation: if weight_goal is "lose" or "gain", additional field is required
+  if (formData['weight_goal'] && additionalData) {
+    const weightGoalValue = formData['weight_goal'];
+    const weightGoal = Array.isArray(weightGoalValue) ? weightGoalValue[0] : weightGoalValue;
+    if (weightGoal === 'lose' || weightGoal === 'gain') {
+      const weightGoalAdditional = additionalData['weight_goal_additional'];
+      if (!weightGoalAdditional || weightGoalAdditional.trim() === '') {
+        errors['weight_goal_additional'] = t.required;
+      }
+    }
+  }
+  
+  // Special validation: if weight_satisfaction is "not_satisfied", weight_goal is required
+  if (formData['weight_satisfaction']) {
+    const weightSatisfactionValue = formData['weight_satisfaction'];
+    const weightSatisfaction = Array.isArray(weightSatisfactionValue) ? weightSatisfactionValue[0] : weightSatisfactionValue;
+    if (weightSatisfaction === 'not_satisfied') {
+      if (!formData['weight_goal']) {
+        errors['weight_goal'] = t.required;
+      }
+    }
+  }
+
+  // Special validation: if had_covid is "yes", covid_times is required
+  if (formData['had_covid']) {
+    const hadCovidValue = formData['had_covid'];
+    const hadCovid = Array.isArray(hadCovidValue) ? hadCovidValue[0] : hadCovidValue;
+    if (hadCovid === 'yes') {
+      if (!formData['covid_times'] || formData['covid_times'] === '' || isNaN(Number(formData['covid_times']))) {
+        errors['covid_times'] = t.required;
+      }
+    }
+  }
+
+  // Special validation: if had_vaccine is "yes", vaccine_doses is required
+  if (formData['had_vaccine']) {
+    const hadVaccineValue = formData['had_vaccine'];
+    const hadVaccine = Array.isArray(hadVaccineValue) ? hadVaccineValue[0] : hadVaccineValue;
+    if (hadVaccine === 'yes') {
+      if (!formData['vaccine_doses'] || formData['vaccine_doses'] === '' || isNaN(Number(formData['vaccine_doses']))) {
+        errors['vaccine_doses'] = t.required;
+      }
+    }
+  }
+
   // Special validation: if skin_condition has "other" selected, additional field is required
   if (formData['skin_condition'] && additionalData) {
     const skinConditionValue = formData['skin_condition'];
@@ -228,6 +361,18 @@ export const validateForm = (
     }
   }
 
+  // Special validation: if sleep_problems has "other" selected, additional field is required
+  if (formData['sleep_problems'] && additionalData) {
+    const sleepProblemsValue = formData['sleep_problems'];
+    const sleepProblemsArray = Array.isArray(sleepProblemsValue) ? sleepProblemsValue : [sleepProblemsValue];
+    if (sleepProblemsArray.includes('other')) {
+      const sleepProblemsAdditional = additionalData['sleep_problems_additional'];
+      if (!sleepProblemsAdditional || sleepProblemsAdditional.trim() === '') {
+        errors['sleep_problems_additional'] = t.required;
+      }
+    }
+  }
+
   // Special validation: if operations has "yes" selected, additional field is required
   if (formData['operations'] && additionalData) {
     const operationsValue = Array.isArray(formData['operations']) ? formData['operations'][0] : formData['operations'];
@@ -236,6 +381,18 @@ export const validateForm = (
       const operationsAdditional = additionalData['operations_additional'];
       if (!operationsAdditional || operationsAdditional.trim() === '') {
         errors['operations_additional'] = t.required;
+      }
+    }
+  }
+
+  // Special validation: if regular_medications has "yes" selected, additional field is required
+  if (formData['regular_medications'] && additionalData) {
+    const regularMedicationsValue = typeof formData['regular_medications'] === 'string' ? formData['regular_medications'] : (Array.isArray(formData['regular_medications']) ? formData['regular_medications'][0] : '');
+    const hasYes = regularMedicationsValue === 'yes';
+    if (hasYes) {
+      const regularMedicationsAdditional = additionalData['regular_medications_additional'];
+      if (!regularMedicationsAdditional || regularMedicationsAdditional.trim() === '') {
+        errors['regular_medications_additional'] = t.required;
       }
     }
   }
@@ -354,6 +511,16 @@ export const generateMarkdown = (
       if (question.id === 'what_else') {
         return;
       }
+      
+      // Skip weight_goal field - it will be added to weight_satisfaction answer
+      if (question.id === 'weight_goal') {
+        return;
+      }
+      
+      // Skip covid_times and vaccine_doses - they will be added to had_covid and had_vaccine answers
+      if (question.id === 'covid_times' || question.id === 'vaccine_doses') {
+        return;
+      }
 
       // Optimized value check
       if (!value) return;
@@ -454,6 +621,103 @@ export const generateMarkdown = (
           }
         }
 
+        // Special handling for weight_goal: add kilograms if specified
+        if (question.id === 'weight_goal' && additional) {
+          const weightKg = additional.trim();
+          if (weightKg && !isNaN(Number(weightKg))) {
+            if (lang === 'ru') {
+              answerText = `${answerText} (${weightKg} кг)`;
+            } else if (lang === 'en') {
+              answerText = `${answerText} (${weightKg} kg)`;
+            } else if (lang === 'de') {
+              answerText = `${answerText} (${weightKg} kg)`;
+            }
+          }
+        }
+        
+        // Special handling: combine weight_satisfaction and weight_goal into one answer
+        if (question.id === 'weight_satisfaction') {
+          const weightSatisfactionValue = formData['weight_satisfaction'];
+          const weightSatisfaction = Array.isArray(weightSatisfactionValue) ? weightSatisfactionValue[0] : weightSatisfactionValue;
+          if (weightSatisfaction === 'not_satisfied' && formData['weight_goal']) {
+            const weightGoalValue = formData['weight_goal'];
+            const weightGoal = Array.isArray(weightGoalValue) ? weightGoalValue[0] : weightGoalValue;
+            const weightGoalAdditional = additionalData['weight_goal_additional'];
+            
+            let goalText = '';
+            if (weightGoal === 'lose') {
+              goalText = lang === 'ru' ? 'Сбросить' : lang === 'de' ? 'Abnehmen' : 'Lose';
+            } else if (weightGoal === 'gain') {
+              goalText = lang === 'ru' ? 'Набрать' : lang === 'de' ? 'Zunehmen' : 'Gain';
+            }
+            
+            if (weightGoalAdditional && weightGoalAdditional.trim() && !isNaN(Number(weightGoalAdditional.trim()))) {
+              const weightKg = weightGoalAdditional.trim();
+              if (lang === 'ru') {
+                answerText = `${answerText}: ${goalText} ${weightKg} кг`;
+              } else if (lang === 'en') {
+                answerText = `${answerText}: ${goalText} ${weightKg} kg`;
+              } else if (lang === 'de') {
+                answerText = `${answerText}: ${goalText} ${weightKg} kg`;
+              }
+            } else if (goalText) {
+              answerText = `${answerText}: ${goalText}`;
+            }
+          }
+        }
+
+        // Special handling: combine had_covid with covid_times
+        if (question.id === 'had_covid' && answerText && formData['covid_times']) {
+          const covidTimes = formData['covid_times'];
+          if (covidTimes && !isNaN(Number(covidTimes))) {
+            const times = Number(covidTimes);
+            if (lang === 'ru') {
+              // Russian pluralization: раз/раза/раз
+              const lastDigit = times % 10;
+              const lastTwoDigits = times % 100;
+              if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+                answerText = `${answerText} (${times} раз)`;
+              } else if (lastDigit === 1) {
+                answerText = `${answerText} (${times} раз)`;
+              } else if (lastDigit >= 2 && lastDigit <= 4) {
+                answerText = `${answerText} (${times} раза)`;
+              } else {
+                answerText = `${answerText} (${times} раз)`;
+              }
+            } else if (lang === 'en') {
+              answerText = `${answerText} (${times} ${times === 1 ? 'time' : 'times'})`;
+            } else if (lang === 'de') {
+              answerText = `${answerText} (${times} ${times === 1 ? 'Mal' : 'Mal'})`;
+            }
+          }
+        }
+
+        // Special handling: combine had_vaccine with vaccine_doses
+        if (question.id === 'had_vaccine' && answerText && formData['vaccine_doses']) {
+          const vaccineDoses = formData['vaccine_doses'];
+          if (vaccineDoses && !isNaN(Number(vaccineDoses))) {
+            const doses = Number(vaccineDoses);
+            if (lang === 'ru') {
+              // Russian pluralization: доза/дозы/доз
+              const lastDigit = doses % 10;
+              const lastTwoDigits = doses % 100;
+              if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+                answerText = `${answerText} (${doses} доз)`;
+              } else if (lastDigit === 1) {
+                answerText = `${answerText} (${doses} доза)`;
+              } else if (lastDigit >= 2 && lastDigit <= 4) {
+                answerText = `${answerText} (${doses} дозы)`;
+              } else {
+                answerText = `${answerText} (${doses} доз)`;
+              }
+            } else if (lang === 'en') {
+              answerText = `${answerText} (${doses} ${doses === 1 ? 'dose' : 'doses'})`;
+            } else if (lang === 'de') {
+              answerText = `${answerText} (${doses} ${doses === 1 ? 'Dosis' : 'Dosen'})`;
+            }
+          }
+        }
+
         // Special handling for what_else_question: if "yes" is selected, show only the what_else text instead of "Да"
         if (question.id === 'what_else_question' && value === 'yes' && formData['what_else']) {
           const whatElseText = formData['what_else'] as string;
@@ -470,7 +734,8 @@ export const generateMarkdown = (
           // Format: Question on one line, Answer on next line
           md += `${questionPrefix}${label}:\n${answerText}`;
           
-          if (additional && additional.trim() !== '') {
+          // Add additional info, but skip for weight_satisfaction and weight_goal as they're already included in answerText
+          if (additional && additional.trim() !== '' && question.id !== 'weight_satisfaction' && question.id !== 'weight_goal') {
             md += `\n(${additional})`;
           }
           
@@ -522,7 +787,7 @@ const getCurrentLanguage = (): Language => {
 // SECURITY NOTE: In production, use environment variables or a server-side proxy
 // Do not expose BOT_TOKEN in client-side code in production!
 // For development: Set VITE_TELEGRAM_BOT_TOKEN and VITE_TELEGRAM_CHAT_ID in .env file
-export const sendToTelegram = async (markdown: string): Promise<{ success: boolean; error?: string; messageId?: number }> => {
+export const sendToTelegram = async (markdown: string, file?: File | null, lang: Language = 'ru'): Promise<{ success: boolean; error?: string; messageId?: number }> => {
   // Try to get from environment variables first (for Vite: VITE_ prefix)
   const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
   const CHAT_ID = import.meta.env.VITE_TELEGRAM_CHAT_ID;
@@ -680,6 +945,42 @@ Current status:
 
     console.log('Successfully sent to Telegram');
     const messageId = responseData.result?.message_id;
+    
+    // If file is provided, send it as a document
+    if (file) {
+      try {
+        const formData = new FormData();
+        formData.append('chat_id', CHAT_ID);
+        formData.append('document', file);
+        formData.append('caption', lang === 'ru' 
+          ? 'Медицинские документы (анализы крови, УЗИ)' 
+          : lang === 'de'
+          ? 'Medizinische Dokumente (Blutuntersuchungen, Ultraschall)'
+          : 'Medical documents (blood tests, ultrasound)');
+        
+        const fileResponse = await fetch(
+          `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`,
+          {
+            method: 'POST',
+            body: formData,
+            signal: controller.signal,
+          }
+        );
+        
+        const fileResponseData = await fileResponse.json();
+        
+        if (!fileResponseData.ok) {
+          console.warn('Failed to send file to Telegram:', fileResponseData);
+          // Don't fail the whole request if file sending fails
+        } else {
+          console.log('Successfully sent file to Telegram');
+        }
+      } catch (fileError: any) {
+        console.warn('Error sending file to Telegram:', fileError);
+        // Don't fail the whole request if file sending fails
+      }
+    }
+    
     return { success: true, messageId };
   } catch (error: any) {
     if (timeoutId) clearTimeout(timeoutId);
