@@ -481,7 +481,7 @@ export const generateMarkdown = (
   let md = `**${headers[type]}**\n`;
 
   let questionNumber = 1;
-  let digestionQuestionPassed = false;
+  let healthSectionPassed = false;
   let isFirstSection = true;
 
   sections.forEach((section) => {
@@ -499,6 +499,11 @@ export const generateMarkdown = (
     }
     md += `**${section.title[lang]}**\n`;
     isFirstSection = false;
+    
+    // Mark when we reach the health section
+    if (section.id === 'health') {
+      healthSectionPassed = true;
+    }
 
     // Create option maps for faster lookup (optimization)
     const optionMaps = new Map<string, Map<string, string>>();
@@ -531,13 +536,9 @@ export const generateMarkdown = (
 
       const label = question.label[lang];
       
-      // Question number and label - start numbering from "digestion" question
+      // Question number and label - start numbering from first question in "health" section and continue for all subsequent sections
       let questionPrefix = '';
-      if (question.id === 'digestion') {
-        digestionQuestionPassed = true;
-        questionPrefix = `${questionNumber}. `;
-        questionNumber++;
-      } else if (digestionQuestionPassed) {
+      if (section.id === 'health' || (section.id !== 'personal' && healthSectionPassed)) {
         questionPrefix = `${questionNumber}. `;
         questionNumber++;
       }
@@ -727,16 +728,16 @@ export const generateMarkdown = (
           }
         }
 
-        // For personal section, show only answers without questions
+        // For personal section, show only answers without questions (with italic font style)
         if (section.id === 'personal') {
-          md += `${answerText}\n`;
+          md += `_${answerText}_\n`;
         } else {
-          // Format: Question on one line, Answer on next line
-          md += `${questionPrefix}${label}:\n${answerText}`;
+          // Format: Question on one line, Answer on next line (with italic font for answers)
+          md += `${questionPrefix}${label}:\n_${answerText}_`;
           
           // Add additional info, but skip for weight_satisfaction and weight_goal as they're already included in answerText
           if (additional && additional.trim() !== '' && question.id !== 'weight_satisfaction' && question.id !== 'weight_goal') {
-            md += `\n(${additional})`;
+            md += `\n_(${additional})_`;
           }
           
           md += `\n`;
