@@ -332,7 +332,7 @@ const Anketa: React.FC = () => {
       case 'memory_concentration':
       case 'operations_traumas':
         if (!valueArray.includes('other')) {
-          clearAdditionalField(`${fieldName}_additional`);
+          clearAdditionalField(`${questionId}_additional`);
         }
         if (!valueArray.includes('organ_removed')) {
           clearAdditionalField('operations_traumas_organs_additional');
@@ -368,24 +368,34 @@ const Anketa: React.FC = () => {
   const markdown = useMemo(() => {
     let md = generateMarkdown(type, sections, formData, additionalData, contactData, language);
     
+    // Helper function to escape HTML special characters
+    const escapeHtml = (text: string): string => {
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    };
+
     // Add file information if files are uploaded
     if (medicalDocumentFiles.length > 0 && formData['has_medical_documents'] === 'yes') {
       if (medicalDocumentFiles.length === 1) {
+        const fileName = escapeHtml(medicalDocumentFiles[0].name);
+        const fileSize = (medicalDocumentFiles[0].size / 1024 / 1024).toFixed(2);
         const fileInfo = language === 'ru'
-          ? `\n**Прикреплён файл:** ${medicalDocumentFiles[0].name} (${(medicalDocumentFiles[0].size / 1024 / 1024).toFixed(2)} MB)`
+          ? `\n<b>Прикреплён файл:</b> ${fileName} (${fileSize} MB)`
           : language === 'de'
-          ? `\n**Angehängte Datei:** ${medicalDocumentFiles[0].name} (${(medicalDocumentFiles[0].size / 1024 / 1024).toFixed(2)} MB)`
-          : `\n**Attached file:** ${medicalDocumentFiles[0].name} (${(medicalDocumentFiles[0].size / 1024 / 1024).toFixed(2)} MB)`;
+          ? `\n<b>Angehängte Datei:</b> ${fileName} (${fileSize} MB)`
+          : `\n<b>Attached file:</b> ${fileName} (${fileSize} MB)`;
         md += fileInfo;
       } else {
         const filesList = medicalDocumentFiles.map((file, index) => 
-          `${index + 1}. ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`
+          `${index + 1}. ${escapeHtml(file.name)} (${(file.size / 1024 / 1024).toFixed(2)} MB)`
         ).join('\n');
         const fileInfo = language === 'ru'
-          ? `\n**Прикреплено файлов:** ${medicalDocumentFiles.length}\n${filesList}`
+          ? `\n<b>Прикреплено файлов:</b> ${medicalDocumentFiles.length}\n${filesList}`
           : language === 'de'
-          ? `\n**Angehängte Dateien:** ${medicalDocumentFiles.length}\n${filesList}`
-          : `\n**Attached files:** ${medicalDocumentFiles.length}\n${filesList}`;
+          ? `\n<b>Angehängte Dateien:</b> ${medicalDocumentFiles.length}\n${filesList}`
+          : `\n<b>Attached files:</b> ${medicalDocumentFiles.length}\n${filesList}`;
         md += fileInfo;
       }
     }

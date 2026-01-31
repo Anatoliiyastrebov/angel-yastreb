@@ -490,7 +490,15 @@ export const generateMarkdown = (
     man: t.mdMan,
   };
 
-  let md = `**${headers[type]}**\n`;
+  // Helper function to escape HTML special characters for Telegram HTML parse mode
+  const escapeHtml = (text: string): string => {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  };
+
+  let md = `<b>${escapeHtml(headers[type])}</b>\n`;
 
   let questionNumber = 1;
   let healthSectionPassed = false;
@@ -509,7 +517,7 @@ export const generateMarkdown = (
     if (!isFirstSection) {
       md += `\n`;
     }
-    md += `**${section.title[lang]}**\n`;
+    md += `<b>${escapeHtml(section.title[lang])}</b>\n`;
     isFirstSection = false;
     
     // Mark when we reach the health section
@@ -742,14 +750,14 @@ export const generateMarkdown = (
 
         // For personal section, show only answers without questions (with italic font style)
         if (section.id === 'personal') {
-          md += `_${answerText}_\n`;
+          md += `<i>${escapeHtml(answerText)}</i>\n`;
         } else {
           // Format: Question on one line, Answer on next line (with italic font for answers)
-          md += `${questionPrefix}${label}:\n_${answerText}_`;
+          md += `${questionPrefix}${escapeHtml(label)}:\n<i>${escapeHtml(answerText)}</i>`;
           
           // Add additional info, but skip for weight_satisfaction and weight_goal as they're already included in answerText
           if (additional && additional.trim() !== '' && question.id !== 'weight_satisfaction' && question.id !== 'weight_goal') {
-            md += `\n_(${additional})_`;
+            md += `\n<i>(${escapeHtml(additional)})</i>`;
           }
           
           // Add operations_traumas_organs_additional if organ_removed is selected
@@ -759,7 +767,8 @@ export const generateMarkdown = (
             if (operationsTraumasArray.includes('organ_removed')) {
               const organsAdditional = additionalData['operations_traumas_organs_additional'];
               if (organsAdditional && organsAdditional.trim() !== '') {
-                md += `\n_(${lang === 'ru' ? 'Удалены органы' : lang === 'de' ? 'Organe entfernt' : 'Organs removed'}: ${organsAdditional})_`;
+                const organsLabel = lang === 'ru' ? 'Удалены органы' : lang === 'de' ? 'Organe entfernt' : 'Organs removed';
+                md += `\n<i>(${escapeHtml(organsLabel)}: ${escapeHtml(organsAdditional)})</i>`;
               }
             }
           }
@@ -770,12 +779,12 @@ export const generateMarkdown = (
   });
 
   // Contact section (compact)
-  md += `\n**${t.mdContacts}**\n`;
+  md += `\n<b>${escapeHtml(t.mdContacts)}</b>\n`;
   
   const contacts: string[] = [];
   if (contactData.telegram && contactData.telegram.trim() !== '') {
     const cleanTelegram = contactData.telegram.replace(/^@/, '').trim();
-    contacts.push(`Telegram: **@${cleanTelegram}**`);
+    contacts.push(`Telegram: <b>@${escapeHtml(cleanTelegram)}</b>`);
   }
   if (contactData.phone && contactData.phone.trim() !== '') {
     const countryCode = contactData.phoneCountryCode || 'DE';
@@ -785,10 +794,10 @@ export const generateMarkdown = (
     const fullPhoneNumber = `${dialCode}${phoneNumber}`; // Full number without spaces
     // Telegram automatically makes phone numbers in format +1234567890 clickable
     // So we display it without spaces to ensure the entire number is clickable
-    contacts.push(`Phone: **${fullPhoneNumber}**`);
+    contacts.push(`Phone: <b>${escapeHtml(fullPhoneNumber)}</b>`);
   }
   if (contactData.email && contactData.email.trim() !== '') {
-    contacts.push(`Email: **${contactData.email.trim()}**`);
+    contacts.push(`Email: <b>${escapeHtml(contactData.email.trim())}</b>`);
   }
   
   if (contacts.length > 0) {
@@ -883,7 +892,7 @@ Current status:
         body: JSON.stringify({
           chat_id: CHAT_ID,
           text: markdown,
-          parse_mode: 'Markdown',
+          parse_mode: 'HTML',
         }),
         signal: controller.signal,
       }
