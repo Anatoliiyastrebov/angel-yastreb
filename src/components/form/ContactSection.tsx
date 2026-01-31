@@ -96,16 +96,13 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
         <label className="text-sm text-medical-600 mb-1 block">
           {t('telegram')}
         </label>
-        <div className="relative">
-          <MessageCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-medical-400" />
-          <input
-            type="text"
-            className={`input-field pl-[62px] ${telegramError ? 'input-error' : ''}`}
-            value={telegram}
-            onChange={(e) => onTelegramChange(e.target.value)}
-            placeholder={t('telegramHint') || '@username или username'}
-          />
-        </div>
+        <input
+          type="text"
+          className={`input-field ${telegramError ? 'input-error' : ''}`}
+          value={telegram}
+          onChange={(e) => onTelegramChange(e.target.value)}
+          placeholder={t('telegramHint') || '@username или username'}
+        />
         {telegramError && (
           <p className="error-message mt-1">
             <AlertCircleIcon />
@@ -152,11 +149,10 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           </div>
 
           {/* Phone Input */}
-          <div className="relative flex-1">
-            <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-medical-400" />
+          <div className="flex-1">
             <input
               type="tel"
-              className={`input-field pl-[62px] ${phoneError ? 'input-error' : ''}`}
+              className={`input-field ${phoneError ? 'input-error' : ''}`}
               value={phone}
               onChange={(e) => handlePhoneChange(e.target.value)}
               placeholder={language === 'ru' ? '123 456 7890' : language === 'de' ? '123 456 7890' : '123 456 7890'}
