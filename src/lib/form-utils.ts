@@ -998,9 +998,57 @@ Current status:
             continue;
           }
           
+          // Create a sanitized filename to avoid issues with special characters and spaces
+          // Replace spaces and special characters that might cause issues
+          const sanitizeFilename = (filename: string): string => {
+            // Get file extension (everything after the last dot)
+            const lastDot = filename.lastIndexOf('.');
+            const extension = lastDot > 0 ? filename.substring(lastDot) : '';
+            const nameWithoutExt = lastDot > 0 ? filename.substring(0, lastDot) : filename;
+            
+            // Replace spaces with underscores and remove/replace problematic characters
+            // Keep dots in the name but replace other problematic characters
+            let sanitized = nameWithoutExt
+              .replace(/\s+/g, '_')  // Replace spaces with underscores
+              .replace(/:/g, '-')  // Replace colons with dashes (common in timestamps like "11:39:34")
+              .replace(/[<>"/\\|?*]/g, '_')  // Replace problematic characters (but keep dots and dashes)
+              .replace(/_+/g, '_')  // Replace multiple underscores with single
+              .replace(/^_+|_+$/g, '');  // Remove leading/trailing underscores
+            
+            // Ensure filename is not empty
+            if (!sanitized || sanitized.length === 0) {
+              sanitized = 'file';
+            }
+            
+            // Limit filename length (keep it reasonable, leave room for extension)
+            const maxNameLength = 200 - extension.length;
+            if (sanitized.length > maxNameLength) {
+              sanitized = sanitized.substring(0, maxNameLength);
+            }
+            
+            return sanitized + extension;
+          };
+          
+          const sanitizedFilename = sanitizeFilename(file.name);
+          
+          // Create a new File object with sanitized name to ensure compatibility
+          // This preserves the original file content but with a safe filename
+          const fileBlob = file instanceof File ? file : new File([file], sanitizedFilename, { type: file.type || 'application/octet-stream' });
+          
+          // If filename changed, create a new File with the sanitized name
+          let fileToSend: File;
+          if (fileBlob.name !== sanitizedFilename) {
+            fileToSend = new File([fileBlob], sanitizedFilename, {
+              type: fileBlob.type || 'application/octet-stream',
+              lastModified: fileBlob.lastModified || Date.now()
+            });
+          } else {
+            fileToSend = fileBlob;
+          }
+          
           const formData = new FormData();
           formData.append('chat_id', CHAT_ID);
-          formData.append('document', file);
+          formData.append('document', fileToSend, sanitizedFilename);
           formData.append('caption', caption);
           
           const fileResponse = await fetch(
