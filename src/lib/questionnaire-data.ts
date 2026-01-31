@@ -1794,22 +1794,6 @@ export const manQuestionnaire: QuestionnaireSection[] = [
       },
     ],
   },
-  {
-    id: 'medical_documents',
-    title: { ru: 'Медицинские документы', en: 'Medical Documents', de: 'Medizinische Dokumente' },
-    icon: 'file-text',
-    questions: [
-      {
-        id: 'has_medical_documents',
-        type: 'radio',
-        label: { ru: 'Есть ли у вас анализы крови за последние 2-3 месяца? УЗИ?', en: 'Do you have blood test results from the last 2-3 months? Ultrasound?', de: 'Haben Sie Blutuntersuchungsergebnisse der letzten 2-3 Monate? Ultraschall?' },
-        icon: 'file-text',
-        options: yesNoOptionsSimple,
-        required: true,
-        hasAdditional: false,
-      },
-    ],
-  },
 ];
 
 export type QuestionnaireType = 'infant' | 'child' | 'woman' | 'man';

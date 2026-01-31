@@ -106,7 +106,7 @@ export const SectionCard: React.FC<SectionCardProps> = ({
       'joints_detailed', 'cysts_polyps_tumors', 'herpes_warts_discharge',
       'menstruation_detailed', 'prostatitis', 'skin_problems_detailed',
       'lifestyle', 'allergies', 'allergies_detailed', 'skin_condition', 'chronic_diseases', 'sleep_problems',
-      'energy_morning', 'memory_concentration', 'operations_traumas'
+      'energy_morning', 'memory_concentration', 'operations_traumas', 'pressure', 'colds_medication'
     ];
     if (inlineOtherQuestions.includes(question.id)) {
       return false;
@@ -270,7 +270,7 @@ export const SectionCard: React.FC<SectionCardProps> = ({
             'joints_detailed', 'cysts_polyps_tumors', 'herpes_warts_discharge',
             'menstruation_detailed', 'prostatitis', 'skin_problems_detailed',
             'lifestyle', 'allergies', 'allergies_detailed', 'skin_condition', 'chronic_diseases', 'sleep_problems',
-            'energy_morning', 'memory_concentration', 'operations_traumas'
+            'energy_morning', 'memory_concentration', 'operations_traumas', 'pressure', 'colds_medication'
           ];
           const shouldShowInlineOther = inlineOtherQuestions.includes(question.id) && shouldShowOtherField;
 
