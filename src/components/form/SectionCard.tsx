@@ -14,8 +14,8 @@ interface SectionCardProps {
   onFieldChange: (questionId: string, value: string | string[]) => void;
   onAdditionalChange: (questionId: string, value: string) => void;
   language: 'ru' | 'en' | 'de';
-  onFileChange?: (file: File | null) => void;
-  file?: File | null;
+  onFileChange?: (files: File[]) => void;
+  files?: File[];
 }
 
 export const SectionCard: React.FC<SectionCardProps> = ({
@@ -27,7 +27,7 @@ export const SectionCard: React.FC<SectionCardProps> = ({
   onAdditionalChange,
   language,
   onFileChange,
-  file,
+  files = [],
 }) => {
   // Get all questions that have additional fields and are answered
   const questionsWithAdditional = section.questions.filter((question) => {
@@ -64,14 +64,8 @@ export const SectionCard: React.FC<SectionCardProps> = ({
     }
     
     if (question.id === 'weight_goal') {
-      // Show weight_goal additional field only if weight_goal is selected and weight_satisfaction is 'not_satisfied'
-      const weightSatisfactionValue = formData['weight_satisfaction'];
-      const weightSatisfaction = typeof weightSatisfactionValue === 'string' ? weightSatisfactionValue : (Array.isArray(weightSatisfactionValue) ? weightSatisfactionValue[0] : '');
-      if (weightSatisfaction !== 'not_satisfied') return false;
-      
-      const weightGoalValue = formData['weight_goal'];
-      const weightGoalStringValue = typeof weightGoalValue === 'string' ? weightGoalValue : (Array.isArray(weightGoalValue) ? weightGoalValue[0] : '');
-      return weightGoalStringValue === 'lose' || weightGoalStringValue === 'gain';
+      // Skip weight_goal from the end block - it's shown inline after the question
+      return false;
     }
     
     if (question.id === 'covid_complications') {
@@ -101,13 +95,18 @@ export const SectionCard: React.FC<SectionCardProps> = ({
       return false;
     }
     
+    if (question.id === 'operations_traumas') {
+      // Skip operations_traumas from the end block - additional field for "organ_removed" is shown inline
+      return false;
+    }
+    
     // Skip questions with "other" option from the end block - they're shown inline after the question
     const inlineOtherQuestions = [
       'digestion_detailed', 'headaches_detailed', 'varicose_hemorrhoids_pigment',
       'joints_detailed', 'cysts_polyps_tumors', 'herpes_warts_discharge',
       'menstruation_detailed', 'prostatitis', 'skin_problems_detailed',
       'lifestyle', 'allergies', 'allergies_detailed', 'skin_condition', 'chronic_diseases', 'sleep_problems',
-      'energy_morning', 'memory_concentration'
+      'energy_morning', 'memory_concentration', 'operations_traumas'
     ];
     if (inlineOtherQuestions.includes(question.id)) {
       return false;
@@ -117,6 +116,14 @@ export const SectionCard: React.FC<SectionCardProps> = ({
   });
 
   const hasAnyAdditional = questionsWithAdditional.length > 0;
+  
+  // Check if the last question in the section is main_concern
+  const lastQuestion = section.questions[section.questions.length - 1];
+  const isLastQuestionMainConcern = lastQuestion?.id === 'main_concern';
+  
+  // Don't show additional fields block if the last question is main_concern
+  const shouldShowAdditionalBlock = hasAnyAdditional && !isLastQuestionMainConcern;
+  
   const additionalLabel = {
     ru: 'Дополнительно (необязательно)',
     en: 'Additional (optional)',
@@ -239,6 +246,15 @@ export const SectionCard: React.FC<SectionCardProps> = ({
           const regularMedicationsAdditionalValue = additionalData[regularMedicationsAdditionalKey] || '';
           const regularMedicationsAdditionalError = errors[regularMedicationsAdditionalKey];
 
+          // Show additional field for operations_traumas when "organ_removed" is selected
+          const showOperationsTraumasAdditional = question.id === 'operations_traumas';
+          const operationsTraumasValue = formData['operations_traumas'];
+          const operationsTraumasArray = Array.isArray(operationsTraumasValue) ? operationsTraumasValue : (operationsTraumasValue ? [operationsTraumasValue] : []);
+          const shouldShowOperationsTraumasField = operationsTraumasArray.includes('organ_removed');
+          const operationsTraumasAdditionalKey = 'operations_traumas_organs_additional';
+          const operationsTraumasAdditionalValue = additionalData[operationsTraumasAdditionalKey] || '';
+          const operationsTraumasAdditionalError = errors[operationsTraumasAdditionalKey];
+
           // Show additional field for questions with "other" option immediately after the question
           const showOtherAdditional = question.hasAdditional && question.type === 'checkbox';
           const questionValue = formData[question.id];
@@ -254,7 +270,7 @@ export const SectionCard: React.FC<SectionCardProps> = ({
             'joints_detailed', 'cysts_polyps_tumors', 'herpes_warts_discharge',
             'menstruation_detailed', 'prostatitis', 'skin_problems_detailed',
             'lifestyle', 'allergies', 'allergies_detailed', 'skin_condition', 'chronic_diseases', 'sleep_problems',
-            'energy_morning', 'memory_concentration'
+            'energy_morning', 'memory_concentration', 'operations_traumas'
           ];
           const shouldShowInlineOther = inlineOtherQuestions.includes(question.id) && shouldShowOtherField;
 
@@ -542,6 +558,51 @@ export const SectionCard: React.FC<SectionCardProps> = ({
                 </motion.div>
               )}
 
+              {/* Additional field for operations_traumas when "organ_removed" is selected */}
+              {showOperationsTraumasAdditional && shouldShowOperationsTraumasField && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  transition={{ duration: 0.3 }}
+                  className="mt-4"
+                >
+                  <label className="text-sm font-medium text-medical-600 mb-2 block">
+                    {language === 'ru' ? 'Какие органы удалены?' : language === 'de' ? 'Welche Organe wurden entfernt?' : 'Which organs were removed?'}
+                    <span className="text-destructive ml-1">*</span>
+                  </label>
+                  <textarea
+                    className={cn(
+                      "w-full px-4 py-3 rounded-lg border border-medical-300 bg-white min-h-[80px] resize-y transition-all duration-200",
+                      "focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500",
+                      operationsTraumasAdditionalError ? "border-destructive" : "hover:border-medical-400"
+                    )}
+                    value={operationsTraumasAdditionalValue}
+                    onChange={(e) => onAdditionalChange('operations_traumas_organs', e.target.value)}
+                    placeholder={language === 'ru' ? 'Укажите какие органы были удалены' : language === 'de' ? 'Geben Sie an, welche Organe entfernt wurden' : 'Specify which organs were removed'}
+                  />
+                  {operationsTraumasAdditionalError && (
+                    <p className="text-sm text-destructive mt-1 flex items-center gap-1.5">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                      </svg>
+                      {operationsTraumasAdditionalError}
+                    </p>
+                  )}
+                </motion.div>
+              )}
+
               {/* Additional field for questions with "other" option */}
               {shouldShowInlineOther && (
                 <motion.div
@@ -591,22 +652,35 @@ export const SectionCard: React.FC<SectionCardProps> = ({
               {showFileUpload && onFileChange && (
                 <div className="mt-4">
                   <label className="text-sm text-medical-600 mb-2 block">
-                    {language === 'ru' ? 'Загрузите файл' : language === 'de' ? 'Datei hochladen' : 'Upload file'}
+                    {language === 'ru' 
+                      ? `Загрузите файлы (до ${files.length}/5)` 
+                      : language === 'de' 
+                      ? `Dateien hochladen (bis zu ${files.length}/5)` 
+                      : `Upload files (up to ${files.length}/5)`}
                   </label>
-                  <div className="flex items-center gap-4">
+                  <div className="space-y-3">
                     <input
                       type="file"
                       accept="*/*"
+                      multiple
                       onChange={(e) => {
-                        const selectedFile = e.target.files?.[0] || null;
-                        onFileChange(selectedFile);
+                        const selectedFiles = Array.from(e.target.files || []);
+                        const currentFiles = files || [];
+                        const newFiles = [...currentFiles, ...selectedFiles].slice(0, 5); // Limit to 5 files
+                        onFileChange(newFiles);
+                        // Reset input to allow selecting the same file again
+                        e.target.value = '';
                       }}
+                      disabled={files.length >= 5}
                       className="hidden"
                       id={`file-input-${question.id}`}
                     />
                     <label
                       htmlFor={`file-input-${question.id}`}
-                      className="px-4 py-2 rounded-lg border border-medical-300 bg-white hover:border-primary-500 cursor-pointer transition-all duration-200 flex items-center gap-2 text-sm font-medium min-h-[44px]"
+                      className={cn(
+                        "px-4 py-2 rounded-lg border border-medical-300 bg-white hover:border-primary-500 cursor-pointer transition-all duration-200 flex items-center gap-2 text-sm font-medium min-h-[44px]",
+                        files.length >= 5 && "opacity-50 cursor-not-allowed"
+                      )}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -623,37 +697,45 @@ export const SectionCard: React.FC<SectionCardProps> = ({
                         <polyline points="17 8 12 3 7 8" />
                         <line x1="12" y1="3" x2="12" y2="15" />
                       </svg>
-                      {language === 'ru' ? 'Выбрать файл' : language === 'de' ? 'Datei auswählen' : 'Choose file'}
+                      {language === 'ru' 
+                        ? (files.length >= 5 ? 'Достигнут лимит (5 файлов)' : 'Выбрать файлы') 
+                        : language === 'de' 
+                        ? (files.length >= 5 ? 'Limit erreicht (5 Dateien)' : 'Dateien auswählen') 
+                        : (files.length >= 5 ? 'Limit reached (5 files)' : 'Choose files')}
                     </label>
-                    {file && (
-                      <div className="flex items-center gap-2 text-sm text-medical-700">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                          <polyline points="14 2 14 8 20 8" />
-                        </svg>
-                        <span>{file.name}</span>
-                        <span className="text-medical-600">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            onFileChange(null);
-                            const input = document.getElementById(`file-input-${question.id}`) as HTMLInputElement;
-                            if (input) input.value = '';
-                          }}
-                          className="ml-2 text-destructive hover:text-destructive/80"
-                        >
-                          ×
-                        </button>
+                    {files.length > 0 && (
+                      <div className="space-y-2">
+                        {files.map((file, index) => (
+                          <div key={index} className="flex items-center gap-2 text-sm text-medical-700 bg-medical-50 p-2 rounded-lg">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                              <polyline points="14 2 14 8 20 8" />
+                            </svg>
+                            <span className="flex-1 truncate">{file.name}</span>
+                            <span className="text-medical-600">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newFiles = files.filter((_, i) => i !== index);
+                                onFileChange(newFiles);
+                              }}
+                              className="ml-2 text-destructive hover:text-destructive/80 font-bold"
+                              aria-label={language === 'ru' ? 'Удалить файл' : language === 'de' ? 'Datei löschen' : 'Remove file'}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
@@ -665,7 +747,7 @@ export const SectionCard: React.FC<SectionCardProps> = ({
       </div>
 
       {/* Additional Fields for questions that need them */}
-      {questionsWithAdditional.map((question) => {
+      {shouldShowAdditionalBlock && questionsWithAdditional.map((question) => {
         const additionalKey = `${question.id}_additional`;
         const additionalValue = additionalData[additionalKey] || '';
         const additionalError = errors[additionalKey];

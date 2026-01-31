@@ -275,7 +275,7 @@ export const validateForm = (
     'digestion_detailed', 'headaches_detailed', 'varicose_hemorrhoids_pigment',
     'joints_detailed', 'cysts_polyps_tumors', 'herpes_warts_discharge',
     'menstruation_detailed', 'prostatitis', 'skin_problems_detailed',
-    'lifestyle', 'chronic_diseases', 'sleep_problems', 'energy_morning', 'memory_concentration'
+    'lifestyle', 'chronic_diseases', 'sleep_problems', 'energy_morning', 'memory_concentration', 'operations_traumas'
   ];
   
   questionsWithOther.forEach((questionId) => {
@@ -393,6 +393,18 @@ export const validateForm = (
       const regularMedicationsAdditional = additionalData['regular_medications_additional'];
       if (!regularMedicationsAdditional || regularMedicationsAdditional.trim() === '') {
         errors['regular_medications_additional'] = t.required;
+      }
+    }
+  }
+
+  // Special validation: if operations_traumas includes "organ_removed", additional field is required
+  if (formData['operations_traumas'] && additionalData) {
+    const operationsTraumasValue = formData['operations_traumas'];
+    const operationsTraumasArray = Array.isArray(operationsTraumasValue) ? operationsTraumasValue : [operationsTraumasValue];
+    if (operationsTraumasArray.includes('organ_removed')) {
+      const operationsTraumasAdditional = additionalData['operations_traumas_organs_additional'];
+      if (!operationsTraumasAdditional || operationsTraumasAdditional.trim() === '') {
+        errors['operations_traumas_organs_additional'] = t.required;
       }
     }
   }
@@ -740,6 +752,18 @@ export const generateMarkdown = (
             md += `\n_(${additional})_`;
           }
           
+          // Add operations_traumas_organs_additional if organ_removed is selected
+          if (question.id === 'operations_traumas' && additionalData) {
+            const operationsTraumasValue = formData['operations_traumas'];
+            const operationsTraumasArray = Array.isArray(operationsTraumasValue) ? operationsTraumasValue : [operationsTraumasValue];
+            if (operationsTraumasArray.includes('organ_removed')) {
+              const organsAdditional = additionalData['operations_traumas_organs_additional'];
+              if (organsAdditional && organsAdditional.trim() !== '') {
+                md += `\n_(${lang === 'ru' ? 'Удалены органы' : lang === 'de' ? 'Organe entfernt' : 'Organs removed'}: ${organsAdditional})_`;
+              }
+            }
+          }
+          
           md += `\n`;
         }
     });
@@ -788,7 +812,7 @@ const getCurrentLanguage = (): Language => {
 // SECURITY NOTE: In production, use environment variables or a server-side proxy
 // Do not expose BOT_TOKEN in client-side code in production!
 // For development: Set VITE_TELEGRAM_BOT_TOKEN and VITE_TELEGRAM_CHAT_ID in .env file
-export const sendToTelegram = async (markdown: string, file?: File | null, lang: Language = 'ru'): Promise<{ success: boolean; error?: string; messageId?: number }> => {
+export const sendToTelegram = async (markdown: string, files?: File[] | File | null, lang: Language = 'ru'): Promise<{ success: boolean; error?: string; messageId?: number }> => {
   // Try to get from environment variables first (for Vite: VITE_ prefix)
   const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
   const CHAT_ID = import.meta.env.VITE_TELEGRAM_CHAT_ID;
@@ -947,38 +971,44 @@ Current status:
     console.log('Successfully sent to Telegram');
     const messageId = responseData.result?.message_id;
     
-    // If file is provided, send it as a document
-    if (file) {
-      try {
-        const formData = new FormData();
-        formData.append('chat_id', CHAT_ID);
-        formData.append('document', file);
-        formData.append('caption', lang === 'ru' 
-          ? 'Медицинские документы (анализы крови, УЗИ)' 
-          : lang === 'de'
-          ? 'Medizinische Dokumente (Blutuntersuchungen, Ultraschall)'
-          : 'Medical documents (blood tests, ultrasound)');
-        
-        const fileResponse = await fetch(
-          `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`,
-          {
-            method: 'POST',
-            body: formData,
-            signal: controller.signal,
+    // If files are provided, send them as documents
+    const filesArray = files ? (Array.isArray(files) ? files : [files]) : [];
+    if (filesArray.length > 0) {
+      const caption = lang === 'ru' 
+        ? 'Медицинские документы (анализы крови, УЗИ)' 
+        : lang === 'de'
+        ? 'Medizinische Dokumente (Blutuntersuchungen, Ultraschall)'
+        : 'Medical documents (blood tests, ultrasound)';
+      
+      // Send each file separately
+      for (const file of filesArray) {
+        try {
+          const formData = new FormData();
+          formData.append('chat_id', CHAT_ID);
+          formData.append('document', file);
+          formData.append('caption', caption);
+          
+          const fileResponse = await fetch(
+            `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`,
+            {
+              method: 'POST',
+              body: formData,
+              signal: controller.signal,
+            }
+          );
+          
+          const fileResponseData = await fileResponse.json();
+          
+          if (!fileResponseData.ok) {
+            console.warn('Failed to send file to Telegram:', fileResponseData);
+            // Don't fail the whole request if file sending fails
+          } else {
+            console.log('Successfully sent file to Telegram:', file.name);
           }
-        );
-        
-        const fileResponseData = await fileResponse.json();
-        
-        if (!fileResponseData.ok) {
-          console.warn('Failed to send file to Telegram:', fileResponseData);
+        } catch (fileError: any) {
+          console.warn('Error sending file to Telegram:', fileError);
           // Don't fail the whole request if file sending fails
-        } else {
-          console.log('Successfully sent file to Telegram');
         }
-      } catch (fileError: any) {
-        console.warn('Error sending file to Telegram:', fileError);
-        // Don't fail the whole request if file sending fails
       }
     }
     

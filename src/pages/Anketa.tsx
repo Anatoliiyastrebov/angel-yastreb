@@ -2,13 +2,11 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { QuestionField } from '@/components/form/QuestionField';
 import { ContactSection } from '@/components/form/ContactSection';
 import { DSGVOCheckbox } from '@/components/form/DSGVOCheckbox';
 import { MarkdownPreview } from '@/components/form/MarkdownPreview';
 import { SectionCard } from '@/components/form/SectionCard';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { SectionIcon } from '@/components/icons/SectionIcons';
 import {
   getQuestionnaire,
   getQuestionnaireTitle,
@@ -65,7 +63,7 @@ const Anketa: React.FC = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [editingQuestionnaireId, setEditingQuestionnaireId] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [medicalDocumentFile, setMedicalDocumentFile] = useState<File | null>(null);
+  const [medicalDocumentFiles, setMedicalDocumentFiles] = useState<File[]>([]);
 
   // Load saved form data on mount or load questionnaire for editing
   useEffect(() => {
@@ -231,7 +229,7 @@ const Anketa: React.FC = () => {
         break;
       case 'has_medical_documents':
         if (firstValue !== 'yes') {
-          setMedicalDocumentFile(null);
+          setMedicalDocumentFiles([]);
         }
         break;
       case 'weight_satisfaction':
@@ -313,8 +311,12 @@ const Anketa: React.FC = () => {
       case 'sleep_problems':
       case 'energy_morning':
       case 'memory_concentration':
+      case 'operations_traumas':
         if (!valueArray.includes('other')) {
           clearAdditionalField(`${fieldName}_additional`);
+        }
+        if (!valueArray.includes('organ_removed')) {
+          clearAdditionalField('operations_traumas_organs_additional');
         }
         break;
     }
@@ -339,7 +341,7 @@ const Anketa: React.FC = () => {
     setContactData({ telegram: '', phone: '', phoneCountryCode: 'DE' });
     setDsgvoAccepted(false);
     setErrors({});
-    setMedicalDocumentFile(null);
+    setMedicalDocumentFiles([]);
     clearFormData(type, language);
     toast.success(language === 'ru' ? 'Форма очищена' : language === 'de' ? 'Formular gelöscht' : 'Form cleared');
   }, [type, language]);
@@ -347,18 +349,30 @@ const Anketa: React.FC = () => {
   const markdown = useMemo(() => {
     let md = generateMarkdown(type, sections, formData, additionalData, contactData, language);
     
-    // Add file information if file is uploaded
-    if (medicalDocumentFile && formData['has_medical_documents'] === 'yes') {
-      const fileInfo = language === 'ru'
-        ? `\n**Прикреплён файл:** ${medicalDocumentFile.name} (${(medicalDocumentFile.size / 1024 / 1024).toFixed(2)} MB)`
-        : language === 'de'
-        ? `\n**Angehängte Datei:** ${medicalDocumentFile.name} (${(medicalDocumentFile.size / 1024 / 1024).toFixed(2)} MB)`
-        : `\n**Attached file:** ${medicalDocumentFile.name} (${(medicalDocumentFile.size / 1024 / 1024).toFixed(2)} MB)`;
-      md += fileInfo;
+    // Add file information if files are uploaded
+    if (medicalDocumentFiles.length > 0 && formData['has_medical_documents'] === 'yes') {
+      if (medicalDocumentFiles.length === 1) {
+        const fileInfo = language === 'ru'
+          ? `\n**Прикреплён файл:** ${medicalDocumentFiles[0].name} (${(medicalDocumentFiles[0].size / 1024 / 1024).toFixed(2)} MB)`
+          : language === 'de'
+          ? `\n**Angehängte Datei:** ${medicalDocumentFiles[0].name} (${(medicalDocumentFiles[0].size / 1024 / 1024).toFixed(2)} MB)`
+          : `\n**Attached file:** ${medicalDocumentFiles[0].name} (${(medicalDocumentFiles[0].size / 1024 / 1024).toFixed(2)} MB)`;
+        md += fileInfo;
+      } else {
+        const filesList = medicalDocumentFiles.map((file, index) => 
+          `${index + 1}. ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`
+        ).join('\n');
+        const fileInfo = language === 'ru'
+          ? `\n**Прикреплено файлов:** ${medicalDocumentFiles.length}\n${filesList}`
+          : language === 'de'
+          ? `\n**Angehängte Dateien:** ${medicalDocumentFiles.length}\n${filesList}`
+          : `\n**Attached files:** ${medicalDocumentFiles.length}\n${filesList}`;
+        md += fileInfo;
+      }
     }
     
     return md;
-  }, [type, sections, formData, additionalData, contactData, language, medicalDocumentFile]);
+  }, [type, sections, formData, additionalData, contactData, language, medicalDocumentFiles]);
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -383,7 +397,7 @@ const Anketa: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const result = await sendToTelegram(markdown, medicalDocumentFile, language);
+      const result = await sendToTelegram(markdown, medicalDocumentFiles, language);
       
       if (result.success) {
         // Check if user is authenticated (for secure storage in Supabase)
@@ -528,8 +542,8 @@ const Anketa: React.FC = () => {
               onFieldChange={handleFieldChange}
               onAdditionalChange={handleAdditionalChange}
               language={language}
-              onFileChange={section.questions.some(q => q.id === 'has_medical_documents') ? setMedicalDocumentFile : undefined}
-              file={medicalDocumentFile}
+              onFileChange={section.questions.some(q => q.id === 'has_medical_documents') ? setMedicalDocumentFiles : undefined}
+              files={medicalDocumentFiles}
             />
           ))}
 

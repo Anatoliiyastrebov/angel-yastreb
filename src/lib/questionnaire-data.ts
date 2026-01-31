@@ -139,6 +139,13 @@ const injuriesOptions: QuestionOption[] = [
   { value: 'severe_falls', label: { ru: 'Сильные падения', en: 'Severe falls', de: 'Schwere Stürze' } },
 ];
 
+const operationsTraumasOptions: QuestionOption[] = [
+  { value: 'no_issues', label: { ru: 'Нет операций и травм', en: 'No operations or injuries', de: 'Keine Operationen oder Verletzungen' } },
+  { value: 'surgeries', label: { ru: 'Операции', en: 'Surgeries', de: 'Operationen' } },
+  { value: 'organ_removed', label: { ru: 'Удалены органы', en: 'Organs removed', de: 'Organe entfernt' } },
+  { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
+];
+
 const covidOptionsWoman: QuestionOption[] = [
   { value: 'no', label: { ru: 'Нет', en: 'No', de: 'Nein' } },
   { value: 'had_covid', label: { ru: 'Болела', en: 'Had COVID', de: 'Hatte COVID' } },
@@ -417,12 +424,6 @@ const jointsDetailedOptions: QuestionOption[] = [
   { value: 'squeak', label: { ru: 'Скрипят', en: 'Squeak', de: 'Quietschen' } },
   { value: 'crunch', label: { ru: 'Хрустят', en: 'Crunch', de: 'Knacken' } },
   { value: 'inflammation', label: { ru: 'Воспаляются', en: 'Inflamed', de: 'Entzündet' } },
-  { value: 'arthrosis_stage1', label: { ru: 'Артроз (1 стадия)', en: 'Arthrosis (stage 1)', de: 'Arthrose (Stadium 1)' } },
-  { value: 'arthrosis_stage2', label: { ru: 'Артроз (2 стадия)', en: 'Arthrosis (stage 2)', de: 'Arthrose (Stadium 2)' } },
-  { value: 'arthrosis_stage3', label: { ru: 'Артроз (3 стадия)', en: 'Arthrosis (stage 3)', de: 'Arthrose (Stadium 3)' } },
-  { value: 'back_pain', label: { ru: 'Боли в спине', en: 'Back pain', de: 'Rückenschmerzen' } },
-  { value: 'lower_back_pain', label: { ru: 'Боли в пояснице', en: 'Lower back pain', de: 'Kreuzschmerzen' } },
-  { value: 'knee_pain', label: { ru: 'Боли в коленях', en: 'Knee pain', de: 'Knieschmerzen' } },
   { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
 ];
 
@@ -442,7 +443,7 @@ const herpesWartsOptions: QuestionOption[] = [
   { value: 'papillomas', label: { ru: 'Папилломы', en: 'Papillomas', de: 'Papillome' } },
   { value: 'moles', label: { ru: 'Родинки', en: 'Moles', de: 'Muttermale' } },
   { value: 'warts', label: { ru: 'Бородавки', en: 'Warts', de: 'Warzen' } },
-  { value: 'red_spots', label: { ru: 'Красные точечки на коже', en: 'Red spots on skin', de: 'Rote Punkte auf der Haut' } },
+  { value: 'red_spots', label: { ru: 'Красные точки на коже', en: 'Red spots on skin', de: 'Rote Punkte auf der Haut' } },
   { value: 'other', label: { ru: 'Другое', en: 'Other', de: 'Andere' } },
 ];
 
@@ -1117,12 +1118,12 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
       // 8. Были ли операции (какие именно), все ли органы на месте (какой орган удален), травмы
       {
         id: 'operations_traumas',
-        type: 'textarea',
+        type: 'checkbox',
         label: { ru: 'Операции и травмы', en: 'Operations and injuries', de: 'Operationen und Verletzungen' },
         icon: 'scissors',
+        options: operationsTraumasOptions,
         required: true,
-        hasAdditional: false,
-        placeholder: { ru: 'Опишите подробно', en: 'Describe in detail', de: 'Detailliert beschreiben' },
+        hasAdditional: true,
       },
       // 9. Давление: высокое или низкое. Если высокое — пьете ли лекарства и как долго
       {
@@ -1202,7 +1203,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         icon: 'alert-circle',
         options: [
           ...herpesWartsOptions,
-          { value: 'discharge_female', label: { ru: 'Выделения (по-женски)', en: 'Discharge (female)', de: 'Ausfluss (weiblich)' } },
+          { value: 'thrush', label: { ru: 'Молочница', en: 'Thrush', de: 'Soor' } },
           { value: 'cystitis', label: { ru: 'Цистит', en: 'Cystitis', de: 'Zystitis' } },
         ],
         required: true,
@@ -1535,12 +1536,12 @@ export const manQuestionnaire: QuestionnaireSection[] = [
       // 8. Были ли операции (какие именно), все ли органы на месте (какой орган удален), травмы
       {
         id: 'operations_traumas',
-        type: 'textarea',
+        type: 'checkbox',
         label: { ru: 'Операции и травмы', en: 'Operations and injuries', de: 'Operationen und Verletzungen' },
         icon: 'scissors',
+        options: operationsTraumasOptions,
         required: true,
-        hasAdditional: false,
-        placeholder: { ru: 'Опишите подробно', en: 'Describe in detail', de: 'Detailliert beschreiben' },
+        hasAdditional: true,
       },
       // 9. Давление: высокое или низкое. Если высокое — пьете ли лекарства и как долго
       {
