@@ -418,6 +418,13 @@ const Anketa: React.FC = () => {
     try {
       const result = await sendToTelegram(markdown, medicalDocumentFiles, language);
       
+      // Show file errors if any
+      if (result.fileErrors && result.fileErrors.length > 0) {
+        result.fileErrors.forEach((error) => {
+          toast.warning(error, { duration: 7000 });
+        });
+      }
+      
       if (result.success) {
         // Check if user is authenticated (for secure storage in Supabase)
         const sessionToken = getSessionToken();

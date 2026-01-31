@@ -5,6 +5,7 @@ import { SectionIcon } from '@/components/icons/SectionIcons';
 import { CompactQuestionField } from './CompactQuestionField';
 import { FormData, FormAdditionalData } from '@/lib/form-utils';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface SectionCardProps {
   section: QuestionnaireSection;
@@ -653,10 +654,10 @@ export const SectionCard: React.FC<SectionCardProps> = ({
                 <div className="mt-4">
                   <label className="text-sm text-medical-600 mb-2 block">
                     {language === 'ru' 
-                      ? `Загрузите файлы (до ${files.length}/5)` 
+                      ? `Загрузите файлы (до ${files.length}/5, максимум 50MB каждый)` 
                       : language === 'de' 
-                      ? `Dateien hochladen (bis zu ${files.length}/5)` 
-                      : `Upload files (up to ${files.length}/5)`}
+                      ? `Dateien hochladen (bis zu ${files.length}/5, max. 50MB pro Datei)` 
+                      : `Upload files (up to ${files.length}/5, max 50MB each)`}
                   </label>
                   <div className="space-y-3">
                     <input
@@ -665,8 +666,33 @@ export const SectionCard: React.FC<SectionCardProps> = ({
                       multiple
                       onChange={(e) => {
                         const selectedFiles = Array.from(e.target.files || []);
+                        const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB - Telegram Bot API limit
                         const currentFiles = files || [];
-                        const newFiles = [...currentFiles, ...selectedFiles].slice(0, 5); // Limit to 5 files
+                        
+                        // Validate file sizes
+                        const validFiles: File[] = [];
+                        const invalidFiles: { name: string; size: number }[] = [];
+                        
+                        selectedFiles.forEach((file) => {
+                          if (file.size > MAX_FILE_SIZE) {
+                            invalidFiles.push({ name: file.name, size: file.size });
+                          } else {
+                            validFiles.push(file);
+                          }
+                        });
+                        
+                        // Show error message for files that are too large
+                        if (invalidFiles.length > 0) {
+                          const errorMsg = language === 'ru'
+                            ? `Файлы превышают максимальный размер (50MB): ${invalidFiles.map(f => f.name).join(', ')}`
+                            : language === 'de'
+                            ? `Dateien überschreiten die maximale Größe (50MB): ${invalidFiles.map(f => f.name).join(', ')}`
+                            : `Files exceed maximum size (50MB): ${invalidFiles.map(f => f.name).join(', ')}`;
+                          toast.error(errorMsg, { duration: 5000 });
+                        }
+                        
+                        // Add only valid files
+                        const newFiles = [...currentFiles, ...validFiles].slice(0, 5); // Limit to 5 files
                         onFileChange(newFiles);
                         // Reset input to allow selecting the same file again
                         e.target.value = '';
@@ -722,7 +748,17 @@ export const SectionCard: React.FC<SectionCardProps> = ({
                               <polyline points="14 2 14 8 20 8" />
                             </svg>
                             <span className="flex-1 truncate">{file.name}</span>
-                            <span className="text-medical-600">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                            <span className={cn(
+                              "text-medical-600",
+                              file.size > 50 * 1024 * 1024 && "text-destructive font-semibold"
+                            )}>
+                              ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                              {file.size > 50 * 1024 * 1024 && (
+                                <span className="ml-1" title={language === 'ru' ? 'Файл слишком большой' : language === 'de' ? 'Datei zu groß' : 'File too large'}>
+                                  ⚠️
+                                </span>
+                              )}
+                            </span>
                             <button
                               type="button"
                               onClick={() => {

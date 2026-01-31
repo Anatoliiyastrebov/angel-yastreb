@@ -812,7 +812,7 @@ const getCurrentLanguage = (): Language => {
 // SECURITY NOTE: In production, use environment variables or a server-side proxy
 // Do not expose BOT_TOKEN in client-side code in production!
 // For development: Set VITE_TELEGRAM_BOT_TOKEN and VITE_TELEGRAM_CHAT_ID in .env file
-export const sendToTelegram = async (markdown: string, files?: File[] | File | null, lang: Language = 'ru'): Promise<{ success: boolean; error?: string; messageId?: number }> => {
+export const sendToTelegram = async (markdown: string, files?: File[] | File | null, lang: Language = 'ru'): Promise<{ success: boolean; error?: string; messageId?: number; fileErrors?: string[] }> => {
   // Try to get from environment variables first (for Vite: VITE_ prefix)
   const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
   const CHAT_ID = import.meta.env.VITE_TELEGRAM_CHAT_ID;
@@ -973,6 +973,8 @@ Current status:
     
     // If files are provided, send them as documents
     const filesArray = files ? (Array.isArray(files) ? files : [files]) : [];
+    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB - Telegram Bot API limit
+    
     if (filesArray.length > 0) {
       const caption = lang === 'ru' 
         ? 'Медицинские документы (анализы крови, УЗИ)' 
@@ -981,8 +983,21 @@ Current status:
         : 'Medical documents (blood tests, ultrasound)';
       
       // Send each file separately
+      const fileErrors: string[] = [];
       for (const file of filesArray) {
         try {
+          // Check file size before sending
+          if (file.size > MAX_FILE_SIZE) {
+            const errorMsg = lang === 'ru'
+              ? `Файл "${file.name}" слишком большой (${(file.size / 1024 / 1024).toFixed(2)}MB). Максимальный размер: 50MB`
+              : lang === 'de'
+              ? `Datei "${file.name}" ist zu groß (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximale Größe: 50MB`
+              : `File "${file.name}" is too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum size: 50MB`;
+            fileErrors.push(errorMsg);
+            console.warn(errorMsg);
+            continue;
+          }
+          
           const formData = new FormData();
           formData.append('chat_id', CHAT_ID);
           formData.append('document', file);
@@ -1000,15 +1015,50 @@ Current status:
           const fileResponseData = await fileResponse.json();
           
           if (!fileResponseData.ok) {
+            const errorDescription = fileResponseData.description || 'Unknown error';
+            let errorMsg = '';
+            
+            // Check for file size error
+            if (errorDescription.includes('file is too big') || errorDescription.includes('file too large')) {
+              errorMsg = lang === 'ru'
+                ? `Файл "${file.name}" слишком большой. Максимальный размер: 50MB`
+                : lang === 'de'
+                ? `Datei "${file.name}" ist zu groß. Maximale Größe: 50MB`
+                : `File "${file.name}" is too large. Maximum size: 50MB`;
+            } else {
+              errorMsg = lang === 'ru'
+                ? `Ошибка отправки файла "${file.name}": ${errorDescription}`
+                : lang === 'de'
+                ? `Fehler beim Senden der Datei "${file.name}": ${errorDescription}`
+                : `Error sending file "${file.name}": ${errorDescription}`;
+            }
+            
+            fileErrors.push(errorMsg);
             console.warn('Failed to send file to Telegram:', fileResponseData);
-            // Don't fail the whole request if file sending fails
           } else {
             console.log('Successfully sent file to Telegram:', file.name);
           }
         } catch (fileError: any) {
+          const errorMsg = lang === 'ru'
+            ? `Ошибка при отправке файла "${file.name}": ${fileError.message || 'Network error'}`
+            : lang === 'de'
+            ? `Fehler beim Senden der Datei "${file.name}": ${fileError.message || 'Netzwerkfehler'}`
+            : `Error sending file "${file.name}": ${fileError.message || 'Network error'}`;
+          fileErrors.push(errorMsg);
           console.warn('Error sending file to Telegram:', fileError);
-          // Don't fail the whole request if file sending fails
         }
+      }
+      
+      // If there were file errors, add them to the return value
+      if (fileErrors.length > 0) {
+        // Store errors but don't fail the whole request
+        console.warn('Some files failed to send:', fileErrors);
+        // Return success but with file errors info
+        return { 
+          success: true, 
+          messageId,
+          fileErrors: fileErrors.length > 0 ? fileErrors : undefined
+        };
       }
     }
     
