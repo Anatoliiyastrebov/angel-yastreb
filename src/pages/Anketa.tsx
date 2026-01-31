@@ -143,6 +143,25 @@ const Anketa: React.FC = () => {
     }
   }, [type, language, searchParams, navigate]);
 
+  // Scroll to top when questionnaire type changes or page loads
+  useEffect(() => {
+    // Scroll to top immediately when component mounts or type changes
+    // Use both immediate scroll and delayed scroll to ensure it works on all devices
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    
+    // Also scroll after a short delay to handle cases where content loads asynchronously
+    const timeoutId = setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }, 0);
+    
+    // Also use requestAnimationFrame to ensure it happens after render
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    });
+    
+    return () => clearTimeout(timeoutId);
+  }, [type]);
+
   // Auto-save form data with debounce
   useEffect(() => {
     // Skip auto-save if editing (to avoid overwriting)
