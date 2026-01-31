@@ -1256,7 +1256,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         label: { ru: 'Сон', en: 'Sleep', de: 'Schlaf' },
         icon: 'moon',
         options: [
-          { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+          { value: 'good', label: { ru: 'Хороший', en: 'Good', de: 'Gut' } },
           { value: 'hard_to_fall_asleep', label: { ru: 'Трудно заснуть', en: 'Hard to fall asleep', de: 'Schwer einzuschlafen' } },
           { value: 'wake_often', label: { ru: 'Часто просыпаюсь ночью', en: 'Often wake up at night', de: 'Wache oft nachts auf' } },
           { value: 'both', label: { ru: 'Оба симптома', en: 'Both symptoms', de: 'Beide Symptome' } },
@@ -1674,7 +1674,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         label: { ru: 'Сон', en: 'Sleep', de: 'Schlaf' },
         icon: 'moon',
         options: [
-          { value: 'no_issues', label: { ru: 'Нет проблем', en: 'No issues', de: 'Keine Beschwerden' } },
+          { value: 'good', label: { ru: 'Хороший', en: 'Good', de: 'Gut' } },
           { value: 'hard_to_fall_asleep', label: { ru: 'Трудно заснуть', en: 'Hard to fall asleep', de: 'Schwer einzuschlafen' } },
           { value: 'wake_often', label: { ru: 'Часто просыпаюсь ночью', en: 'Often wake up at night', de: 'Wache oft nachts auf' } },
           { value: 'both', label: { ru: 'Оба симптома', en: 'Both symptoms', de: 'Beide Symptome' } },
