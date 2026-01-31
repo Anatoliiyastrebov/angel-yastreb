@@ -131,6 +131,16 @@ export async function saveQuestionnaire(questionnaire: any): Promise<ApiResponse
       }),
     });
 
+    // Handle non-JSON responses (like 500 errors with HTML)
+    if (!response.ok && response.status >= 500) {
+      const text = await response.text();
+      console.error('Server error (500):', text.substring(0, 200));
+      return { 
+        success: false, 
+        error: 'Server error. Please try again later.' 
+      };
+    }
+
     const data = await parseJsonResponse(response);
     
     if (!response.ok) {
@@ -142,9 +152,17 @@ export async function saveQuestionnaire(questionnaire: any): Promise<ApiResponse
 
     return { success: true, data };
   } catch (error) {
+    // Better error handling for network errors
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      console.error('Network error saving questionnaire:', error);
+      return { 
+        success: false, 
+        error: 'Network error. Please check your connection.' 
+      };
+    }
     return { 
       success: false, 
-      error: error instanceof Error ? error.message : 'Network error' 
+      error: error instanceof Error ? error.message : 'Unknown error occurred' 
     };
   }
 }

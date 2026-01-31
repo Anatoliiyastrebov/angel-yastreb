@@ -484,37 +484,29 @@ const Anketa: React.FC = () => {
           // Save new questionnaire to Supabase (works with or without authentication)
           // If authenticated, uses session contact_identifier
           // If not authenticated, uses contactData from form
+          // Try to save to Supabase, but don't fail if it doesn't work
+          // The important thing is that the message was sent to Telegram
           const saveResult = await saveQuestionnaire(questionnaireData);
           
-          if (saveResult.success) {
-            clearFormData(type, language);
-            if (sessionToken) {
-              toast.success(language === 'ru' ? 'Анкета успешно отправлена и сохранена' : language === 'de' ? 'Fragebogen erfolgreich gesendet und gespeichert' : 'Questionnaire successfully sent and saved');
-            } else {
-              toast.success(
-                language === 'ru' 
-                  ? 'Анкета отправлена! Войдите на странице "Мои анкеты" для просмотра всех ваших анкет.'
-                  : language === 'de'
-                  ? 'Fragebogen gesendet! Melden Sie sich auf der Seite "Meine Fragebögen" an, um alle Ihre Fragebögen anzuzeigen.'
-                  : 'Questionnaire sent! Sign in on "My Questionnaires" page to view all your questionnaires.'
-              );
-            }
-            navigate(`/success?lang=${language}`);
-          } else {
-            // If save to Supabase fails, still save to localStorage as fallback
-            const { saveSubmittedQuestionnaire } = await import('@/lib/form-utils');
-            saveSubmittedQuestionnaire(questionnaireData);
+          // Save to localStorage as backup regardless of Supabase result
+          const { saveSubmittedQuestionnaire } = await import('@/lib/form-utils');
+          saveSubmittedQuestionnaire(questionnaireData);
+          
+          if (!saveResult.success) {
+            // Log error but don't show it to user - Telegram message was sent successfully
             console.warn('Failed to save to Supabase, saved to localStorage instead:', saveResult.error);
-            clearFormData(type, language);
-            toast.warning(
-              language === 'ru' 
-                ? 'Анкета отправлена, но сохранение не удалось. Войдите на странице "Мои анкеты" для доступа.'
-                : language === 'de'
-                ? 'Fragebogen gesendet, aber Speichern fehlgeschlagen. Melden Sie sich auf der Seite "Meine Fragebögen" an.'
-                : 'Questionnaire sent, but saving failed. Sign in on "My Questionnaires" page.'
-            );
-            navigate(`/success?lang=${language}`);
           }
+          
+          // Clear form data and show success message
+          clearFormData(type, language);
+          toast.success(
+            language === 'ru' 
+              ? 'Анкета успешно отправлена! Мы свяжемся с вами в течение 48 часов.'
+              : language === 'de'
+              ? 'Fragebogen erfolgreich gesendet! Wir werden uns innerhalb von 48 Stunden bei Ihnen melden.'
+              : 'Questionnaire successfully sent! We will contact you within 48 hours.'
+          );
+          navigate(`/success?lang=${language}`);
         }
       } else {
         // Show detailed error message
