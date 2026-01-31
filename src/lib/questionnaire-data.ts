@@ -1735,6 +1735,15 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         required: true,
         hasAdditional: false,
       },
+      {
+        id: 'memory',
+        type: 'radio',
+        label: { ru: 'Память и концентрация', en: 'Memory and concentration', de: 'Gedächtnis und Konzentration' },
+        icon: 'brain',
+        options: memoryOptions,
+        required: true,
+        hasAdditional: false,
+      },
       // 28. Какой самый важный вопрос Вас волнует в первую очередь?
       {
         id: 'main_concern',
@@ -1744,15 +1753,6 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         required: false,
         hasAdditional: false,
         placeholder: { ru: 'Опишите ваш главный вопрос', en: 'Describe your main question', de: 'Beschreiben Sie Ihre Hauptfrage' },
-      },
-      {
-        id: 'memory',
-        type: 'radio',
-        label: { ru: 'Память и концентрация', en: 'Memory and concentration', de: 'Gedächtnis und Konzentration' },
-        icon: 'brain',
-        options: memoryOptions,
-        required: true,
-        hasAdditional: false,
       },
     ],
   },
