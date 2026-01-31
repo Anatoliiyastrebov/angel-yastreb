@@ -1169,7 +1169,7 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
       {
         id: 'varicose_hemorrhoids_pigment',
         type: 'checkbox',
-        label: { ru: 'Варикоз и геморрой', en: 'Varicose veins and hemorrhoids', de: 'Krampfadern und Hämorrhoiden' },
+        label: { ru: 'Варикоз, геморрой, пигментация', en: 'Varicose veins, hemorrhoids, pigmentation', de: 'Krampfadern, Hämorrhoiden, Pigmentierung' },
         icon: 'heart',
         options: varicoseHemorrhoidsDetailedOptions,
         required: true,
@@ -1326,16 +1326,6 @@ export const womanQuestionnaire: QuestionnaireSection[] = [
         options: yesNoOptionsSimple,
         required: true,
         hasAdditional: false,
-      },
-      // 27. Что еще Вы хотели бы добавить о своем здоровье
-      {
-        id: 'what_else',
-        type: 'textarea',
-        label: { ru: 'Что еще Вы хотели бы добавить о своем здоровье', en: 'What else would you like to add about your health', de: 'Was möchten Sie sonst noch über Ihre Gesundheit hinzufügen' },
-        icon: 'info',
-        required: false,
-        hasAdditional: false,
-        placeholder: { ru: 'Дополнительная информация', en: 'Additional information', de: 'Zusätzliche Informationen' },
       },
       // 28. Какой самый важный вопрос Вас волнует в первую очередь?
       {
@@ -1587,7 +1577,7 @@ export const manQuestionnaire: QuestionnaireSection[] = [
       {
         id: 'varicose_hemorrhoids_pigment',
         type: 'checkbox',
-        label: { ru: 'Варикоз и геморрой', en: 'Varicose veins and hemorrhoids', de: 'Krampfadern und Hämorrhoiden' },
+        label: { ru: 'Варикоз, геморрой, пигментация', en: 'Varicose veins, hemorrhoids, pigmentation', de: 'Krampfadern, Hämorrhoiden, Pigmentierung' },
         icon: 'heart',
         options: varicoseHemorrhoidsDetailedOptions,
         required: true,
@@ -1745,16 +1735,6 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         required: true,
         hasAdditional: false,
       },
-      // 27. Что еще Вы хотели бы добавить о своем здоровье
-      {
-        id: 'what_else',
-        type: 'textarea',
-        label: { ru: 'Что еще Вы хотели бы добавить о своем здоровье', en: 'What else would you like to add about your health', de: 'Was möchten Sie sonst noch über Ihre Gesundheit hinzufügen' },
-        icon: 'info',
-        required: false,
-        hasAdditional: false,
-        placeholder: { ru: 'Дополнительная информация', en: 'Additional information', de: 'Zusätzliche Informationen' },
-      },
       // 28. Какой самый важный вопрос Вас волнует в первую очередь?
       {
         id: 'main_concern',
@@ -1773,24 +1753,6 @@ export const manQuestionnaire: QuestionnaireSection[] = [
         options: memoryOptions,
         required: true,
         hasAdditional: false,
-      },
-      {
-        id: 'what_else_question',
-        type: 'radio',
-        label: { ru: 'Есть ли что-то что ещё нужно знать о вашем здоровье?', en: 'Is there anything else we should know about your health?', de: 'Gibt es noch etwas, was wir über Ihre Gesundheit wissen sollten?' },
-        icon: 'info',
-        options: yesNoOptionsSimple,
-        required: true,
-        hasAdditional: false,
-      },
-      {
-        id: 'what_else',
-        type: 'textarea',
-        label: { ru: 'Опишите подробнее', en: 'Please describe', de: 'Bitte beschreiben Sie' },
-        icon: 'info',
-        required: false,
-        hasAdditional: false,
-        placeholder: { ru: 'Дополнительная информация', en: 'Additional information', de: 'Zusätzliche Informationen' },
       },
     ],
   },
