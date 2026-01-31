@@ -74,6 +74,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className="bg-white rounded-lg p-6 md:p-8 border border-medical-200 shadow-sm space-y-6"
+      data-section="contact"
     >
       <div className="flex items-center gap-3">
         <MessageCircle className="w-6 h-6 text-primary-600" />
@@ -92,12 +93,13 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
         </div>
       )}
 
-      <div>
+      <div data-question-id="telegram" data-error={!!telegramError}>
         <label className="text-sm text-medical-600 mb-1 block">
           {t('telegram')}
         </label>
         <input
           type="text"
+          id="telegram"
           className={`input-field ${telegramError ? 'input-error' : ''}`}
           value={telegram}
           onChange={(e) => onTelegramChange(e.target.value)}
@@ -149,9 +151,10 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           </div>
 
           {/* Phone Input */}
-          <div className="flex-1">
+          <div className="flex-1" data-question-id="phone" data-error={!!phoneError}>
             <input
               type="tel"
+              id="phone"
               className={`input-field ${phoneError ? 'input-error' : ''}`}
               value={phone}
               onChange={(e) => handlePhoneChange(e.target.value)}

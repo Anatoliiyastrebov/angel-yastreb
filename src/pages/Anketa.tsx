@@ -412,9 +412,57 @@ const Anketa: React.FC = () => {
 
     if (Object.keys(validationErrors).length > 0) {
       toast.error(t('required'));
-      // Scroll to first error
-      const firstErrorField = document.querySelector('[data-error="true"]');
-      firstErrorField?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // Scroll to first error field
+      const firstErrorKey = Object.keys(validationErrors)[0];
+      
+      // Try to find the field by ID or data-error attribute
+      let errorElement: HTMLElement | null = null;
+      
+      // Special handling for contact_method error - scroll to contact section
+      if (firstErrorKey === 'contact_method') {
+        const contactSection = document.querySelector('[data-section="contact"]');
+        if (contactSection) {
+          errorElement = contactSection as HTMLElement;
+        }
+      } else {
+        // First, try to find by question ID (for form fields)
+        const questionElement = document.querySelector(`[data-question-id="${firstErrorKey}"]`);
+        if (questionElement) {
+          errorElement = questionElement as HTMLElement;
+        } else {
+          // Try to find by data-error attribute
+          const errorField = document.querySelector(`[data-error="true"]`);
+          if (errorField) {
+            errorElement = errorField as HTMLElement;
+          } else {
+            // Try to find input/textarea/select with error class
+            const inputWithError = document.querySelector(`input[id="${firstErrorKey}"], textarea[id="${firstErrorKey}"], select[id="${firstErrorKey}"]`);
+            if (inputWithError) {
+              errorElement = inputWithError as HTMLElement;
+            } else {
+              // Try to find by name attribute
+              const fieldByName = document.querySelector(`input[name="${firstErrorKey}"], textarea[name="${firstErrorKey}"], select[name="${firstErrorKey}"]`);
+              if (fieldByName) {
+                errorElement = fieldByName as HTMLElement;
+              }
+            }
+          }
+        }
+      }
+      
+      // If found, scroll to it
+      if (errorElement) {
+        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Also focus the field if it's an input element
+        if (errorElement instanceof HTMLInputElement || errorElement instanceof HTMLTextAreaElement || errorElement instanceof HTMLSelectElement) {
+          setTimeout(() => errorElement?.focus(), 300);
+        }
+      } else {
+        // Fallback: scroll to top of form
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      
       return;
     }
 

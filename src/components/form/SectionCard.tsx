@@ -276,7 +276,7 @@ export const SectionCard: React.FC<SectionCardProps> = ({
           const shouldShowInlineOther = inlineOtherQuestions.includes(question.id) && shouldShowOtherField;
 
           return (
-            <div key={question.id} data-error={!!errors[question.id]}>
+            <div key={question.id} data-error={!!errors[question.id]} data-question-id={question.id}>
               <CompactQuestionField
                 question={question}
                 value={formData[question.id] || (question.type === 'checkbox' ? [] : '')}
