@@ -100,7 +100,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           <MessageCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-medical-400" />
           <input
             type="text"
-            className={`input-field pl-16 ${telegramError ? 'input-error' : ''}`}
+            className={`input-field pl-[52px] ${telegramError ? 'input-error' : ''}`}
             value={telegram}
             onChange={(e) => onTelegramChange(e.target.value)}
             placeholder={t('telegramHint') || '@username или username'}
@@ -156,7 +156,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
             <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-medical-400" />
             <input
               type="tel"
-              className={`input-field pl-16 ${phoneError ? 'input-error' : ''}`}
+              className={`input-field pl-[52px] ${phoneError ? 'input-error' : ''}`}
               value={phone}
               onChange={(e) => handlePhoneChange(e.target.value)}
               placeholder={language === 'ru' ? '123 456 7890' : language === 'de' ? '123 456 7890' : '123 456 7890'}
