@@ -642,6 +642,7 @@ const Anketa: React.FC = () => {
               }
             }}
             phoneCountryCode={contactData.phoneCountryCode || 'DE'}
+            customDialCode={contactData.customDialCode}
             onPhoneChange={(phone) => {
               setContactData((prev) => ({ ...prev, phone }));
               if (errors['phone'] || errors['contact_method']) {
@@ -653,8 +654,8 @@ const Anketa: React.FC = () => {
                 });
               }
             }}
-            onCountryCodeChange={(countryCode) => {
-              setContactData((prev) => ({ ...prev, phoneCountryCode: countryCode }));
+            onCountryCodeChange={(countryCode, customDialCode) => {
+              setContactData((prev) => ({ ...prev, phoneCountryCode: countryCode, customDialCode }));
               if (errors['phone']) {
                 setErrors((prev) => {
                   const newErrors = { ...prev };

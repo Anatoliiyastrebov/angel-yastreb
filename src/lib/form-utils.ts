@@ -13,7 +13,8 @@ export interface FormAdditionalData {
 export interface ContactData {
   telegram?: string;
   phone?: string;
-  phoneCountryCode?: string; // Country code (e.g., 'DE', 'RU')
+  phoneCountryCode?: string; // Country code (e.g., 'DE', 'RU') or 'CUSTOM'
+  customDialCode?: string; // User-entered dial code when country not in list
   email?: string; // Kept for backward compatibility with saved data
 }
 
@@ -788,12 +789,15 @@ export const generateMarkdown = (
   }
   if (contactData.phone && contactData.phone.trim() !== '') {
     const countryCode = contactData.phoneCountryCode || 'DE';
-    const country = countryCodes.find(c => c.code === countryCode);
-    const dialCode = country?.dialCode || '+49';
-    const phoneNumber = contactData.phone.trim().replace(/[\s\-\(\)]/g, ''); // Remove formatting
-    const fullPhoneNumber = `${dialCode}${phoneNumber}`; // Full number without spaces
-    // Telegram automatically makes phone numbers in format +1234567890 clickable
-    // So we display it without spaces to ensure the entire number is clickable
+    let dialCode: string;
+    if (countryCode === 'CUSTOM' && contactData.customDialCode) {
+      dialCode = contactData.customDialCode.startsWith('+') ? contactData.customDialCode : `+${contactData.customDialCode}`;
+    } else {
+      const country = countryCodes.find(c => c.code === countryCode);
+      dialCode = country?.dialCode || '+49';
+    }
+    const phoneNumber = contactData.phone.trim().replace(/[\s\-\(\)]/g, '');
+    const fullPhoneNumber = `${dialCode}${phoneNumber}`;
     contacts.push(`Phone: <b>${escapeHtml(fullPhoneNumber)}</b>`);
   }
   if (contactData.email && contactData.email.trim() !== '') {

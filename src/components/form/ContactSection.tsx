@@ -8,18 +8,20 @@ interface ContactSectionProps {
   telegram: string;
   phone: string;
   phoneCountryCode?: string;
+  customDialCode?: string;
   telegramError?: string;
   phoneError?: string;
   contactMethodError?: string;
   onTelegramChange: (telegram: string) => void;
   onPhoneChange: (phone: string) => void;
-  onCountryCodeChange: (countryCode: string) => void;
+  onCountryCodeChange: (countryCode: string, customDialCode?: string) => void;
 }
 
 export const ContactSection: React.FC<ContactSectionProps> = ({
   telegram,
   phone,
   phoneCountryCode = defaultCountryCode,
+  customDialCode: externalCustomDialCode,
   telegramError,
   phoneError,
   contactMethodError,
@@ -29,15 +31,34 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
 }) => {
   const { language, t } = useLanguage();
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
+  const [countrySearch, setCountrySearch] = useState('');
+  const [dialCodeInput, setDialCodeInput] = useState('');
+  const [isEditingDialCode, setIsEditingDialCode] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const dialCodeInputRef = useRef<HTMLInputElement>(null);
 
-  const selectedCountry = countryCodes.find(c => c.code === phoneCountryCode) || countryCodes.find(c => c.code === defaultCountryCode)!;
+  const isCustom = phoneCountryCode === 'CUSTOM';
+  const selectedCountry = isCustom ? null : (countryCodes.find(c => c.code === phoneCountryCode) || countryCodes.find(c => c.code === defaultCountryCode)!);
+  const currentDialCode = isCustom ? (externalCustomDialCode || '') : (selectedCountry?.dialCode || '+49');
 
-  // Close dropdown when clicking outside
+  const filteredCountries = countrySearch.trim()
+    ? countryCodes.filter(c => {
+        const search = countrySearch.toLowerCase();
+        return (
+          c.name[language].toLowerCase().includes(search) ||
+          c.name.en.toLowerCase().includes(search) ||
+          c.dialCode.includes(search) ||
+          c.code.toLowerCase().includes(search)
+        );
+      })
+    : countryCodes;
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsCountryDropdownOpen(false);
+        setCountrySearch('');
       }
     };
 
@@ -45,26 +66,63 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (isCountryDropdownOpen && searchInputRef.current) {
+      setTimeout(() => searchInputRef.current?.focus(), 50);
+    }
+  }, [isCountryDropdownOpen]);
+
   const handleCountrySelect = (country: CountryCode) => {
     onCountryCodeChange(country.code);
     setIsCountryDropdownOpen(false);
+    setCountrySearch('');
+    setIsEditingDialCode(false);
     
-    // If phone already has a dial code, replace it with the new one
     if (phone.trim()) {
       const phoneWithoutCode = phone.replace(/^\+\d+\s*/, '').trim();
       onPhoneChange(phoneWithoutCode);
     }
   };
 
+  const handleDialCodeInputChange = (value: string) => {
+    const cleaned = value.replace(/[^0-9+]/g, '');
+    const formatted = cleaned.startsWith('+') ? cleaned : (cleaned ? `+${cleaned}` : '');
+    setDialCodeInput(formatted);
+
+    const match = countryCodes.find(c => c.dialCode === formatted);
+    if (match) {
+      onCountryCodeChange(match.code);
+      setIsEditingDialCode(false);
+    }
+  };
+
+  const handleDialCodeBlur = () => {
+    const value = dialCodeInput.trim();
+    if (value && value !== '+') {
+      const match = countryCodes.find(c => c.dialCode === value);
+      if (match) {
+        onCountryCodeChange(match.code);
+      } else {
+        onCountryCodeChange('CUSTOM', value);
+      }
+    }
+    setIsEditingDialCode(false);
+  };
+
+  const startEditingDialCode = () => {
+    setDialCodeInput(currentDialCode);
+    setIsEditingDialCode(true);
+    setTimeout(() => dialCodeInputRef.current?.focus(), 50);
+  };
+
   const handlePhoneChange = (value: string) => {
-    // Remove any existing country code if user types manually
     const cleaned = value.replace(/^\+\d+\s*/, '');
     onPhoneChange(cleaned);
   };
 
   const getFullPhoneNumber = () => {
     if (!phone.trim()) return '';
-    return `${selectedCountry.dialCode} ${phone.trim()}`;
+    return `${currentDialCode} ${phone.trim()}`;
   };
 
 
@@ -120,32 +178,76 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
         <div className="flex gap-2">
           {/* Country Code Selector */}
           <div className="relative" ref={dropdownRef}>
-            <button
-              type="button"
-              onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
-              className="flex items-center gap-2 px-3 py-2 border border-medical-300 bg-white rounded-lg hover:bg-medical-50 focus:outline-none focus:ring-2 focus:ring-primary-500 min-w-[100px] min-h-[44px]"
-            >
-              <span className="text-lg">{selectedCountry.flag}</span>
-              <span className="text-sm font-medium">{selectedCountry.dialCode}</span>
-              <ChevronDown className="w-4 h-4 text-medical-400" />
-            </button>
+            <div className="flex items-center border border-medical-300 bg-white rounded-lg min-h-[44px] overflow-hidden">
+              {isEditingDialCode ? (
+                <input
+                  ref={dialCodeInputRef}
+                  type="text"
+                  value={dialCodeInput}
+                  onChange={(e) => handleDialCodeInputChange(e.target.value)}
+                  onBlur={handleDialCodeBlur}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleDialCodeBlur();
+                    }
+                  }}
+                  className="w-[80px] px-3 py-2 text-sm font-medium bg-transparent focus:outline-none"
+                  placeholder="+..."
+                />
+              ) : (
+                <button
+                  type="button"
+                  onClick={startEditingDialCode}
+                  className="flex items-center gap-1.5 px-3 py-2 hover:bg-medical-50 focus:outline-none"
+                  title={language === 'ru' ? 'Нажмите, чтобы ввести код' : language === 'de' ? 'Klicken, um Code einzugeben' : 'Click to enter code'}
+                >
+                  <span className="text-lg">{selectedCountry?.flag || '🌍'}</span>
+                  <span className="text-sm font-medium">{currentDialCode}</span>
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
+                className="px-1.5 py-2 hover:bg-medical-50 focus:outline-none border-l border-medical-200"
+              >
+                <ChevronDown className="w-4 h-4 text-medical-400" />
+              </button>
+            </div>
             
             {isCountryDropdownOpen && (
-              <div className="absolute z-50 mt-1 w-64 max-h-60 overflow-y-auto bg-white border border-medical-300 rounded-lg shadow-lg">
-                {countryCodes.map((country) => (
-                  <button
-                    key={country.code}
-                    type="button"
-                    onClick={() => handleCountrySelect(country)}
-                    className={`w-full flex items-center gap-3 px-4 py-2 hover:bg-medical-50 text-left min-h-[44px] ${
-                      country.code === phoneCountryCode ? 'bg-medical-100' : ''
-                    }`}
-                  >
-                    <span className="text-lg">{country.flag}</span>
-                    <span className="flex-1 text-sm">{country.name[language]}</span>
-                    <span className="text-sm text-medical-600">{country.dialCode}</span>
-                  </button>
-                ))}
+              <div className="absolute z-50 mt-1 w-72 max-h-72 bg-white border border-medical-300 rounded-lg shadow-lg flex flex-col">
+                <div className="sticky top-0 bg-white p-2 border-b border-medical-200">
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={countrySearch}
+                    onChange={(e) => setCountrySearch(e.target.value)}
+                    placeholder={language === 'ru' ? 'Поиск страны...' : language === 'de' ? 'Land suchen...' : 'Search country...'}
+                    className="w-full px-3 py-2 text-sm border border-medical-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+                <div className="overflow-y-auto flex-1">
+                  {filteredCountries.length === 0 ? (
+                    <div className="px-4 py-3 text-sm text-medical-500 text-center">
+                      {language === 'ru' ? 'Ничего не найдено' : language === 'de' ? 'Nichts gefunden' : 'Nothing found'}
+                    </div>
+                  ) : (
+                    filteredCountries.map((country) => (
+                      <button
+                        key={country.code}
+                        type="button"
+                        onClick={() => handleCountrySelect(country)}
+                        className={`w-full flex items-center gap-3 px-4 py-2 hover:bg-medical-50 text-left min-h-[44px] ${
+                          country.code === phoneCountryCode ? 'bg-primary-50 font-medium' : ''
+                        }`}
+                      >
+                        <span className="text-lg">{country.flag}</span>
+                        <span className="flex-1 text-sm truncate">{country.name[language]}</span>
+                        <span className="text-sm text-medical-600 whitespace-nowrap">{country.dialCode}</span>
+                      </button>
+                    ))
+                  )}
+                </div>
               </div>
             )}
           </div>
