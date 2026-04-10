@@ -26,7 +26,7 @@ export const PrivacyPolicyDialog: React.FC<PrivacyPolicyDialogProps> = ({
       sections: [
         {
           title: 'Контролер данных',
-          content: 'Контролером данных является лицо, предоставляющее консультацию по здоровью. Для запросов по обработке данных свяжитесь с нами через указанные контактные данные в анкете.',
+          content: 'Контролером данных является оператор данного сайта. Для запросов по обработке данных используйте контактные данные, указанные в Impressum.',
         },
         {
           title: 'Правовая основа обработки',
@@ -34,19 +34,19 @@ export const PrivacyPolicyDialog: React.FC<PrivacyPolicyDialogProps> = ({
         },
         {
           title: 'Какие данные мы собираем',
-          content: 'Мы собираем персональные данные, которые вы предоставляете в анкете: имя, возраст, вес, информацию о состоянии здоровья, симптомы, жалобы, аллергии, историю болезней и контактные данные (Telegram или Instagram). Предоставление данных является добровольным, но необходимо для предоставления консультации.',
+          content: 'Мы собираем только данные, которые вы добровольно предоставляете: ответы анкеты, контактные данные (включая email/Telegram/Instagram) и технические данные, необходимые для работы сайта.',
         },
         {
           title: 'Зачем мы собираем данные',
-          content: 'Данные собираются исключительно для предоставления консультации по здоровью. Мы используем эту информацию для анализа вашего состояния и подготовки рекомендаций. Данные не используются для автоматизированного принятия решений или профилирования.',
+          content: 'Данные используются для обработки запроса, обратной связи и предоставления информационных материалов. Данные не применяются для автоматизированного принятия решений или профилирования.',
         },
         {
           title: 'Куда отправляются данные',
-          content: 'Данные отправляются в Telegram-бот через официальный API Telegram. Сообщение с вашей анкетой отправляется в защищенный чат для обработки консультантом. Telegram обрабатывает данные в соответствии с применимыми законами о защите данных.',
+          content: 'Передача данных третьим лицам осуществляется только при технической необходимости (например, хостинг или каналы связи). Если используется Telegram, обработка осуществляется в рамках их политики конфиденциальности.',
         },
         {
           title: 'Как долго хранятся данные',
-          content: 'Данные хранятся в Telegram-чате до момента завершения консультации или до момента отзыва вашего согласия. После завершения консультации или отзыва согласия вы можете запросить удаление ваших данных. Мы удалим ваши данные в течение 30 дней с момента запроса.',
+          content: 'Данные хранятся только столько, сколько необходимо для целей обработки, либо до отзыва согласия/законного требования удаления.',
         },
         {
           title: 'Ваши права',
@@ -67,7 +67,7 @@ export const PrivacyPolicyDialog: React.FC<PrivacyPolicyDialogProps> = ({
       sections: [
         {
           title: 'Data Controller',
-          content: 'The data controller is the person providing health consultation. For requests regarding data processing, please contact us through the contact details provided in the questionnaire.',
+          content: 'The data controller is the operator of this website. For data-processing requests, please use the contact details listed in the Impressum.',
         },
         {
           title: 'Legal Basis for Processing',
@@ -75,19 +75,19 @@ export const PrivacyPolicyDialog: React.FC<PrivacyPolicyDialogProps> = ({
         },
         {
           title: 'What data we collect',
-          content: 'We collect personal data that you provide in the questionnaire: name, age, weight, health information, symptoms, complaints, allergies, medical history, and contact details (Telegram or Instagram). Providing data is voluntary but necessary for providing consultation.',
+          content: 'We collect only data you provide voluntarily: questionnaire responses, contact details (including email/Telegram/Instagram), and technical data required to operate the website.',
         },
         {
           title: 'Why we collect data',
-          content: 'Data is collected solely for the purpose of providing health consultation. We use this information to analyze your condition and prepare recommendations. Data is not used for automated decision-making or profiling.',
+          content: 'Data is used to process your request, communicate with you, and provide informational content. Data is not used for automated decision-making or profiling.',
         },
         {
           title: 'Where data is sent',
-          content: 'Data is sent to a Telegram bot through the official Telegram API. The message with your questionnaire is sent to a secure chat for processing by a consultant. Telegram processes data in accordance with applicable data protection laws.',
+          content: 'Data is shared with third parties only where technically necessary (e.g., hosting or communication channels). If Telegram is used, processing is subject to Telegram’s own privacy policy.',
         },
         {
           title: 'How long data is stored',
-          content: 'Data is stored in the Telegram chat until the consultation is completed or until you withdraw your consent. After completion of the consultation or withdrawal of consent, you can request deletion of your data. We will delete your data within 30 days of the request.',
+          content: 'Data is stored only for as long as required for the stated purposes, or until consent is withdrawn / deletion is legally required.',
         },
         {
           title: 'Your rights',
@@ -108,7 +108,7 @@ export const PrivacyPolicyDialog: React.FC<PrivacyPolicyDialogProps> = ({
       sections: [
         {
           title: 'Verantwortlicher',
-          content: 'Verantwortlicher für die Datenverarbeitung ist die Person, die die Gesundheitsberatung durchführt. Für Anfragen zur Datenverarbeitung kontaktieren Sie uns bitte über die in der Umfrage angegebenen Kontaktdaten.',
+          content: 'Verantwortlich für die Datenverarbeitung ist der Betreiber dieser Website. Für Anfragen zur Datenverarbeitung nutzen Sie bitte die im Impressum genannten Kontaktdaten.',
         },
         {
           title: 'Rechtsgrundlage der Verarbeitung',
@@ -116,19 +116,19 @@ export const PrivacyPolicyDialog: React.FC<PrivacyPolicyDialogProps> = ({
         },
         {
           title: 'Welche Daten wir sammeln',
-          content: 'Wir sammeln personenbezogene Daten, die Sie im Fragebogen angeben: Name, Alter, Gewicht, Gesundheitsinformationen, Symptome, Beschwerden, Allergien, Krankengeschichte und Kontaktdaten (Telegram oder Instagram). Die Bereitstellung der Daten ist freiwillig, aber für die Beratung erforderlich.',
+          content: 'Wir verarbeiten nur Daten, die Sie freiwillig angeben: Fragebogenangaben, Kontaktdaten (einschließlich E-Mail/Telegram/Instagram) sowie technisch notwendige Nutzungsdaten.',
         },
         {
           title: 'Warum wir Daten sammeln',
-          content: 'Daten werden ausschließlich für die Bereitstellung einer Gesundheitsberatung gesammelt. Wir verwenden diese Informationen zur Analyse Ihres Zustands und zur Vorbereitung von Empfehlungen. Die Daten werden nicht für automatisierte Entscheidungsfindung oder Profiling verwendet.',
+          content: 'Die Daten werden zur Bearbeitung Ihrer Anfrage, zur Kommunikation und zur Bereitstellung von Informationsinhalten verwendet. Eine automatisierte Entscheidungsfindung oder ein Profiling findet nicht statt.',
         },
         {
           title: 'Wohin Daten gesendet werden',
-          content: 'Daten werden über die offizielle Telegram-API an einen Telegram-Bot gesendet. Die Nachricht mit Ihrem Fragebogen wird an einen sicheren Chat zur Bearbeitung durch einen Berater gesendet. Telegram verarbeitet Daten in Übereinstimmung mit den geltenden Datenschutzgesetzen.',
+          content: 'Eine Weitergabe an Dritte erfolgt nur, soweit dies technisch erforderlich ist (z. B. Hosting oder Kommunikationskanäle). Bei Nutzung von Telegram richtet sich die Verarbeitung nach den Datenschutzbestimmungen von Telegram.',
         },
         {
           title: 'Wie lange Daten gespeichert werden',
-          content: 'Daten werden im Telegram-Chat gespeichert, bis die Beratung abgeschlossen ist oder Sie Ihre Einwilligung widerrufen. Nach Abschluss der Beratung oder Widerruf der Einwilligung können Sie die Löschung Ihrer Daten anfordern. Wir löschen Ihre Daten innerhalb von 30 Tagen nach der Anfrage.',
+          content: 'Daten werden nur so lange gespeichert, wie es für die genannten Zwecke erforderlich ist, oder bis eine Einwilligung widerrufen wird bzw. ein gesetzlicher Löschanspruch besteht.',
         },
         {
           title: 'Ihre Rechte',
