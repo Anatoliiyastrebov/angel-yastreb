@@ -56,6 +56,10 @@ const Anketa: React.FC = () => {
     telegram: '',
     phone: '',
     phoneCountryCode: 'DE',
+    whatsapp: '',
+    viber: '',
+    instagram: '',
+    vk: '',
   });
   const [dsgvoAccepted, setDsgvoAccepted] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -357,7 +361,15 @@ const Anketa: React.FC = () => {
   const handleClearForm = useCallback(() => {
     setFormData({});
     setAdditionalData({});
-    setContactData({ telegram: '', phone: '', phoneCountryCode: 'DE' });
+    setContactData({
+      telegram: '',
+      phone: '',
+      phoneCountryCode: 'DE',
+      whatsapp: '',
+      viber: '',
+      instagram: '',
+      vk: '',
+    });
     setDsgvoAccepted(false);
     setErrors({});
     setMedicalDocumentFiles([]);
@@ -625,44 +637,42 @@ const Anketa: React.FC = () => {
 
           {/* Contact Section */}
           <ContactSection
-            telegram={contactData.telegram || ''}
-            phone={contactData.phone || ''}
-            telegramError={errors['telegram']}
-            phoneError={errors['phone']}
-            contactMethodError={errors['contact_method']}
-            onTelegramChange={(telegram) => {
-              setContactData((prev) => ({ ...prev, telegram }));
-              if (errors['telegram'] || errors['contact_method']) {
-                setErrors((prev) => {
-                  const newErrors = { ...prev };
-                  delete newErrors['telegram'];
-                  delete newErrors['contact_method'];
-                  return newErrors;
-                });
-              }
+            value={contactData}
+            errors={{
+              phone: errors['phone'],
+              telegram: errors['telegram'],
+              whatsapp: errors['whatsapp'],
+              viber: errors['viber'],
+              instagram: errors['instagram'],
+              vk: errors['vk'],
+              contact_method: errors['contact_method'],
             }}
-            phoneCountryCode={contactData.phoneCountryCode || 'DE'}
-            customDialCode={contactData.customDialCode}
-            onPhoneChange={(phone) => {
-              setContactData((prev) => ({ ...prev, phone }));
-              if (errors['phone'] || errors['contact_method']) {
-                setErrors((prev) => {
-                  const newErrors = { ...prev };
-                  delete newErrors['phone'];
-                  delete newErrors['contact_method'];
-                  return newErrors;
-                });
-              }
-            }}
-            onCountryCodeChange={(countryCode, customDialCode) => {
-              setContactData((prev) => ({ ...prev, phoneCountryCode: countryCode, customDialCode }));
-              if (errors['phone']) {
-                setErrors((prev) => {
-                  const newErrors = { ...prev };
-                  delete newErrors['phone'];
-                  return newErrors;
-                });
-              }
+            onChange={(patch) => {
+              setContactData((prev) => ({ ...prev, ...patch }));
+              setErrors((prev) => {
+                const next = { ...prev };
+                const keys = Object.keys(patch) as (keyof ContactData)[];
+                for (const key of keys) {
+                  if (key === 'phone' || key === 'phoneCountryCode' || key === 'customDialCode') {
+                    delete next.phone;
+                  }
+                  if (key === 'telegram') delete next.telegram;
+                  if (key === 'whatsapp') delete next.whatsapp;
+                  if (key === 'viber') delete next.viber;
+                  if (key === 'instagram') delete next.instagram;
+                  if (key === 'vk') delete next.vk;
+                  if (
+                    key === 'telegram' ||
+                    key === 'whatsapp' ||
+                    key === 'viber' ||
+                    key === 'instagram' ||
+                    key === 'vk'
+                  ) {
+                    delete next.contact_method;
+                  }
+                }
+                return next;
+              });
             }}
           />
 

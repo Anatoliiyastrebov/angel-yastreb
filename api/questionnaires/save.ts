@@ -53,15 +53,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const { telegram, phone } = questionnaire.contactData;
-      
-      if (telegram && telegram.trim()) {
-        contactIdentifier = telegram.trim().replace(/^@/, '').toLowerCase();
-        contactType = 'telegram';
-      } else if (phone && phone.trim()) {
+
+      if (phone && phone.trim()) {
         contactIdentifier = phone.trim().replace(/[\s\-\(\)]/g, '');
         contactType = 'phone';
+      } else if (telegram && telegram.trim()) {
+        contactIdentifier = telegram.trim().replace(/^@/, '').toLowerCase();
+        contactType = 'telegram';
       } else {
-        return res.status(400).json({ error: 'Telegram or phone is required in contact data' });
+        return res.status(400).json({ error: 'Phone or Telegram is required in contact data' });
       }
     }
 

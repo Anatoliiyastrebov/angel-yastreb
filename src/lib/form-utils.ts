@@ -16,6 +16,10 @@ export interface ContactData {
   phoneCountryCode?: string; // Country code (e.g., 'DE', 'RU') or 'CUSTOM'
   customDialCode?: string; // User-entered dial code when country not in list
   email?: string; // Kept for backward compatibility with saved data
+  whatsapp?: string;
+  viber?: string;
+  instagram?: string;
+  vk?: string;
 }
 
 export interface SubmittedQuestionnaire {
@@ -428,35 +432,71 @@ export const validateForm = (
     }
   }
 
-  // Validate phone number if provided
-  if (contactData.phone && contactData.phone.trim() !== '') {
-    const phoneValue = contactData.phone.trim();
-    // Remove common phone formatting characters for validation
-    const cleanPhone = phoneValue.replace(/[\s\-\(\)]/g, '');
-    
-    // Phone validation: should contain only digits (country code is added separately)
-    const phoneRegex = /^\d{6,14}$/; // 6-14 digits for local number (country code added separately)
-    if (!phoneRegex.test(cleanPhone)) {
-      const phoneErrorMsg = lang === 'ru'
-        ? 'Некорректный номер телефона. Должен содержать 6-14 цифр'
+  // Phone is required (primary contact)
+  if (!contactData.phone || contactData.phone.trim() === '') {
+    errors['phone'] =
+      lang === 'ru'
+        ? 'Укажите номер телефона'
         : lang === 'de'
-        ? 'Ungültige Telefonnummer. Muss 6-14 Ziffern enthalten'
-        : 'Invalid phone number. Must contain 6-14 digits';
+          ? 'Bitte geben Sie Ihre Telefonnummer an'
+          : 'Please enter your phone number';
+  } else {
+    const phoneValue = contactData.phone.trim();
+    const cleanPhone = phoneValue.replace(/[\s\-\(\)]/g, '');
+    const phoneRegex = /^\d{6,14}$/;
+    if (!phoneRegex.test(cleanPhone)) {
+      const phoneErrorMsg =
+        lang === 'ru'
+          ? 'Некорректный номер телефона. Должен содержать 6-14 цифр'
+          : lang === 'de'
+            ? 'Ungültige Telefonnummer. Muss 6-14 Ziffern enthalten'
+            : 'Invalid phone number. Must contain 6-14 digits';
       errors['phone'] = phoneErrorMsg;
     }
   }
 
-  // At least one contact method (telegram or phone) must be provided
-  const hasTelegram = contactData.telegram && contactData.telegram.trim() !== '';
-  const hasPhone = contactData.phone && contactData.phone.trim() !== '';
-  
-  if (!hasTelegram && !hasPhone) {
-    const contactRequiredMsg = lang === 'ru' 
-      ? 'Укажите хотя бы один способ связи (Telegram или телефон)' 
-      : lang === 'de' 
-      ? 'Geben Sie mindestens eine Kontaktmethode an (Telegram oder Telefon)'
-      : 'Please provide at least one contact method (Telegram or phone)';
-    errors['contact_method'] = contactRequiredMsg;
+  const trimOptional = (v?: string) => (v && v.trim() !== '' ? v.trim() : '');
+  const optionalMax = 120;
+  const optionalTooLong = (field: string, labelRu: string, labelDe: string, labelEn: string) => {
+    const val = trimOptional((contactData as Record<string, string | undefined>)[field]);
+    if (val.length > optionalMax) {
+      errors[field] =
+        lang === 'ru'
+          ? `${labelRu}: не более ${optionalMax} символов`
+          : lang === 'de'
+            ? `${labelDe}: maximal ${optionalMax} Zeichen`
+            : `${labelEn}: at most ${optionalMax} characters`;
+    }
+  };
+  optionalTooLong('whatsapp', 'WhatsApp', 'WhatsApp', 'WhatsApp');
+  optionalTooLong('viber', 'Viber', 'Viber', 'Viber');
+  optionalTooLong('instagram', 'Instagram', 'Instagram', 'Instagram');
+  optionalTooLong('vk', 'VK', 'VK', 'VK');
+
+  if (contactData.instagram && contactData.instagram.trim() !== '') {
+    const raw = contactData.instagram.trim().replace(/^@/, '');
+    const igRegex = /^[a-zA-Z0-9._]{1,30}$/;
+    if (!igRegex.test(raw) || raw.startsWith('.') || raw.endsWith('.')) {
+      errors['instagram'] =
+        lang === 'ru'
+          ? 'Некорректный Instagram: @username или username, до 30 символов (буквы, цифры, . и _)'
+          : lang === 'de'
+            ? 'Ungültiges Instagram: @username oder username, bis zu 30 Zeichen'
+            : 'Invalid Instagram: @username or username, up to 30 characters (letters, digits, . and _)';
+    }
+  }
+
+  const hasMessenger = ['telegram', 'whatsapp', 'viber', 'instagram', 'vk'].some((key) => {
+    const v = (contactData as Record<string, string | undefined>)[key];
+    return v && v.trim() !== '';
+  });
+  if (!hasMessenger) {
+    errors['contact_method'] =
+      lang === 'ru'
+        ? 'Укажите хотя бы один мессенджер: Telegram, WhatsApp, Viber, Instagram или ВКонтакте.'
+        : lang === 'de'
+          ? 'Bitte geben Sie mindestens einen Messenger an: Telegram, WhatsApp, Viber, Instagram oder VKontakte.'
+          : 'Please add at least one messenger: Telegram, WhatsApp, Viber, Instagram, or VK.';
   }
 
   // Special validation: if what_else_question is "yes", what_else field is required
@@ -783,10 +823,6 @@ export const generateMarkdown = (
   md += `\n<b>${escapeHtml(t.mdContacts)}</b>\n`;
   
   const contacts: string[] = [];
-  if (contactData.telegram && contactData.telegram.trim() !== '') {
-    const cleanTelegram = contactData.telegram.replace(/^@/, '').trim();
-    contacts.push(`Telegram: <b>@${escapeHtml(cleanTelegram)}</b>`);
-  }
   if (contactData.phone && contactData.phone.trim() !== '') {
     const countryCode = contactData.phoneCountryCode || 'DE';
     let dialCode: string;
@@ -799,6 +835,23 @@ export const generateMarkdown = (
     const phoneNumber = contactData.phone.trim().replace(/[\s\-\(\)]/g, '');
     const fullPhoneNumber = `${dialCode}${phoneNumber}`;
     contacts.push(`Phone: <b>${escapeHtml(fullPhoneNumber)}</b>`);
+  }
+  if (contactData.telegram && contactData.telegram.trim() !== '') {
+    const cleanTelegram = contactData.telegram.replace(/^@/, '').trim();
+    contacts.push(`Telegram: <b>@${escapeHtml(cleanTelegram)}</b>`);
+  }
+  if (contactData.whatsapp && contactData.whatsapp.trim() !== '') {
+    contacts.push(`WhatsApp: <b>${escapeHtml(contactData.whatsapp.trim())}</b>`);
+  }
+  if (contactData.viber && contactData.viber.trim() !== '') {
+    contacts.push(`Viber: <b>${escapeHtml(contactData.viber.trim())}</b>`);
+  }
+  if (contactData.instagram && contactData.instagram.trim() !== '') {
+    const ig = contactData.instagram.trim().replace(/^@/, '');
+    contacts.push(`Instagram: <b>@${escapeHtml(ig)}</b>`);
+  }
+  if (contactData.vk && contactData.vk.trim() !== '') {
+    contacts.push(`VK: <b>${escapeHtml(contactData.vk.trim())}</b>`);
   }
   if (contactData.email && contactData.email.trim() !== '') {
     contacts.push(`Email: <b>${escapeHtml(contactData.email.trim())}</b>`);
