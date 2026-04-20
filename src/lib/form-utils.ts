@@ -1,6 +1,7 @@
 import { QuestionnaireSection, QuestionnaireType } from './questionnaire-data';
 import { Language, translations } from './translations';
 import { countryCodes } from './country-codes';
+import { buildInternationalPhone, normalizeNationalSubscriberDigits } from './phone-format';
 
 export interface FormData {
   [key: string]: string | string[];
@@ -442,9 +443,19 @@ export const validateForm = (
           : 'Please enter your phone number';
   } else {
     const phoneValue = contactData.phone.trim();
-    const cleanPhone = phoneValue.replace(/[\s\-\(\)]/g, '');
+    const countryCode = contactData.phoneCountryCode || 'DE';
+    let dialCode: string;
+    if (countryCode === 'CUSTOM' && contactData.customDialCode) {
+      dialCode = contactData.customDialCode.startsWith('+')
+        ? contactData.customDialCode
+        : `+${contactData.customDialCode}`;
+    } else {
+      const country = countryCodes.find((c) => c.code === countryCode);
+      dialCode = country?.dialCode || '+49';
+    }
+    const nationalDigits = normalizeNationalSubscriberDigits(dialCode, phoneValue);
     const phoneRegex = /^\d{6,14}$/;
-    if (!phoneRegex.test(cleanPhone)) {
+    if (!phoneRegex.test(nationalDigits)) {
       const phoneErrorMsg =
         lang === 'ru'
           ? 'Некорректный номер телефона. Должен содержать 6-14 цифр'
@@ -832,8 +843,7 @@ export const generateMarkdown = (
       const country = countryCodes.find(c => c.code === countryCode);
       dialCode = country?.dialCode || '+49';
     }
-    const phoneNumber = contactData.phone.trim().replace(/[\s\-\(\)]/g, '');
-    const fullPhoneNumber = `${dialCode}${phoneNumber}`;
+    const fullPhoneNumber = buildInternationalPhone(dialCode, contactData.phone.trim());
     contacts.push(`Phone: <b>${escapeHtml(fullPhoneNumber)}</b>`);
   }
   if (contactData.telegram && contactData.telegram.trim() !== '') {

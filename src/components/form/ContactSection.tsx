@@ -5,6 +5,7 @@ import { Phone, ChevronDown } from 'lucide-react';
 import { countryCodes, defaultCountryCode, type CountryCode } from '@/lib/country-codes';
 import type { ContactData } from '@/lib/form-utils';
 import { cn } from '@/lib/utils';
+import { buildInternationalPhone } from '@/lib/phone-format';
 
 export interface ContactSectionErrors {
   phone?: string;
@@ -135,7 +136,9 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
 
   const getFullPhoneNumber = () => {
     if (!phone.trim()) return '';
-    return `${currentDialCode} ${phone.trim()}`;
+    const e164 = buildInternationalPhone(currentDialCode, phone.trim());
+    const national = e164.slice(currentDialCode.length);
+    return national ? `${currentDialCode} ${national}` : e164;
   };
 
   const inputClass = 'w-full rounded-md border border-medical-300 bg-white px-2.5 py-1.5 text-sm text-medical-900 placeholder:text-medical-400 focus:outline-none focus:ring-2 focus:ring-primary-500/25 focus:border-primary-400';
