@@ -6,9 +6,10 @@ import { PrivacyPolicyDialog } from './PrivacyPolicyDialog';
 interface DSGVOCheckboxProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
+  error?: string;
 }
 
-export const DSGVOCheckbox: React.FC<DSGVOCheckboxProps> = ({ checked, onChange }) => {
+export const DSGVOCheckbox: React.FC<DSGVOCheckboxProps> = ({ checked, onChange, error }) => {
   const { t, language } = useLanguage();
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
 
@@ -32,7 +33,11 @@ export const DSGVOCheckbox: React.FC<DSGVOCheckboxProps> = ({ checked, onChange 
 
   return (
     <>
-      <div className="bg-white rounded-lg p-6 md:p-8 border border-medical-200 shadow-sm">
+      <div
+        className={`bg-white rounded-lg p-6 md:p-8 border shadow-sm ${error ? 'border-destructive/40' : 'border-medical-200'}`}
+        data-section="dsgvo"
+        data-error={!!error}
+      >
       <label className="flex items-start gap-3 cursor-pointer group">
         <div className="relative flex-shrink-0 mt-0.5">
           <input
@@ -77,7 +82,10 @@ export const DSGVOCheckbox: React.FC<DSGVOCheckboxProps> = ({ checked, onChange 
           </p>
         </div>
       </label>
-    </div>
+        {error && (
+          <p className="mt-2 text-xs text-destructive">{error}</p>
+        )}
+      </div>
 
       <PrivacyPolicyDialog open={showPrivacyPolicy} onOpenChange={setShowPrivacyPolicy} />
     </>

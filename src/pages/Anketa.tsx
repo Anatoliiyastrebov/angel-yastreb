@@ -415,71 +415,69 @@ const Anketa: React.FC = () => {
     return md;
   }, [type, sections, formData, additionalData, contactData, language, medicalDocumentFiles]);
 
+  const scrollToTopMostError = useCallback((validationErrors: FormErrors) => {
+    const firstErrorKey = Object.keys(validationErrors)[0];
+    const candidates: HTMLElement[] = [];
+
+    if (firstErrorKey === 'contact_method') {
+      const contactSection = document.querySelector('[data-section="contact"]');
+      if (contactSection) candidates.push(contactSection as HTMLElement);
+    } else if (firstErrorKey === 'dsgvo') {
+      const dsgvoSection = document.querySelector('[data-section="dsgvo"]');
+      if (dsgvoSection) candidates.push(dsgvoSection as HTMLElement);
+    } else {
+      const questionElement = document.querySelector(`[data-question-id="${firstErrorKey}"]`);
+      if (questionElement) candidates.push(questionElement as HTMLElement);
+    }
+
+    const allErrorElements = Array.from(document.querySelectorAll('[data-error="true"]')) as HTMLElement[];
+    candidates.push(...allErrorElements);
+
+    if (candidates.length === 0) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    const topMost = candidates
+      .filter((el) => el.offsetParent !== null)
+      .sort((a, b) => {
+        const topA = a.getBoundingClientRect().top + window.scrollY;
+        const topB = b.getBoundingClientRect().top + window.scrollY;
+        return topA - topB;
+      })[0];
+
+    topMost.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const focusable = topMost.querySelector('input, textarea, select, button') as HTMLElement | null;
+    if (focusable) {
+      setTimeout(() => focusable.focus(), 250);
+    }
+  }, []);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const validationErrors = validateForm(sections, formData, contactData, language, additionalData);
-    setErrors(validationErrors);
-
-    if (Object.keys(validationErrors).length > 0) {
-      toast.error(t('required'));
-      
-      // Scroll to first error field
-      const firstErrorKey = Object.keys(validationErrors)[0];
-      
-      // Try to find the field by ID or data-error attribute
-      let errorElement: HTMLElement | null = null;
-      
-      // Special handling for contact_method error - scroll to contact section
-      if (firstErrorKey === 'contact_method') {
-        const contactSection = document.querySelector('[data-section="contact"]');
-        if (contactSection) {
-          errorElement = contactSection as HTMLElement;
-        }
-      } else {
-        // First, try to find by question ID (for form fields)
-        const questionElement = document.querySelector(`[data-question-id="${firstErrorKey}"]`);
-        if (questionElement) {
-          errorElement = questionElement as HTMLElement;
-        } else {
-          // Try to find by data-error attribute
-          const errorField = document.querySelector(`[data-error="true"]`);
-          if (errorField) {
-            errorElement = errorField as HTMLElement;
-          } else {
-            // Try to find input/textarea/select with error class
-            const inputWithError = document.querySelector(`input[id="${firstErrorKey}"], textarea[id="${firstErrorKey}"], select[id="${firstErrorKey}"]`);
-            if (inputWithError) {
-              errorElement = inputWithError as HTMLElement;
-            } else {
-              // Try to find by name attribute
-              const fieldByName = document.querySelector(`input[name="${firstErrorKey}"], textarea[name="${firstErrorKey}"], select[name="${firstErrorKey}"]`);
-              if (fieldByName) {
-                errorElement = fieldByName as HTMLElement;
-              }
-            }
-          }
-        }
-      }
-      
-      // If found, scroll to it
-      if (errorElement) {
-        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        // Also focus the field if it's an input element
-        if (errorElement instanceof HTMLInputElement || errorElement instanceof HTMLTextAreaElement || errorElement instanceof HTMLSelectElement) {
-          setTimeout(() => errorElement?.focus(), 300);
-        }
-      } else {
-        // Fallback: scroll to top of form
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-      
-      return;
+    if (!dsgvoAccepted) {
+      validationErrors['dsgvo'] = language === 'ru'
+        ? 'Подтвердите согласие на обработку персональных данных'
+        : language === 'de'
+          ? 'Bitte bestätigen Sie die Einwilligung zur Datenverarbeitung'
+          : 'Please confirm consent to personal data processing';
+    }
+    if (!isEnvConfigured) {
+      validationErrors['contact_method'] = validationErrors['contact_method']
+        || (language === 'ru'
+          ? 'Отправка временно недоступна: не настроены переменные окружения.'
+          : language === 'de'
+            ? 'Versand ist vorübergehend nicht verfügbar: Umgebungsvariablen sind nicht konfiguriert.'
+            : 'Submission is temporarily unavailable: environment variables are not configured.');
     }
 
-    if (!dsgvoAccepted) {
-      toast.error(language === 'ru' ? 'Необходимо принять условия DSGVO' : language === 'de' ? 'Sie müssen die DSGVO-Bedingungen akzeptieren' : 'You must accept GDPR terms');
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) {
+      toast.error(t('required'));
+      setTimeout(() => scrollToTopMostError(validationErrors), 0);
       return;
     }
 
@@ -677,7 +675,20 @@ const Anketa: React.FC = () => {
           />
 
           {/* DSGVO Checkbox */}
-          <DSGVOCheckbox checked={dsgvoAccepted} onChange={setDsgvoAccepted} />
+          <DSGVOCheckbox
+            checked={dsgvoAccepted}
+            onChange={(checked) => {
+              setDsgvoAccepted(checked);
+              if (checked && errors['dsgvo']) {
+                setErrors((prev) => {
+                  const next = { ...prev };
+                  delete next.dsgvo;
+                  return next;
+                });
+              }
+            }}
+            error={errors['dsgvo']}
+          />
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3">
@@ -704,8 +715,8 @@ const Anketa: React.FC = () => {
           <div className="sticky bottom-4 z-10 md:static md:z-auto">
             <button
               type="submit"
-              disabled={!dsgvoAccepted || isSubmitting || !isEnvConfigured}
-              className="btn-primary w-full flex items-center justify-center gap-2 py-4 text-lg shadow-lg md:shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting}
+              className="btn-primary w-full flex items-center justify-center gap-2 py-4 text-lg shadow-lg md:shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
             >
             {isSubmitting ? (
               <>

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Phone, ChevronDown } from 'lucide-react';
@@ -6,6 +6,8 @@ import { countryCodes, defaultCountryCode, type CountryCode } from '@/lib/countr
 import type { ContactData } from '@/lib/form-utils';
 import { cn } from '@/lib/utils';
 import { buildInternationalPhone } from '@/lib/phone-format';
+
+type MessengerKey = 'telegram' | 'whatsapp' | 'viber' | 'instagram' | 'vk';
 
 export interface ContactSectionErrors {
   phone?: string;
@@ -48,6 +50,33 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const dialCodeInputRef = useRef<HTMLInputElement>(null);
+
+  const messengerKeys: MessengerKey[] = ['telegram', 'whatsapp', 'viber', 'instagram', 'vk'];
+  const messengerLabels: Record<MessengerKey, string> = {
+    telegram: t('telegram'),
+    whatsapp: t('whatsapp'),
+    viber: t('viber'),
+    instagram: t('instagram'),
+    vk: t('vk'),
+  };
+  const messengerPlaceholders: Record<MessengerKey, string> = {
+    telegram: t('telegramHint'),
+    whatsapp: t('whatsappHint'),
+    viber: t('viberHint'),
+    instagram: t('instagramHint'),
+    vk: t('vkHint'),
+  };
+
+  const firstFilledMethod = useMemo<MessengerKey | null>(() => {
+    const values: Record<MessengerKey, string> = { telegram, whatsapp, viber, instagram, vk };
+    return messengerKeys.find((k) => values[k]?.trim()) ?? null;
+  }, [telegram, whatsapp, viber, instagram, vk]);
+
+  const [selectedMethod, setSelectedMethod] = useState<MessengerKey>(firstFilledMethod ?? 'telegram');
+
+  useEffect(() => {
+    if (firstFilledMethod) setSelectedMethod(firstFilledMethod);
+  }, [firstFilledMethod]);
 
   const isCustom = phoneCountryCode === 'CUSTOM';
   const selectedCountry = isCustom
@@ -141,14 +170,23 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
     return national ? `${currentDialCode} ${national}` : e164;
   };
 
-  const inputClass = 'w-full rounded-md border border-medical-300 bg-white px-2.5 py-1.5 text-sm text-medical-900 placeholder:text-medical-400 focus:outline-none focus:ring-2 focus:ring-primary-500/25 focus:border-primary-400';
+  const currentMessengerValue: Record<MessengerKey, string> = {
+    telegram,
+    whatsapp,
+    viber,
+    instagram,
+    vk,
+  };
+
+  const inputClass =
+    'w-full rounded-md border border-medical-300 bg-white px-2.5 py-1.5 text-sm text-medical-900 placeholder:text-medical-400 focus:outline-none focus:ring-2 focus:ring-primary-500/25 focus:border-primary-400';
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-white rounded-lg p-4 md:p-5 border border-medical-200 shadow-sm space-y-3.5"
+      className="bg-white rounded-lg p-4 md:p-5 border border-medical-200 shadow-sm space-y-4"
       data-section="contact"
     >
       <div className="flex items-start gap-2.5">
@@ -162,7 +200,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
         </div>
       </div>
 
-      {/* Phone */}
       <div className="space-y-1">
         <label htmlFor="phone" className="text-xs font-medium text-medical-800">
           {t('phone')}
@@ -189,13 +226,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                   type="button"
                   onClick={startEditingDialCode}
                   className="flex items-center gap-1 px-2 py-1.5 hover:bg-medical-50 focus:outline-none"
-                  title={
-                    language === 'ru'
-                      ? 'Нажмите, чтобы ввести код'
-                      : language === 'de'
-                        ? 'Klicken, um Code einzugeben'
-                        : 'Click to enter code'
-                  }
                 >
                   <span className="text-base leading-none">{selectedCountry?.flag || '🌍'}</span>
                   <span className="text-xs font-medium tabular-nums">{currentDialCode}</span>
@@ -206,9 +236,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                 onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
                 className="px-1 py-1.5 hover:bg-medical-50 focus:outline-none border-l border-medical-200"
                 aria-expanded={isCountryDropdownOpen}
-                aria-label={
-                  language === 'ru' ? 'Выбор страны' : language === 'de' ? 'Land auswählen' : 'Choose country'
-                }
               >
                 <ChevronDown className="w-3.5 h-3.5 text-medical-400" />
               </button>
@@ -222,9 +249,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                     type="text"
                     value={countrySearch}
                     onChange={(e) => setCountrySearch(e.target.value)}
-                    placeholder={
-                      language === 'ru' ? 'Поиск...' : language === 'de' ? 'Suchen...' : 'Search...'
-                    }
+                    placeholder={language === 'ru' ? 'Поиск...' : language === 'de' ? 'Suchen...' : 'Search...'}
                     className="w-full px-2 py-1.5 text-xs border border-medical-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500/25"
                   />
                 </div>
@@ -276,100 +301,61 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
         )}
       </div>
 
-      {/* Messengers — compact grid */}
-      <div className="pt-1 border-t border-medical-100 space-y-2">
+      <div className="pt-2 border-t border-medical-100 space-y-2">
         <p className="text-xs font-medium text-medical-800">
           {t('messengersShortTitle')}
           <span className="text-destructive">*</span>
         </p>
+
+        <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={t('messengersShortTitle')}>
+          {messengerKeys.map((key) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setSelectedMethod(key)}
+              className={cn(
+                'px-3 py-1.5 rounded-full text-xs border transition-colors',
+                selectedMethod === key
+                  ? 'bg-primary-600 text-white border-primary-600'
+                  : 'bg-white text-medical-700 border-medical-300 hover:bg-medical-50'
+              )}
+            >
+              {messengerLabels[key]}
+            </button>
+          ))}
+        </div>
+
+        <div data-question-id={selectedMethod} data-error={!!errors[selectedMethod]}>
+          <label htmlFor={`messenger-${selectedMethod}`} className="text-[11px] font-medium text-medical-600 mb-0.5 block">
+            {messengerLabels[selectedMethod]}
+          </label>
+          <input
+            id={`messenger-${selectedMethod}`}
+            type="text"
+            value={currentMessengerValue[selectedMethod]}
+            onChange={(e) => onChange({ [selectedMethod]: e.target.value })}
+            placeholder={messengerPlaceholders[selectedMethod]}
+            className={cn(inputClass, errors[selectedMethod] ? 'border-destructive' : '')}
+            autoComplete="off"
+          />
+          {errors[selectedMethod] && (
+            <p className="error-message text-[11px] mt-0.5 flex items-start gap-1">
+              <AlertCircleIcon />
+              {errors[selectedMethod]}
+            </p>
+          )}
+        </div>
+
         {errors.contact_method && (
           <p className="text-xs text-destructive flex items-start gap-1 bg-destructive/5 rounded px-2 py-1.5 border border-destructive/15">
             <AlertCircleIcon />
             {errors.contact_method}
           </p>
         )}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-3 gap-y-2">
-          <CompactField
-            id="telegram"
-            label={t('telegram')}
-            placeholder={t('telegramHint')}
-            value={telegram}
-            error={errors.telegram}
-            inputClass={inputClass}
-            onChange={(v) => onChange({ telegram: v })}
-          />
-          <CompactField
-            id="whatsapp"
-            label={t('whatsapp')}
-            placeholder={t('whatsappHint')}
-            value={whatsapp}
-            error={errors.whatsapp}
-            inputClass={inputClass}
-            onChange={(v) => onChange({ whatsapp: v })}
-          />
-          <CompactField
-            id="viber"
-            label={t('viber')}
-            placeholder={t('viberHint')}
-            value={viber}
-            error={errors.viber}
-            inputClass={inputClass}
-            onChange={(v) => onChange({ viber: v })}
-          />
-          <CompactField
-            id="instagram"
-            label={t('instagram')}
-            placeholder={t('instagramHint')}
-            value={instagram}
-            error={errors.instagram}
-            inputClass={inputClass}
-            onChange={(v) => onChange({ instagram: v })}
-          />
-          <CompactField
-            id="vk"
-            label={t('vk')}
-            placeholder={t('vkHint')}
-            value={vk}
-            error={errors.vk}
-            inputClass={inputClass}
-            onChange={(v) => onChange({ vk: v })}
-          />
-        </div>
       </div>
     </motion.div>
   );
 };
-
-const CompactField: React.FC<{
-  id: string;
-  label: string;
-  placeholder: string;
-  value: string;
-  error?: string;
-  inputClass: string;
-  onChange: (v: string) => void;
-}> = ({ id, label, placeholder, value, error, inputClass, onChange }) => (
-  <div data-question-id={id} data-error={!!error}>
-    <label htmlFor={id} className="text-[11px] font-medium text-medical-600 mb-0.5 block truncate">
-      {label}
-    </label>
-    <input
-      type="text"
-      id={id}
-      className={cn(inputClass, error ? 'border-destructive' : '')}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      autoComplete="off"
-    />
-    {error && (
-      <p className="error-message text-[11px] mt-0.5 flex items-start gap-1">
-        <AlertCircleIcon />
-        {error}
-      </p>
-    )}
-  </div>
-);
 
 const AlertCircleIcon = () => (
   <svg
